@@ -1,0 +1,89 @@
+{
+  "backend_unchanged": {
+    "retryguard/fixtures.py": true,
+    "retryguard/diagnosis.py": true,
+    "retryguard/analysis.py": true,
+    "retryguard/verifier.py": true,
+    "retryguard/web.py": true,
+    "retryguard/selection.py": true,
+    "retryguard/adversarial.py": true,
+    "retryguard/independent.py": true,
+    "retryguard/validation.py": true,
+    "retryguard/__init__.py": true,
+    "retryguard/__main__.py": true,
+    "retryguard/compiler.py": true,
+    "tests/test_diagnosis.py": true,
+    "tests/test_source_retry.py": true,
+    "tests/test_validation.py": true,
+    "tests/test_verifier_coverage.py": true,
+    "tests/test_external_evaluation.py": true,
+    "tests/test_selection.py": true,
+    "tests/test_web.py": true,
+    "tests/test_retryguard.py": true,
+    "pyproject.toml": true,
+    "requirements.txt": true
+  },
+  "regression_tests_passed": 67,
+  "typescript_check": "passed",
+  "browser_checks_passed": [
+    "two-action entrance",
+    "instructions on entrance",
+    "no workspace mounted under entrance",
+    "viewport-sized desktop/mobile entrance",
+    "shader disposal on workspace entry",
+    "real example execution",
+    "four verified alternatives",
+    "evidence ZIP download",
+    "source-preservation recommendation",
+    "stale-result suppression",
+    "invalid upload rejection",
+    "modal Escape dismissal",
+    "mobile layout without horizontal overflow",
+    "reduced motion",
+    "no JavaScript page errors"
+  ],
+  "visual_review": [
+    "desktop entrance",
+    "desktop workspace",
+    "mobile entrance"
+  ],
+  "libraries": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/three": "0.186.0",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "esbuild": "0.28.2",
+    "framer-motion": "14.0.0",
+    "gsap": "3.15.0",
+    "lucide-react": "1.52.0",
+    "postcss": "8.5.28",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tailwind-merge": "3.7.0",
+    "tailwindcss": "4.3.3",
+    "three": "0.186.1",
+    "typescript": "7.0.2"
+  },
+  "interactive_guide": {
+    "browser_checks_passed": [
+      "branch selection",
+      "recovery toggle",
+      "retry-cap formula at cap 8",
+      "source eligibility toggle",
+      "guide reset",
+      "no API calls from guide",
+      "real workspace handoff",
+      "mobile layout",
+      "Escape dismissal"
+    ],
+    "model": "Illustrative K0=H/sqrt(2), K1=X/sqrt(2); independently retried after X recovery",
+    "typescript_check": "passed",
+    "visual_review": [
+      "recovery desktop",
+      "budget desktop",
+      "eligibility mobile"
+    ]
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "status": "failed",
+  "stage": "stopped",
+  "diagnosis": {
+    "routine": "ibm_rx",
+    "scope": "Original unitary trial followed by ancilla measurement, before recovery. Failure outcomes are potential terminal timeouts.",
+    "bit_order": "Displayed bits are c[highest]...c[0]; integer syndrome 0 is success.",
+    "source_caveat": "These are checks against RetryGuard\u2019s declared timeout contract, not claims of previously unknown upstream bugs.",
+    "branches": [
+      {
+        "syndrome": 0,
+        "bits": "00",
+        "contract": "success_target",
+        "status": "satisfied",
+        "explanation": "The successful outcome performs the declared target.",
+        "probability": 0.6249999999999994,
+        "probability_note": "Input-independent probability.",
+        "probability_witness": null,
+        "affected_state": {
+          "input_state": "zero |0>",
+          "expected_state": "a rotated pure state (distinguished by the measurement below)",
+          "actual_state": "a rotated pure state (distinguished by the measurement below)",
+          "branch_probability": 0.6249999999999994,
+          "measurement_basis": "X",
+          "expected_plus_probability": 0.5,
+          "actual_plus_probability": 0.5,
+          "measurement_gap": 0.0
+        },
+        "proposed_correction": null,
+        "correction_verified": false,
+        "operator_residual": 1.2412670766236366e-16
+      },
+      {
+        "syndrome": 1,
+        "bits": "01",
+        "contract": "timeout_preserves_data",
+        "status": "violated",
+        "explanation": "This failure changes the data. If execution stops here without recovery, timeout returns the wrong state.",
+        "probability": 0.12499999999999989,
+        "probability_note": "Input-independent probability.",
+        "probability_witness": null,
+        "affected_state": {
+          "input_state": "zero |0>",
+          "expected_state": "zero |0>",
+          "actual_state": "one |1>",
+          "branch_probability": 0.12499999999999989,
+          "measurement_basis": "Z",
+          "expected_plus_probability": 1.0,
+          "actual_plus_probability": 1.1102230246251565e-16,
+          "measurement_gap": 0.9999999999999999,
+          "corrected_plus_probability": 0.9999999999999998
+        },
+        "proposed_correction": {
+          "kind": "X",
+          "instruction": "Apply an X gate to undo the bit flip."
+        },
+        "correction_verified": false,
+        "operator_residual": 0.4999999999999998
+      },
+      {
+        "syndrome": 2,
+        "bits": "10",
+        "contract": "timeout_preserves_data",
+        "status": "violated",
+        "explanation": "This failure changes the data. If execution stops here without recovery, timeout returns the wrong state.",
+        "probability": 0.12499999999999989,
+        "probability_note": "Input-independent probability.",
+        "probability_witness": null,
+        "affected_state": {
+          "input_state": "zero |0>",
+          "expected_state": "zero |0>",
+          "actual_state": "one |1>",
+          "branch_probability": 0.12499999999999989,
+          "measurement_basis": "Z",
+          "expected_plus_probability": 1.0,
+          "actual_plus_probability": 1.1102230246251565e-16,
+          "measurement_gap": 0.9999999999999999,
+          "corrected_plus_probability": 0.9999999999999998
+        },
+        "proposed_correction": {
+          "kind": "X",
+          "instruction": "Apply an X gate to undo the bit flip."
+        },
+        "correction_verified": false,
+        "operator_residual": 0.4999999999999998
+      },
+      {
+        "syndrome": 3,
+        "bits": "11",
+        "contract": "timeout_preserves_data",
+        "status": "violated",
+        "explanation": "This failure changes the data. If execution stops here without recovery, timeout returns the wrong state.",
+        "probability": 0.12499999999999989,
+        "probability_note": "Input-independent probability.",
+        "probability_witness": null,
+        "affected_state": {
+          "input_state": "zero |0>",
+          "expected_state": "zero |0>",
+          "actual_state": "one |1>",
+          "branch_probability": 0.12499999999999989,
+          "measurement_basis": "Z",
+          "expected_plus_probability": 1.0,
+          "actual_plus_probability": 1.1102230246251565e-16,
+          "measurement_gap": 0.9999999999999999,
+          "corrected_plus_probability": 0.9999999999999998
+        },
+        "proposed_correction": {
+          "kind": "X",
+          "instruction": "Apply an X gate to undo the bit flip."
+        },
+        "correction_verified": false,
+        "operator_residual": 0.4999999999999998
+      }
+    ],
+    "naive_control": {
+      "scope": "Specific wrapper that controls every trial gate and leaves off-arm ancillas zero.",
+      "leak_detected": true,
+      "distribution_distance": 0.3750000000000001,
+      "explanation": "Measurement outcomes distinguish the run and do-not-run arms and can damage their superposition.",
+      "proposal": "Do not apply this naive wrapper. The separately verified controlled replacement circuits are available for accepted inputs; source recovery alone does not fix control leakage."
+    },
+    "evidence_note": "State examples illustrate the diagnosis; exported-program Choi checks establish the numerical contract checks. This is ideal-model verification, not a formal proof.",
+    "verified_artifacts": []
+  },
+  "error": {
+    "code": "EXECUTION_ERROR",
+    "message": "\"The 'qiskit_qasm3_import' library is required to use 'loading from OpenQASM 3'. You can install it with 'pip install qiskit_qasm3_import'.\""
+  }
+}

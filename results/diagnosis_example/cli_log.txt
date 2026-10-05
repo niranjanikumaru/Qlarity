@@ -1,0 +1,13 @@
+{
+  "status": "partial",
+  "items_total": 3,
+  "items_accepted": 1,
+  "items_rejected": 2,
+  "all_verified": false,
+  "controlled_variants": 4,
+  "source_retry_variants": 2,
+  "results": "results/diagnosis_example/benchmark.json"
+}
+
+Item 2 (leaking) [IRREVERSIBLE_FAILURE]: Failure leaks information; reject unitary recovery.
+Item 3 (wrong_success) [TARGET_MISMATCH]: Success does not implement declared target; check target matrix, qubit ordering, and success syndrome.

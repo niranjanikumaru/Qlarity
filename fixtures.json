@@ -1,0 +1,83 @@
+[
+  {
+    "name": "ibm_rx",
+    "qasm": "results/generated/47f37bce7fa4/ibm_rx/ibm_rx_trial.qasm",
+    "target_real": [
+      [
+        0.8944271909999159,
+        0.0
+      ],
+      [
+        0.0,
+        0.8944271909999159
+      ]
+    ],
+    "target_imag": [
+      [
+        0.0,
+        -0.4472135954999579
+      ],
+      [
+        -0.4472135954999579,
+        0.0
+      ]
+    ],
+    "source": "https://github.com/Qiskit/documentation/blob/24612fc664d3d7167d54fb493312f3b7bb5299c9/docs/tutorials/repeat-until-success.ipynb",
+    "lineage": "Paetznick Svore rotation synthesis",
+    "note": "Pinned IBM gate sequence; explicit target phase contract for coherent control."
+  },
+  {
+    "name": "guppy_v3",
+    "qasm": "results/generated/47f37bce7fa4/guppy_v3/guppy_v3_trial.qasm",
+    "target_real": [
+      [
+        0.4472135954999579,
+        0.0
+      ],
+      [
+        0.0,
+        0.4472135954999579
+      ]
+    ],
+    "target_imag": [
+      [
+        0.8944271909999159,
+        0.0
+      ],
+      [
+        0.0,
+        -0.8944271909999159
+      ]
+    ],
+    "source": "https://docs.quantinuum.com/guppy/guppylang/examples/repeat-until-success.html",
+    "lineage": "Paetznick Svore rotation synthesis",
+    "note": "First measurement deferred. Measuring otherwise discarded b refines early failure. Generated corrections are analyzed independently."
+  },
+  {
+    "name": "gearbox",
+    "qasm": "results/generated/47f37bce7fa4/gearbox/gearbox_trial.qasm",
+    "target_real": [
+      [
+        0.9888727472590864,
+        0.0
+      ],
+      [
+        0.0,
+        0.9888727472590864
+      ]
+    ],
+    "target_imag": [
+      [
+        0.0,
+        -0.1487638723893242
+      ],
+      [
+        -0.1487638723893242,
+        0.0
+      ]
+    ],
+    "source": "https://arxiv.org/abs/1406.2040",
+    "lineage": "Wiebe Kliuchnikov gearbox",
+    "note": "One-input gearbox realization with Ry convention and theta 0.37. Independent implementation of published instrument, not source-code import."
+  }
+]

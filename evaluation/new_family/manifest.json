@@ -1,0 +1,29 @@
+[
+  {
+    "name": "adqc_j_beta061",
+    "qasm": "trial.qasm",
+    "target_real": [
+      [
+        0.6744716483747629,
+        0.6744716483747629
+      ],
+      [
+        0.6744716483747629,
+        -0.6744716483747629
+      ]
+    ],
+    "target_imag": [
+      [
+        0.21233934053450884,
+        -0.21233934053450884
+      ],
+      [
+        0.21233934053450884,
+        0.21233934053450884
+      ]
+    ],
+    "source": "https://doi.org/10.1103/PhysRevA.82.020301",
+    "lineage": "ancilla-driven measurement-based single-qubit gate",
+    "note": "Assistant-authored new-family adapter against frozen core; not teammate-authored or blinded"
+  }
+]

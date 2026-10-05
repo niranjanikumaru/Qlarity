@@ -1,0 +1,11 @@
+{
+  "status": "complete",
+  "items_total": 3,
+  "items_accepted": 3,
+  "items_rejected": 0,
+  "all_verified": true,
+  "controlled_variants": 12,
+  "source_retry_variants": 6,
+  "results": "results/benchmark.json"
+}
+

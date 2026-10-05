@@ -1,0 +1,12 @@
+{
+  "example": "ibm_rx",
+  "timeout": 0.01,
+  "max_attempts": 16,
+  "require_source": false,
+  "weights": {
+    "cx": 10,
+    "one_qubit": 1,
+    "measure": 5,
+    "reset": 5
+  }
+}

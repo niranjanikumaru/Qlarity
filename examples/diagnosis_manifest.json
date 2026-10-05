@@ -1,0 +1,80 @@
+[
+  {
+    "name": "ibm_rx",
+    "qasm": "ibm_rx_diagnosis.qasm",
+    "target_real": [
+      [
+        0.8944271909999159,
+        0.0
+      ],
+      [
+        0.0,
+        0.8944271909999159
+      ]
+    ],
+    "target_imag": [
+      [
+        0.0,
+        -0.4472135954999579
+      ],
+      [
+        -0.4472135954999579,
+        0.0
+      ]
+    ],
+    "source": "https://github.com/Qiskit/documentation/blob/24612fc664d3d7167d54fb493312f3b7bb5299c9/docs/tutorials/repeat-until-success.ipynb",
+    "lineage": "Paetznick Svore rotation synthesis"
+  },
+  {
+    "name": "leaking",
+    "qasm": "leaking_diagnosis.qasm",
+    "target_real": [
+      [
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0
+      ]
+    ],
+    "target_imag": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "source": "synthetic",
+    "lineage": "synthetic"
+  },
+  {
+    "name": "wrong_success",
+    "qasm": "wrong_success_diagnosis.qasm",
+    "target_real": [
+      [
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0
+      ]
+    ],
+    "target_imag": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "source": "synthetic",
+    "lineage": "synthetic"
+  }
+]

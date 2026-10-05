@@ -1,0 +1,10 @@
+{
+  "status": "complete",
+  "items_total": 1,
+  "items_accepted": 1,
+  "items_rejected": 0,
+  "all_verified": true,
+  "controlled_variants": 4,
+  "source_retry_variants": 2,
+  "results": "results/new_family_cli/benchmark.json"
+}

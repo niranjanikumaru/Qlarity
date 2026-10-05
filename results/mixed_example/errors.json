@@ -1,0 +1,29 @@
+{
+  "summary": {
+    "status": "partial",
+    "items_total": 4,
+    "items_accepted": 2,
+    "items_rejected": 2,
+    "all_verified": false,
+    "controlled_variants": 8,
+    "source_retry_variants": 4
+  },
+  "errors": [
+    {
+      "item_index": 2,
+      "name": "missing_target",
+      "stage": "validation",
+      "code": "MISSING_FIELD",
+      "field": "target_imag",
+      "message": "Missing required fields: target_imag."
+    },
+    {
+      "item_index": 3,
+      "name": "wrong_shape",
+      "stage": "validation",
+      "code": "INVALID_MATRIX",
+      "field": "target_real",
+      "message": "target_real must be a 2 by 2 matrix of numbers, without strings or booleans."
+    }
+  ]
+}

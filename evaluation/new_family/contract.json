@@ -1,0 +1,26 @@
+{
+  "name": "adqc_j_beta061",
+  "family": "ancilla-driven measurement-based single-qubit gate",
+  "beta": 0.61,
+  "source": "https://doi.org/10.1103/PhysRevA.82.020301",
+  "source_locator": "Published version Fig. 2 and Eqs. (1)-(2); J(beta)=H exp(i beta Z/2)",
+  "data_qubit": 1,
+  "ancilla_qubits": [
+    0
+  ],
+  "success_syndrome": 0,
+  "expected_probability": 0.5,
+  "expected_success": "K0 = H diag(exp(i beta/2),exp(-i beta/2)) / sqrt(2)",
+  "expected_failure": "K1 = X H diag(exp(i beta/2),exp(-i beta/2)) / sqrt(2)",
+  "expected_recovery": "J(beta)^dagger X returns failure data to its input",
+  "caps": [
+    1,
+    2,
+    7,
+    32
+  ],
+  "timeout_limit": 0.01,
+  "max_attempts": 16,
+  "authorship": "Assistant-authored new-family adapter against frozen core; not teammate-authored or blinded",
+  "natural_comparator": "X feed-forward on outcome 1 makes both outcomes implement J(beta); bounded retry is an imposed contract, not the source protocol."
+}

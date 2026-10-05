@@ -1,0 +1,91 @@
+[
+  {
+    "name": "valid_before",
+    "qasm": "ibm_trial.qasm",
+    "target_real": [
+      [
+        0.8944271909999159,
+        0.0
+      ],
+      [
+        0.0,
+        0.8944271909999159
+      ]
+    ],
+    "target_imag": [
+      [
+        0.0,
+        -0.4472135954999579
+      ],
+      [
+        -0.4472135954999579,
+        0.0
+      ]
+    ],
+    "source": "https://github.com/Qiskit/documentation/blob/24612fc664d3d7167d54fb493312f3b7bb5299c9/docs/tutorials/repeat-until-success.ipynb",
+    "lineage": "Paetznick Svore rotation synthesis"
+  },
+  {
+    "name": "missing_target",
+    "qasm": "ibm_trial.qasm",
+    "target_real": [
+      [
+        0.8944271909999159,
+        0.0
+      ],
+      [
+        0.0,
+        0.8944271909999159
+      ]
+    ],
+    "source": "https://github.com/Qiskit/documentation/blob/24612fc664d3d7167d54fb493312f3b7bb5299c9/docs/tutorials/repeat-until-success.ipynb",
+    "lineage": "Paetznick Svore rotation synthesis"
+  },
+  {
+    "name": "wrong_shape",
+    "qasm": "ibm_trial.qasm",
+    "target_real": [
+      [
+        1
+      ]
+    ],
+    "target_imag": [
+      [
+        0.0,
+        -0.4472135954999579
+      ],
+      [
+        -0.4472135954999579,
+        0.0
+      ]
+    ],
+    "source": "https://github.com/Qiskit/documentation/blob/24612fc664d3d7167d54fb493312f3b7bb5299c9/docs/tutorials/repeat-until-success.ipynb",
+    "lineage": "Paetznick Svore rotation synthesis"
+  },
+  {
+    "name": "valid_after",
+    "qasm": "ibm_trial.qasm",
+    "target_real": [
+      [
+        0.8944271909999159,
+        0.0
+      ],
+      [
+        0.0,
+        0.8944271909999159
+      ]
+    ],
+    "target_imag": [
+      [
+        0.0,
+        -0.4472135954999579
+      ],
+      [
+        -0.4472135954999579,
+        0.0
+      ]
+    ],
+    "source": "https://github.com/Qiskit/documentation/blob/24612fc664d3d7167d54fb493312f3b7bb5299c9/docs/tutorials/repeat-until-success.ipynb",
+    "lineage": "Paetznick Svore rotation synthesis"
+  }
+]

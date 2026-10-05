@@ -1,0 +1,418 @@
+{
+  "items": [
+    {
+      "routine": "valid_before",
+      "scope": "Original unitary trial followed by ancilla measurement, before recovery. Failure outcomes are potential terminal timeouts.",
+      "bit_order": "Displayed bits are c[highest]...c[0]; integer syndrome 0 is success.",
+      "source_caveat": "These are checks against RetryGuard\u2019s declared timeout contract, not claims of previously unknown upstream bugs.",
+      "branches": [
+        {
+          "syndrome": 0,
+          "bits": "00",
+          "contract": "success_target",
+          "status": "satisfied",
+          "explanation": "The successful outcome performs the declared target.",
+          "probability": 0.6249999999999996,
+          "probability_note": "Input-independent probability.",
+          "probability_witness": null,
+          "affected_state": {
+            "input_state": "zero |0>",
+            "expected_state": "a rotated pure state (distinguished by the measurement below)",
+            "actual_state": "a rotated pure state (distinguished by the measurement below)",
+            "branch_probability": 0.6249999999999994,
+            "measurement_basis": "X",
+            "expected_plus_probability": 0.5,
+            "actual_plus_probability": 0.5,
+            "measurement_gap": 0.0
+          },
+          "proposed_correction": null,
+          "correction_verified": false,
+          "operator_residual": 1.2412670766236366e-16
+        },
+        {
+          "syndrome": 1,
+          "bits": "01",
+          "contract": "timeout_preserves_data",
+          "status": "violated",
+          "explanation": "This failure changes the data. If execution stops here without recovery, timeout returns the wrong state.",
+          "probability": 0.12499999999999989,
+          "probability_note": "Input-independent probability.",
+          "probability_witness": null,
+          "affected_state": {
+            "input_state": "zero |0>",
+            "expected_state": "zero |0>",
+            "actual_state": "one |1>",
+            "branch_probability": 0.12499999999999989,
+            "measurement_basis": "Z",
+            "expected_plus_probability": 1.0,
+            "actual_plus_probability": 1.1102230246251565e-16,
+            "measurement_gap": 0.9999999999999999,
+            "corrected_plus_probability": 0.9999999999999998
+          },
+          "proposed_correction": {
+            "kind": "X",
+            "instruction": "Apply an X gate to undo the bit flip."
+          },
+          "correction_verified": true,
+          "operator_residual": 0.4999999999999998
+        },
+        {
+          "syndrome": 2,
+          "bits": "10",
+          "contract": "timeout_preserves_data",
+          "status": "violated",
+          "explanation": "This failure changes the data. If execution stops here without recovery, timeout returns the wrong state.",
+          "probability": 0.12499999999999989,
+          "probability_note": "Input-independent probability.",
+          "probability_witness": null,
+          "affected_state": {
+            "input_state": "zero |0>",
+            "expected_state": "zero |0>",
+            "actual_state": "one |1>",
+            "branch_probability": 0.12499999999999989,
+            "measurement_basis": "Z",
+            "expected_plus_probability": 1.0,
+            "actual_plus_probability": 1.1102230246251565e-16,
+            "measurement_gap": 0.9999999999999999,
+            "corrected_plus_probability": 0.9999999999999998
+          },
+          "proposed_correction": {
+            "kind": "X",
+            "instruction": "Apply an X gate to undo the bit flip."
+          },
+          "correction_verified": true,
+          "operator_residual": 0.4999999999999998
+        },
+        {
+          "syndrome": 3,
+          "bits": "11",
+          "contract": "timeout_preserves_data",
+          "status": "violated",
+          "explanation": "This failure changes the data. If execution stops here without recovery, timeout returns the wrong state.",
+          "probability": 0.12499999999999989,
+          "probability_note": "Input-independent probability.",
+          "probability_witness": null,
+          "affected_state": {
+            "input_state": "zero |0>",
+            "expected_state": "zero |0>",
+            "actual_state": "one |1>",
+            "branch_probability": 0.12499999999999989,
+            "measurement_basis": "Z",
+            "expected_plus_probability": 1.0,
+            "actual_plus_probability": 1.1102230246251565e-16,
+            "measurement_gap": 0.9999999999999999,
+            "corrected_plus_probability": 0.9999999999999998
+          },
+          "proposed_correction": {
+            "kind": "X",
+            "instruction": "Apply an X gate to undo the bit flip."
+          },
+          "correction_verified": true,
+          "operator_residual": 0.4999999999999998
+        }
+      ],
+      "naive_control": {
+        "scope": "Specific wrapper that controls every trial gate and leaves off-arm ancillas zero.",
+        "leak_detected": true,
+        "distribution_distance": 0.37500000000000006,
+        "explanation": "Measurement outcomes distinguish the run and do-not-run arms and can damage their superposition.",
+        "proposal": "Do not apply this naive wrapper. The separately verified controlled replacement circuits are available for accepted inputs; source recovery alone does not fix control leakage."
+      },
+      "evidence_note": "State examples illustrate the diagnosis; exported-program Choi checks establish the numerical contract checks. This is ideal-model verification, not a formal proof.",
+      "verified_artifacts": [
+        {
+          "kind": "recovered_attempt",
+          "qasm_file": "generated/a6bae9e52703/valid_before/valid_before_recovered_attempt.qasm"
+        },
+        {
+          "kind": "source_fixed",
+          "cap": 7,
+          "qasm_file": "generated/a6bae9e52703/valid_before/valid_before_source_fixed.qasm",
+          "success_residual": 3.7098574623799553e-16,
+          "timeout_residual": 1.7155124648276058e-17
+        },
+        {
+          "kind": "source_selected",
+          "cap": 5,
+          "qasm_file": "generated/a6bae9e52703/valid_before/valid_before_source_selected.qasm",
+          "success_residual": 3.6831281381967195e-16,
+          "timeout_residual": 8.590207493230885e-17
+        }
+      ],
+      "recovered_attempt_check": {
+        "timeout_probability": 0.3749999999999998,
+        "timeout_residual": 8.356528017638577e-16,
+        "independent_timeout_residual": 8.615499779534415e-16,
+        "timeout_engine_agreement_residual": 5.75754544570364e-17,
+        "primary_timeout_relative_probability_residual": 2.3314683517128287e-15,
+        "primary_timeout_conditional_residual": 4.627585760055977e-16,
+        "independent_timeout_relative_probability_residual": 2.55351295663786e-15,
+        "independent_timeout_conditional_residual": 4.847517577095474e-16,
+        "timeout_conditional_engine_agreement_residual": 1.9305014478701202e-16,
+        "success_probability": 0.625,
+        "success_residual": 8.721756738077324e-16,
+        "independent_success_residual": 8.217221335097336e-16,
+        "success_engine_agreement_residual": 1.0408340855860843e-16,
+        "primary_success_relative_probability_residual": 1.1102230246251565e-15,
+        "primary_success_conditional_residual": 4.380173328140681e-16,
+        "independent_success_relative_probability_residual": 1.1102230246251565e-15,
+        "independent_success_conditional_residual": 3.4628621809569677e-16,
+        "success_conditional_engine_agreement_residual": 1.838793792236158e-16,
+        "trace_residual": 2.220446049250313e-16,
+        "independent_trace_residual": 2.220446049250313e-16,
+        "verified": true,
+        "branch_checks": [
+          {
+            "branch": "timeout",
+            "expected_probability": 0.37500000000000067,
+            "actual_probability": 0.3749999999999998,
+            "independent_probability": 0.3749999999999997,
+            "primary_conditional_status": "checked",
+            "independent_conditional_status": "checked"
+          },
+          {
+            "branch": "success",
+            "expected_probability": 0.6249999999999993,
+            "actual_probability": 0.625,
+            "independent_probability": 0.625,
+            "primary_conditional_status": "checked",
+            "independent_conditional_status": "checked"
+          }
+        ],
+        "failures": [],
+        "independence_scope": "Separate gate matrices, measurement, reset, reference preparation and partial trace; shared Qiskit QASM parser, NumPy and declared contract.",
+        "timeout_probability_supplied": true,
+        "probability_note": "Timeout supplied separately to avoid cancellation in 1-success."
+      },
+      "item_index": 1,
+      "batch_status": "accepted"
+    },
+    {
+      "routine": "missing_target",
+      "scope": "Input validation",
+      "branches": [],
+      "input_error": {
+        "code": "MISSING_FIELD",
+        "field": "target_imag",
+        "message": "Missing required fields: target_imag."
+      },
+      "explanation": "Circuit behavior was not diagnosed because this input could not be analyzed. Missing required fields: target_imag.",
+      "verified_artifacts": [],
+      "evidence_note": "No affected quantum state or repair is asserted for this invalid input.",
+      "item_index": 2,
+      "batch_status": "rejected",
+      "batch_error": {
+        "code": "MISSING_FIELD",
+        "field": "target_imag",
+        "message": "Missing required fields: target_imag."
+      }
+    },
+    {
+      "routine": "wrong_shape",
+      "scope": "Input validation",
+      "branches": [],
+      "input_error": {
+        "code": "INVALID_MATRIX",
+        "field": "target_real",
+        "message": "target_real must be a 2 by 2 matrix of numbers, without strings or booleans."
+      },
+      "explanation": "Circuit behavior was not diagnosed because this input could not be analyzed. target_real must be a 2 by 2 matrix of numbers, without strings or booleans.",
+      "verified_artifacts": [],
+      "evidence_note": "No affected quantum state or repair is asserted for this invalid input.",
+      "item_index": 3,
+      "batch_status": "rejected",
+      "batch_error": {
+        "code": "INVALID_MATRIX",
+        "field": "target_real",
+        "message": "target_real must be a 2 by 2 matrix of numbers, without strings or booleans."
+      }
+    },
+    {
+      "routine": "valid_after",
+      "scope": "Original unitary trial followed by ancilla measurement, before recovery. Failure outcomes are potential terminal timeouts.",
+      "bit_order": "Displayed bits are c[highest]...c[0]; integer syndrome 0 is success.",
+      "source_caveat": "These are checks against RetryGuard\u2019s declared timeout contract, not claims of previously unknown upstream bugs.",
+      "branches": [
+        {
+          "syndrome": 0,
+          "bits": "00",
+          "contract": "success_target",
+          "status": "satisfied",
+          "explanation": "The successful outcome performs the declared target.",
+          "probability": 0.6249999999999996,
+          "probability_note": "Input-independent probability.",
+          "probability_witness": null,
+          "affected_state": {
+            "input_state": "zero |0>",
+            "expected_state": "a rotated pure state (distinguished by the measurement below)",
+            "actual_state": "a rotated pure state (distinguished by the measurement below)",
+            "branch_probability": 0.6249999999999994,
+            "measurement_basis": "X",
+            "expected_plus_probability": 0.5,
+            "actual_plus_probability": 0.5,
+            "measurement_gap": 0.0
+          },
+          "proposed_correction": null,
+          "correction_verified": false,
+          "operator_residual": 1.2412670766236366e-16
+        },
+        {
+          "syndrome": 1,
+          "bits": "01",
+          "contract": "timeout_preserves_data",
+          "status": "violated",
+          "explanation": "This failure changes the data. If execution stops here without recovery, timeout returns the wrong state.",
+          "probability": 0.12499999999999989,
+          "probability_note": "Input-independent probability.",
+          "probability_witness": null,
+          "affected_state": {
+            "input_state": "zero |0>",
+            "expected_state": "zero |0>",
+            "actual_state": "one |1>",
+            "branch_probability": 0.12499999999999989,
+            "measurement_basis": "Z",
+            "expected_plus_probability": 1.0,
+            "actual_plus_probability": 1.1102230246251565e-16,
+            "measurement_gap": 0.9999999999999999,
+            "corrected_plus_probability": 0.9999999999999998
+          },
+          "proposed_correction": {
+            "kind": "X",
+            "instruction": "Apply an X gate to undo the bit flip."
+          },
+          "correction_verified": true,
+          "operator_residual": 0.4999999999999998
+        },
+        {
+          "syndrome": 2,
+          "bits": "10",
+          "contract": "timeout_preserves_data",
+          "status": "violated",
+          "explanation": "This failure changes the data. If execution stops here without recovery, timeout returns the wrong state.",
+          "probability": 0.12499999999999989,
+          "probability_note": "Input-independent probability.",
+          "probability_witness": null,
+          "affected_state": {
+            "input_state": "zero |0>",
+            "expected_state": "zero |0>",
+            "actual_state": "one |1>",
+            "branch_probability": 0.12499999999999989,
+            "measurement_basis": "Z",
+            "expected_plus_probability": 1.0,
+            "actual_plus_probability": 1.1102230246251565e-16,
+            "measurement_gap": 0.9999999999999999,
+            "corrected_plus_probability": 0.9999999999999998
+          },
+          "proposed_correction": {
+            "kind": "X",
+            "instruction": "Apply an X gate to undo the bit flip."
+          },
+          "correction_verified": true,
+          "operator_residual": 0.4999999999999998
+        },
+        {
+          "syndrome": 3,
+          "bits": "11",
+          "contract": "timeout_preserves_data",
+          "status": "violated",
+          "explanation": "This failure changes the data. If execution stops here without recovery, timeout returns the wrong state.",
+          "probability": 0.12499999999999989,
+          "probability_note": "Input-independent probability.",
+          "probability_witness": null,
+          "affected_state": {
+            "input_state": "zero |0>",
+            "expected_state": "zero |0>",
+            "actual_state": "one |1>",
+            "branch_probability": 0.12499999999999989,
+            "measurement_basis": "Z",
+            "expected_plus_probability": 1.0,
+            "actual_plus_probability": 1.1102230246251565e-16,
+            "measurement_gap": 0.9999999999999999,
+            "corrected_plus_probability": 0.9999999999999998
+          },
+          "proposed_correction": {
+            "kind": "X",
+            "instruction": "Apply an X gate to undo the bit flip."
+          },
+          "correction_verified": true,
+          "operator_residual": 0.4999999999999998
+        }
+      ],
+      "naive_control": {
+        "scope": "Specific wrapper that controls every trial gate and leaves off-arm ancillas zero.",
+        "leak_detected": true,
+        "distribution_distance": 0.37500000000000006,
+        "explanation": "Measurement outcomes distinguish the run and do-not-run arms and can damage their superposition.",
+        "proposal": "Do not apply this naive wrapper. The separately verified controlled replacement circuits are available for accepted inputs; source recovery alone does not fix control leakage."
+      },
+      "evidence_note": "State examples illustrate the diagnosis; exported-program Choi checks establish the numerical contract checks. This is ideal-model verification, not a formal proof.",
+      "verified_artifacts": [
+        {
+          "kind": "recovered_attempt",
+          "qasm_file": "generated/a6bae9e52703/valid_after/valid_after_recovered_attempt.qasm"
+        },
+        {
+          "kind": "source_fixed",
+          "cap": 7,
+          "qasm_file": "generated/a6bae9e52703/valid_after/valid_after_source_fixed.qasm",
+          "success_residual": 3.7098574623799553e-16,
+          "timeout_residual": 1.7155124648276058e-17
+        },
+        {
+          "kind": "source_selected",
+          "cap": 5,
+          "qasm_file": "generated/a6bae9e52703/valid_after/valid_after_source_selected.qasm",
+          "success_residual": 3.6831281381967195e-16,
+          "timeout_residual": 8.590207493230885e-17
+        }
+      ],
+      "recovered_attempt_check": {
+        "timeout_probability": 0.3749999999999998,
+        "timeout_residual": 8.356528017638577e-16,
+        "independent_timeout_residual": 8.615499779534415e-16,
+        "timeout_engine_agreement_residual": 5.75754544570364e-17,
+        "primary_timeout_relative_probability_residual": 2.3314683517128287e-15,
+        "primary_timeout_conditional_residual": 4.627585760055977e-16,
+        "independent_timeout_relative_probability_residual": 2.55351295663786e-15,
+        "independent_timeout_conditional_residual": 4.847517577095474e-16,
+        "timeout_conditional_engine_agreement_residual": 1.9305014478701202e-16,
+        "success_probability": 0.625,
+        "success_residual": 8.721756738077324e-16,
+        "independent_success_residual": 8.217221335097336e-16,
+        "success_engine_agreement_residual": 1.0408340855860843e-16,
+        "primary_success_relative_probability_residual": 1.1102230246251565e-15,
+        "primary_success_conditional_residual": 4.380173328140681e-16,
+        "independent_success_relative_probability_residual": 1.1102230246251565e-15,
+        "independent_success_conditional_residual": 3.4628621809569677e-16,
+        "success_conditional_engine_agreement_residual": 1.838793792236158e-16,
+        "trace_residual": 2.220446049250313e-16,
+        "independent_trace_residual": 2.220446049250313e-16,
+        "verified": true,
+        "branch_checks": [
+          {
+            "branch": "timeout",
+            "expected_probability": 0.37500000000000067,
+            "actual_probability": 0.3749999999999998,
+            "independent_probability": 0.3749999999999997,
+            "primary_conditional_status": "checked",
+            "independent_conditional_status": "checked"
+          },
+          {
+            "branch": "success",
+            "expected_probability": 0.6249999999999993,
+            "actual_probability": 0.625,
+            "independent_probability": 0.625,
+            "primary_conditional_status": "checked",
+            "independent_conditional_status": "checked"
+          }
+        ],
+        "failures": [],
+        "independence_scope": "Separate gate matrices, measurement, reset, reference preparation and partial trace; shared Qiskit QASM parser, NumPy and declared contract.",
+        "timeout_probability_supplied": true,
+        "probability_note": "Timeout supplied separately to avoid cancellation in 1-success."
+      },
+      "item_index": 4,
+      "batch_status": "accepted"
+    }
+  ]
+}

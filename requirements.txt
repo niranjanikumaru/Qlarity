@@ -1,0 +1,4 @@
+numpy==2.5.3
+scipy==1.18.1
+qiskit==2.5.2
+qiskit-qasm3-import==0.6.0

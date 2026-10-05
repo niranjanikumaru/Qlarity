@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "retryguard-prototype"
+version = "0.8.0"
+description = "Small numerical verifier and compiler for bounded quantum retry contracts"
+requires-python = ">=3.12"
+dependencies = ["numpy==2.5.3", "scipy==1.18.1", "qiskit==2.5.2", "qiskit-qasm3-import==0.8.0"]
+
+[project.scripts]
+retryguard = "retryguard.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["retryguard*"]
+
+[tool.setuptools.package-data]
+retryguard = ["web.html"]

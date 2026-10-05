@@ -1,0 +1,18 @@
+import {build} from 'esbuild';
+import postcss from 'postcss';
+import tailwind from '@tailwindcss/postcss';
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import crypto from 'node:crypto';
+const here=path.dirname(fileURLToPath(import.meta.url));
+const root=path.resolve(here,'..');
+const lock=JSON.parse(fs.readFileSync(path.join(here,'backend-lock.json'),'utf8'));
+for(const [p,hash] of Object.entries(lock))if(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex')!==hash)throw Error('Backend changed: '+p);
+const result=await build({entryPoints:[path.join(here,'src.jsx')],bundle:true,minify:true,write:false,format:'iife',target:['es2020'],legalComments:'eof',define:{'process.env.NODE_ENV':'"production"'},jsx:'automatic'});
+const js=result.outputFiles[0].text.replace(/<\/script/gi,'<\\/script');
+const globals=path.join(here,'styles/globals.css');
+const compiled=await postcss([tailwind({base:here})]).process(fs.readFileSync(globals,'utf8'),{from:globals});
+const css=compiled.css+'\n'+fs.readFileSync(path.join(here,'style.css'),'utf8');
+fs.writeFileSync(path.join(root,'retryguard/web.html'),`<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111515"><title>RetryGuard — Every outcome matters</title><style>${css}</style></head><body><div id="root"></div><noscript>Enable JavaScript to use the execution workspace.</noscript><script>${js}</script></body></html>`);
+console.log('Built self-contained web.html; all '+Object.keys(lock).length+' backend and test files unchanged.');

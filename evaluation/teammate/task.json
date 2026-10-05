@@ -1,0 +1,50 @@
+{
+  "task_id": "teammate_t_injection_v1",
+  "status": "awaiting_independent_submission",
+  "target_real": [
+    [
+      1,
+      0
+    ],
+    [
+      0,
+      0.7071067811865476
+    ]
+  ],
+  "target_imag": [
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0.7071067811865476
+    ]
+  ],
+  "source": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/fault-tolerant-quantum-computing/controlling-error-propagation",
+  "family": "magic-state gate injection",
+  "expected_probability": 0.5,
+  "data_qubit": 1,
+  "ancilla_qubits": [
+    0
+  ],
+  "success_syndrome": 0,
+  "failure_contract": "Recoverable failure proportional to T dagger; phase immaterial for branch channel. Return input unchanged on bounded exhaustion.",
+  "caps": [
+    1,
+    2,
+    7,
+    32
+  ],
+  "max_timeout": 0.01,
+  "max_attempts": 16,
+  "required_authorship_fields": [
+    "author",
+    "written_independently_of_retryguard_core",
+    "core_author_involved",
+    "ai_assistance_disclosed",
+    "source_url",
+    "notes"
+  ],
+  "independence_policy": "Self-attestation plus human review; the harness cannot authenticate authorship. Do not count AI-authored sample adapters as this submission."
+}

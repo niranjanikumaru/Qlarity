@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@source "../components";
+@source "../demo.tsx";
+:root { --background: #101014; --foreground: #fafafa; --primary: #fafafa; --primary-foreground: #16161b; --border: #ffffff33; --ring: #ddd3ff; --radius: .75rem; }
+@theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-border: var(--border); --color-ring: var(--ring); --radius-lg: var(--radius); }

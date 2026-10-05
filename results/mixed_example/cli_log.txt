@@ -1,0 +1,13 @@
+{
+  "status": "partial",
+  "items_total": 4,
+  "items_accepted": 2,
+  "items_rejected": 2,
+  "all_verified": false,
+  "controlled_variants": 8,
+  "source_retry_variants": 4,
+  "results": "results/mixed_example/benchmark.json"
+}
+
+Item 2 (missing_target) [MISSING_FIELD]: Missing required fields: target_imag.
+Item 3 (wrong_shape) [INVALID_MATRIX]: target_real must be a 2 by 2 matrix of numbers, without strings or booleans.

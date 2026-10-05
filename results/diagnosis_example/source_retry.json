@@ -1,0 +1,131 @@
+{
+  "contract": {
+    "max_timeout": 0.01,
+    "max_attempts": 16,
+    "success": "Declared uncontrolled target on reference-entangled data",
+    "timeout": "Identity on data after final failure recovery",
+    "flag": "Entire syndrome register: zero success, nonzero timeout",
+    "initialization": "All source ancillas initially zero; data arbitrary",
+    "scope": "Original trial retained; no external coherent control"
+  },
+  "results": [
+    {
+      "routine": "ibm_rx",
+      "policy": "source_fixed",
+      "cap": 7,
+      "p_per_attempt": 0.6249999999999993,
+      "expected_attempts": 1.5983314514160174,
+      "expected_timeout_probability": 0.0010428428649902474,
+      "static_counts": {
+        "u": 154,
+        "cx": 84,
+        "measure": 14,
+        "reset": 12,
+        "x": 0
+      },
+      "qasm_file": "generated/fdfc4624dad9/ibm_rx/ibm_rx_source_fixed.qasm",
+      "verified": true,
+      "timeout_probability": 0.0010428428649902305,
+      "timeout_residual": 1.7155124648276058e-17,
+      "independent_timeout_residual": 1.728989489025866e-17,
+      "timeout_engine_agreement_residual": 5.036127411092874e-19,
+      "primary_timeout_relative_probability_residual": 1.6209256159527285e-14,
+      "primary_timeout_conditional_residual": 3.0427634721391493e-15,
+      "independent_timeout_relative_probability_residual": 1.6653345369377348e-14,
+      "independent_timeout_conditional_residual": 2.9277227861093866e-15,
+      "timeout_conditional_engine_agreement_residual": 5.386125397501903e-16,
+      "success_probability": 0.9989571571350097,
+      "success_residual": 3.7098574623799553e-16,
+      "independent_success_residual": 3.20790868982447e-16,
+      "success_engine_agreement_residual": 1.8028482358040522e-16,
+      "primary_success_relative_probability_residual": 1.1102230246251565e-16,
+      "primary_success_conditional_residual": 4.845273370921685e-16,
+      "independent_success_relative_probability_residual": 1.1102230246251565e-16,
+      "independent_success_conditional_residual": 4.2245822821223943e-16,
+      "success_conditional_engine_agreement_residual": 1.804083690495227e-16,
+      "trace_residual": 1.1102230246251565e-16,
+      "independent_trace_residual": 1.1102230246251565e-16,
+      "branch_checks": [
+        {
+          "branch": "timeout",
+          "expected_probability": 0.0010428428649902474,
+          "actual_probability": 0.0010428428649902305,
+          "independent_probability": 0.00104284286499023,
+          "primary_conditional_status": "checked",
+          "independent_conditional_status": "checked"
+        },
+        {
+          "branch": "success",
+          "expected_probability": 0.9989571571350098,
+          "actual_probability": 0.9989571571350097,
+          "independent_probability": 0.9989571571350097,
+          "primary_conditional_status": "checked",
+          "independent_conditional_status": "checked"
+        }
+      ],
+      "failures": [],
+      "independence_scope": "Separate gate matrices, measurement, reset, reference preparation and partial trace; shared Qiskit QASM parser, NumPy and declared contract.",
+      "timeout_probability_supplied": true,
+      "probability_note": "Timeout supplied separately to avoid cancellation in 1-success."
+    },
+    {
+      "routine": "ibm_rx",
+      "policy": "source_selected",
+      "cap": 5,
+      "p_per_attempt": 0.6249999999999993,
+      "expected_attempts": 1.5881347656250016,
+      "expected_timeout_probability": 0.007415771484375066,
+      "static_counts": {
+        "u": 110,
+        "cx": 60,
+        "measure": 10,
+        "reset": 8,
+        "x": 0
+      },
+      "qasm_file": "generated/fdfc4624dad9/ibm_rx/ibm_rx_source_selected.qasm",
+      "verified": true,
+      "timeout_probability": 0.007415771484374981,
+      "timeout_residual": 8.590207493230885e-17,
+      "independent_timeout_residual": 8.761045037168137e-17,
+      "timeout_engine_agreement_residual": 3.572898214164843e-18,
+      "primary_timeout_relative_probability_residual": 1.1435297153639112e-14,
+      "primary_timeout_conditional_residual": 2.1910486506707505e-15,
+      "independent_timeout_relative_probability_residual": 1.176836406102666e-14,
+      "independent_timeout_conditional_residual": 2.03429929834051e-15,
+      "timeout_conditional_engine_agreement_residual": 3.983094468713301e-16,
+      "success_probability": 0.9925842285156249,
+      "success_residual": 3.6831281381967195e-16,
+      "independent_success_residual": 3.176843655744708e-16,
+      "success_engine_agreement_residual": 1.7964168102092405e-16,
+      "primary_success_relative_probability_residual": 0.0,
+      "primary_success_conditional_residual": 3.689489199131556e-16,
+      "independent_success_relative_probability_residual": 0.0,
+      "independent_success_conditional_residual": 3.1840197118359166e-16,
+      "success_conditional_engine_agreement_residual": 1.8052037573256693e-16,
+      "trace_residual": 1.1102230246251565e-16,
+      "independent_trace_residual": 1.1102230246251565e-16,
+      "branch_checks": [
+        {
+          "branch": "timeout",
+          "expected_probability": 0.007415771484375066,
+          "actual_probability": 0.007415771484374981,
+          "independent_probability": 0.007415771484374978,
+          "primary_conditional_status": "checked",
+          "independent_conditional_status": "checked"
+        },
+        {
+          "branch": "success",
+          "expected_probability": 0.9925842285156249,
+          "actual_probability": 0.9925842285156249,
+          "independent_probability": 0.9925842285156249,
+          "primary_conditional_status": "checked",
+          "independent_conditional_status": "checked"
+        }
+      ],
+      "failures": [],
+      "independence_scope": "Separate gate matrices, measurement, reset, reference preparation and partial trace; shared Qiskit QASM parser, NumPy and declared contract.",
+      "timeout_probability_supplied": true,
+      "probability_note": "Timeout supplied separately to avoid cancellation in 1-success."
+    }
+  ]
+}

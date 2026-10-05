@@ -1,0 +1,17 @@
+{
+  "baseline": "RetryGuard 0.5.0",
+  "purpose": "Freeze core before adding new-family external evaluation inputs; not an independent blinded holdout.",
+  "sha256": {
+    "retryguard/analysis.py": "03bc1b1073a9998e8685372397cc040ec2a34080735293737478e231561bc17b",
+    "retryguard/compiler.py": "ca37c55f4156ecc3ec3adff8886bd2762f5602529c975cd01441e4c5c21c6dbc",
+    "retryguard/verifier.py": "7d5d06675f961473f2f083120cc07707a353e915d772ae9bce439737c705b1c5",
+    "retryguard/independent.py": "bf47d93446bbcd4bc7663898921a199af50c7af08eb5689aebc8cb5b54065daf",
+    "retryguard/validation.py": "f24a5c7f4b2a99daaba441ec26f1cf4c6a616404dd70c78e35f5dcaf985920b0",
+    "retryguard/fixtures.py": "379715c9ea216b446920ccc934b5975f0e9814e71cfacd71c8cebc8632070a98",
+    "retryguard/__main__.py": "d56dc98bc52c735ea15be7e8a9c15762e3854c3bdc81eef07c9639119b2cf703"
+  },
+  "frozen_contracts": {
+    "evaluation/new_family/contract.json": "a213b2f43d1934d4475921e6985997fdcea34bc7d779c5ea47f21c42852e124d",
+    "evaluation/teammate/task.json": "92cd52805dfcc9be6f6ca435827a90c5332922b9c63f156e67fe86f656fe5119"
+  }
+}

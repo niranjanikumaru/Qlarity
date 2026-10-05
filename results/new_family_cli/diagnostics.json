@@ -1,0 +1,137 @@
+{
+  "items": [
+    {
+      "routine": "adqc_j_beta061",
+      "scope": "Original unitary trial followed by ancilla measurement, before recovery. Failure outcomes are potential terminal timeouts.",
+      "bit_order": "Displayed bits are c[highest]...c[0]; integer syndrome 0 is success.",
+      "source_caveat": "These are checks against RetryGuard\u2019s declared timeout contract, not claims of previously unknown upstream bugs.",
+      "branches": [
+        {
+          "syndrome": 0,
+          "bits": "0",
+          "contract": "success_target",
+          "status": "satisfied",
+          "explanation": "The successful outcome performs the declared target.",
+          "probability": 0.5000000000000002,
+          "probability_note": "Input-independent probability.",
+          "probability_witness": null,
+          "affected_state": {
+            "input_state": "zero |0>",
+            "expected_state": "plus |+>",
+            "actual_state": "plus |+>",
+            "branch_probability": 0.5000000000000002,
+            "measurement_basis": "X",
+            "expected_plus_probability": 1.0,
+            "actual_plus_probability": 1.0,
+            "measurement_gap": 0.0
+          },
+          "proposed_correction": null,
+          "correction_verified": false,
+          "operator_residual": 2.220446049250313e-16
+        },
+        {
+          "syndrome": 1,
+          "bits": "1",
+          "contract": "timeout_preserves_data",
+          "status": "violated",
+          "explanation": "This failure changes the data. If execution stops here without recovery, timeout returns the wrong state.",
+          "probability": 0.5000000000000002,
+          "probability_note": "Input-independent probability.",
+          "probability_witness": null,
+          "affected_state": {
+            "input_state": "zero |0>",
+            "expected_state": "zero |0>",
+            "actual_state": "plus |+>",
+            "branch_probability": 0.5000000000000002,
+            "measurement_basis": "X",
+            "expected_plus_probability": 0.5,
+            "actual_plus_probability": 1.0,
+            "measurement_gap": 0.5,
+            "corrected_plus_probability": 0.5
+          },
+          "proposed_correction": {
+            "kind": "unitary_inverse",
+            "instruction": "Apply the generated inverse single-qubit rotation to undo this branch\u2019s data rotation."
+          },
+          "correction_verified": true,
+          "operator_residual": 0.7383007487051807
+        }
+      ],
+      "naive_control": {
+        "scope": "Specific wrapper that controls every trial gate and leaves off-arm ancillas zero.",
+        "leak_detected": true,
+        "distribution_distance": 0.5,
+        "explanation": "Measurement outcomes distinguish the run and do-not-run arms and can damage their superposition.",
+        "proposal": "Do not apply this naive wrapper. The separately verified controlled replacement circuits are available for accepted inputs; source recovery alone does not fix control leakage."
+      },
+      "evidence_note": "State examples illustrate the diagnosis; exported-program Choi checks establish the numerical contract checks. This is ideal-model verification, not a formal proof.",
+      "verified_artifacts": [
+        {
+          "kind": "recovered_attempt",
+          "qasm_file": "generated\\ee42ccf71541\\adqc_j_beta061\\adqc_j_beta061_recovered_attempt.qasm"
+        },
+        {
+          "kind": "source_fixed",
+          "cap": 7,
+          "qasm_file": "generated\\ee42ccf71541\\adqc_j_beta061\\adqc_j_beta061_source_fixed.qasm",
+          "success_residual": 8.347239051259645e-16,
+          "timeout_residual": 3.332781893901941e-17
+        },
+        {
+          "kind": "source_selected",
+          "cap": 7,
+          "qasm_file": "generated\\ee42ccf71541\\adqc_j_beta061\\adqc_j_beta061_source_selected.qasm",
+          "success_residual": 8.347239051259645e-16,
+          "timeout_residual": 3.332781893901941e-17
+        }
+      ],
+      "recovered_attempt_check": {
+        "timeout_probability": 0.5000000000000002,
+        "timeout_residual": 5.047182889765946e-16,
+        "independent_timeout_residual": 4.766122860890314e-16,
+        "timeout_engine_agreement_residual": 6.45053962627233e-17,
+        "primary_timeout_relative_probability_residual": 8.881784197001252e-16,
+        "primary_timeout_conditional_residual": 1.8134517744781706e-16,
+        "independent_timeout_relative_probability_residual": 6.661338147750939e-16,
+        "independent_timeout_conditional_residual": 3.084222373547052e-16,
+        "timeout_conditional_engine_agreement_residual": 2.0321340476504114e-16,
+        "success_probability": 0.5000000000000001,
+        "success_residual": 1.7991349654406445e-16,
+        "independent_success_residual": 1.8023219585732358e-16,
+        "success_engine_agreement_residual": 8.060651333615367e-18,
+        "primary_success_relative_probability_residual": 2.220446049250313e-16,
+        "primary_success_conditional_residual": 4.578145373853406e-16,
+        "independent_success_relative_probability_residual": 2.220446049250313e-16,
+        "independent_success_conditional_residual": 4.583156809238798e-16,
+        "success_conditional_engine_agreement_residual": 1.612130266723073e-17,
+        "trace_residual": 4.440892098500626e-16,
+        "independent_trace_residual": 2.220446049250313e-16,
+        "verified": true,
+        "branch_checks": [
+          {
+            "branch": "timeout",
+            "expected_probability": 0.4999999999999998,
+            "actual_probability": 0.5000000000000002,
+            "independent_probability": 0.5000000000000001,
+            "primary_conditional_status": "checked",
+            "independent_conditional_status": "checked"
+          },
+          {
+            "branch": "success",
+            "expected_probability": 0.5000000000000002,
+            "actual_probability": 0.5000000000000001,
+            "independent_probability": 0.5000000000000001,
+            "primary_conditional_status": "checked",
+            "independent_conditional_status": "checked"
+          }
+        ],
+        "failures": [],
+        "independence_scope": "Separate gate matrices, measurement, reset, reference preparation and partial trace; shared Qiskit QASM parser, NumPy and declared contract.",
+        "timeout_probability_supplied": true,
+        "probability_note": "Timeout supplied separately to avoid cancellation in 1-success."
+      },
+      "item_index": 1,
+      "batch_status": "accepted"
+    }
+  ]
+}
