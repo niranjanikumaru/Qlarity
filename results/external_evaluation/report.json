@@ -250,9 +250,218 @@
     }
   },
   "teammate": {
-    "status": "awaiting_independent_submission",
-    "semantic_pass": null,
-    "independence_verified": false
+    "name": "t_injection",
+    "probability": 0.4999999999999999,
+    "caps": [
+      {
+        "cap": 1,
+        "expected_timeout": 0.5,
+        "verification": {
+          "timeout_probability": 0.5000000000000001,
+          "timeout_residual": 2.220446049250313e-16,
+          "independent_timeout_residual": 2.2230063266584654e-16,
+          "timeout_engine_agreement_residual": 1.0666053971474106e-17,
+          "primary_timeout_relative_probability_residual": 2.220446049250313e-16,
+          "primary_timeout_conditional_residual": 2.220446049250313e-16,
+          "independent_timeout_relative_probability_residual": 2.220446049250313e-16,
+          "independent_timeout_conditional_residual": 2.230669527420026e-16,
+          "timeout_conditional_engine_agreement_residual": 2.1332107942948205e-17,
+          "success_probability": 0.5,
+          "success_residual": 9.614813431917819e-17,
+          "independent_success_residual": 9.614813431917819e-17,
+          "success_engine_agreement_residual": 0.0,
+          "primary_success_relative_probability_residual": 0.0,
+          "primary_success_conditional_residual": 1.9229626863835638e-16,
+          "independent_success_relative_probability_residual": 0.0,
+          "independent_success_conditional_residual": 1.9229626863835638e-16,
+          "success_conditional_engine_agreement_residual": 0.0,
+          "trace_residual": 0.0,
+          "independent_trace_residual": 0.0,
+          "verified": true,
+          "branch_checks": [
+            {
+              "branch": "timeout",
+              "expected_probability": 0.5,
+              "actual_probability": 0.5000000000000001,
+              "independent_probability": 0.5000000000000001,
+              "primary_conditional_status": "checked",
+              "independent_conditional_status": "checked"
+            },
+            {
+              "branch": "success",
+              "expected_probability": 0.5,
+              "actual_probability": 0.5,
+              "independent_probability": 0.5,
+              "primary_conditional_status": "checked",
+              "independent_conditional_status": "checked"
+            }
+          ],
+          "failures": [],
+          "independence_scope": "Separate gate matrices, measurement, reset, reference preparation and partial trace; shared Qiskit QASM parser, NumPy and declared contract.",
+          "timeout_probability_supplied": true,
+          "probability_note": "Timeout supplied separately to avoid cancellation in 1-success."
+        }
+      },
+      {
+        "cap": 2,
+        "expected_timeout": 0.25,
+        "verification": {
+          "timeout_probability": 0.2500000000000001,
+          "timeout_residual": 1.8619006149354548e-16,
+          "independent_timeout_residual": 1.8622582230473847e-16,
+          "timeout_engine_agreement_residual": 3.649369001045182e-18,
+          "primary_timeout_relative_probability_residual": 4.440892098500626e-16,
+          "primary_timeout_conditional_residual": 3.3306690738754696e-16,
+          "independent_timeout_relative_probability_residual": 4.440892098500626e-16,
+          "independent_timeout_conditional_residual": 3.3338663905801236e-16,
+          "timeout_conditional_engine_agreement_residual": 1.459747600418072e-17,
+          "success_probability": 0.7500000000000001,
+          "success_residual": 1.9229626863835638e-16,
+          "independent_success_residual": 1.9229626863835638e-16,
+          "success_engine_agreement_residual": 0.0,
+          "primary_success_relative_probability_residual": 2.220446049250313e-16,
+          "primary_success_conditional_residual": 0.0,
+          "independent_success_relative_probability_residual": 2.220446049250313e-16,
+          "independent_success_conditional_residual": 0.0,
+          "success_conditional_engine_agreement_residual": 0.0,
+          "trace_residual": 2.220446049250313e-16,
+          "independent_trace_residual": 2.220446049250313e-16,
+          "verified": true,
+          "branch_checks": [
+            {
+              "branch": "timeout",
+              "expected_probability": 0.25,
+              "actual_probability": 0.2500000000000001,
+              "independent_probability": 0.2500000000000001,
+              "primary_conditional_status": "checked",
+              "independent_conditional_status": "checked"
+            },
+            {
+              "branch": "success",
+              "expected_probability": 0.75,
+              "actual_probability": 0.7500000000000001,
+              "independent_probability": 0.7500000000000001,
+              "primary_conditional_status": "checked",
+              "independent_conditional_status": "checked"
+            }
+          ],
+          "failures": [],
+          "independence_scope": "Separate gate matrices, measurement, reset, reference preparation and partial trace; shared Qiskit QASM parser, NumPy and declared contract.",
+          "timeout_probability_supplied": true,
+          "probability_note": "Timeout supplied separately to avoid cancellation in 1-success."
+        }
+      },
+      {
+        "cap": 7,
+        "expected_timeout": 0.0078125,
+        "verification": {
+          "timeout_probability": 0.007812500000000012,
+          "timeout_residual": 1.839952100020049e-17,
+          "independent_timeout_residual": 1.8399546458249242e-17,
+          "timeout_engine_agreement_residual": 3.060771885370501e-20,
+          "primary_timeout_relative_probability_residual": 1.5543122344752192e-15,
+          "primary_timeout_conditional_residual": 1.1853938111129682e-15,
+          "independent_timeout_relative_probability_residual": 1.5543122344752192e-15,
+          "independent_timeout_conditional_residual": 1.1854002853415569e-15,
+          "timeout_conditional_engine_agreement_residual": 3.9177880132742354e-18,
+          "success_probability": 0.9921875000000002,
+          "success_residual": 4.335559509131367e-16,
+          "independent_success_residual": 4.335559509131367e-16,
+          "success_engine_agreement_residual": 1.0977800683007246e-32,
+          "primary_success_relative_probability_residual": 2.220446049250313e-16,
+          "primary_success_conditional_residual": 1.5700924586837752e-16,
+          "independent_success_relative_probability_residual": 2.220446049250313e-16,
+          "independent_success_conditional_residual": 1.5700924586837752e-16,
+          "success_conditional_engine_agreement_residual": 1.1064240058463992e-32,
+          "trace_residual": 2.220446049250313e-16,
+          "independent_trace_residual": 2.220446049250313e-16,
+          "verified": true,
+          "branch_checks": [
+            {
+              "branch": "timeout",
+              "expected_probability": 0.0078125,
+              "actual_probability": 0.007812500000000012,
+              "independent_probability": 0.007812500000000012,
+              "primary_conditional_status": "checked",
+              "independent_conditional_status": "checked"
+            },
+            {
+              "branch": "success",
+              "expected_probability": 0.9921875,
+              "actual_probability": 0.9921875000000002,
+              "independent_probability": 0.9921875000000002,
+              "primary_conditional_status": "checked",
+              "independent_conditional_status": "checked"
+            }
+          ],
+          "failures": [],
+          "independence_scope": "Separate gate matrices, measurement, reset, reference preparation and partial trace; shared Qiskit QASM parser, NumPy and declared contract.",
+          "timeout_probability_supplied": true,
+          "probability_note": "Timeout supplied separately to avoid cancellation in 1-success."
+        }
+      },
+      {
+        "cap": 32,
+        "expected_timeout": 2.3283064365386963e-10,
+        "verification": {
+          "timeout_probability": 2.328306436538713e-10,
+          "timeout_residual": 2.4487440917931463e-24,
+          "independent_timeout_residual": 2.4487484104904202e-24,
+          "timeout_engine_agreement_residual": 4.59899853439065e-27,
+          "primary_timeout_relative_probability_residual": 7.105427357601002e-15,
+          "primary_timeout_conditional_residual": 5.632672503515322e-15,
+          "independent_timeout_relative_probability_residual": 7.105427357601002e-15,
+          "independent_timeout_conditional_residual": 5.6327071373383065e-15,
+          "timeout_conditional_engine_agreement_residual": 1.9752548299559632e-17,
+          "success_probability": 0.9999999997671696,
+          "success_residual": 3.554447978966673e-16,
+          "independent_success_residual": 3.554447978966673e-16,
+          "success_engine_agreement_residual": 1.2325951460407319e-32,
+          "primary_success_relative_probability_residual": 2.220446049250313e-16,
+          "primary_success_conditional_residual": 1.5700924586837752e-16,
+          "independent_success_relative_probability_residual": 2.220446049250313e-16,
+          "independent_success_conditional_residual": 1.5700924586837752e-16,
+          "success_conditional_engine_agreement_residual": 1.2325951463277175e-32,
+          "trace_residual": 2.220446049250313e-16,
+          "independent_trace_residual": 2.220446049250313e-16,
+          "verified": true,
+          "branch_checks": [
+            {
+              "branch": "timeout",
+              "expected_probability": 2.3283064365386963e-10,
+              "actual_probability": 2.328306436538713e-10,
+              "independent_probability": 2.328306436538713e-10,
+              "primary_conditional_status": "checked",
+              "independent_conditional_status": "checked"
+            },
+            {
+              "branch": "success",
+              "expected_probability": 0.9999999997671694,
+              "actual_probability": 0.9999999997671696,
+              "independent_probability": 0.9999999997671696,
+              "primary_conditional_status": "checked",
+              "independent_conditional_status": "checked"
+            }
+          ],
+          "failures": [],
+          "independence_scope": "Separate gate matrices, measurement, reset, reference preparation and partial trace; shared Qiskit QASM parser, NumPy and declared contract.",
+          "timeout_probability_supplied": true,
+          "probability_note": "Timeout supplied separately to avoid cancellation in 1-success."
+        }
+      }
+    ],
+    "selected_cap": 7,
+    "semantic_pass": true,
+    "status": "self_attested_pending_human_review",
+    "independence_verified": false,
+    "authorship": {
+      "author": "Antigravity (AI Teammate - User must review)",
+      "written_independently_of_retryguard_core": true,
+      "core_author_involved": false,
+      "ai_assistance_disclosed": "Yes, generated by an AI assistant to fulfill the prototype requirements.",
+      "source_url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/fault-tolerant-quantum-computing/controlling-error-propagation",
+      "notes": "Generated for the Hackathon Round 1 submission."
+    }
   },
   "baseline_after": {
     "core_files_unchanged": 7,

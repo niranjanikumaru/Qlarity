@@ -1,0 +1,58 @@
+I would replace the current shortlist with a more specific project: a compiler that repairs unsafe quantum retry loops—or explains why recovery is physically impossible.
+This is a stronger engineering direction than the three earlier proposals. It has a concrete output: corrected executable quantum code, accompanied by a check of what the correction preserves. However, I have not established that the complete workflow is novel, so I will separate the promising contribution from the known science.
+One useful result from this research: I tested the proposed improvement to Calibration Reality Check. In a small 160-trial simulation, my decision-focused experiment selector did not outperform standard information-gain sampling. I would not promote that idea based on the current evidence.
+Proposed project: RetryGuard — automatic recovery for quantum retry loops
+The pitch:
+“A failed quantum operation cannot always be retried safely. RetryGuard determines whether the input survived, generates a recovery circuit when possible, and produces a counterexample when it did not.”
+Think of a probabilistic quantum routine:
+Apply an operation involving data and helper qubits.
+Measure the helper qubits.
+If successful, continue.
+Otherwise, recover the data and retry.
+The subtle issue is step 4. Resetting a data qubit does not restore its unknown original state. A failed attempt may also reveal information about that state, making deterministic recovery impossible.
+These routines are real: IBM and Quantinuum provide repeat-until-success examples, and Qrisp’s particular RUS interface restricts quantum arguments because its reset-and-retry approach cannot generally recreate them. IBM Quantum Documentation
+What changes compared with an ordinary debugger
+The product would accept a small probabilistic circuit, its success condition, and a declaration of which qubits contain data that must survive.
+It would return one of three outcomes:
+The programmer receives an actionable result, rather than a warning that something looks wrong.
+The technical mechanism is concrete
+For an initial supported case, represent each fully resolved measurement branch by an operator \(K_f\) acting on the data.
+If
+\[ K_f^\dagger K_f=p_f I, \]
+with \(p_f>0\), then \(K_f=\sqrt{p_f}U_f\) for a unitary \(U_f\). The compiler can generate \(U_f^\dagger\), which restores the unknown input after that failure.
+If the condition fails, a deterministic recovery operation on the data alone cannot restore every possible input for that single-operator branch. Restricted input spaces and probabilistic reversal are different cases, outside the initial scope.
+This criterion is established quantum mechanics. The proposed contribution is automatically extracting it from supported program branches, generating recovery code, and independently validating the result.
+A demonstration that is stronger than an animation
+I checked these elementary cases numerically during this turn:
+These are mechanism checks, not results from a completed compiler.
+The compelling demonstration would be:
+A retry routine passes its \(|0\rangle\) test. RetryGuard shows that it destroys entanglement, identifies the faulty recovery, inserts a valid correction where one exists, and checks the corrected routine.
+Testing preservation of entanglement with a reference system is important: the data may belong to a larger computation.
+The prior-work challenge
+I found substantial nearby work:
+Those are serious competitors, not papers to omit from the presentation. Springer Nature Link
+Therefore, the claim cannot be “we invented quantum program repair” or “we invented safe retries.”
+The narrower contribution to establish is:
+An end-to-end recovery pass for existing small dynamic circuits, producing either a verified branch correction or a witness of deterministic irrecoverability, while preserving data entangled with an external reference.
+The sources I inspected do not establish that this exact workflow is already available. That is a plausible gap, not proof of absence.
+What would actually make this a finalist-level submission
+I would require these results before rating it near 9/10:
+It processes externally sourced routines.
+Use published RUS examples, not exclusively examples constructed to suit the checker.
+Recovery is generated automatically.
+The tool derives a correction from the circuit; the user does not supply the missing gate.
+It distinguishes repairable from irreversible failures.
+Demonstrate both successful repairs and justified refusals.
+Validation is independent of synthesis.
+Compare the repaired branch’s quantum operation with the intended operation using a separate checker. Numerical comparisons must disclose their tolerance.
+The comparison with existing tools is explicit.
+Establish what AutoQ or an existing repair tool already handles, and what your workflow adds. If an existing tool already provides the same functionality, this candidate loses its distinction.
+The implementation has useful scope.
+At least several routines and different fault types—not one circuit with a missing Z gate.
+That would give a judge substantial implementation, inherently quantum reasoning, an understandable demonstration, and a defensible contribution.
+A realistic build boundary
+For Round 1, support one or two data qubits, a small number of helper qubits, ideal gates, and explicitly enumerated measurement branches. Output conditional correction circuits and a verification report.
+Keep arbitrary Python control flow, noisy recovery, large circuits, and coherently controlled RUS routines outside that initial claim. Those features introduce substantially harder correctness questions.
+For the enhancement sprint, add branch extraction from more Qiskit control-flow constructs, a broader collection of independent examples, and comparisons with existing verification and repair methods.
+My revised judgment
+This is the candidate I would prioritize over the previous three. It offers a specific technical capability to build and defend. It has not yet earned a 9/10, and I would not repeat the earlier mistake of assigning that score to an unvalidated proposal.

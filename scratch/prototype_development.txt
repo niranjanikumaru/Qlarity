@@ -1,0 +1,29 @@
+Develop RetryGuard around source-circuit repair, stronger verification, and a clear debugging workflow. Those are higher priorities than a large interface or hardware integration.
+I located and inspected RetryGuard_Prototype.zip, compared it with your team brief, and reran it:
+9/9 tests passed.
+12/12 generated alternatives passed the success, timeout, and trace checks.
+All three manifest inputs processed successfully.
+The package contains a working Python CLI, generated QASM, and reports. It has no web interface.
+These results confirm a functioning starting point—not yet a demonstrated novel contribution.
+The most important finding
+The current implementation does two different things:
+It retains the original source circuit and generates corrections for one attempt.
+Its bounded controlled alternatives use a separate random coin followed by direct implementation of the target gate.
+That distinction matters. The second path demonstrates the requested output contract, but it does not demonstrate a complete repaired retry loop built from the original routine.
+My recommended development order
+For the first item, start with the uncontrolled source retry loop. Treat coherent control as a separate supported transformation requiring its own checks; simply controlling every source gate is insufficient.
+Specific code issues worth addressing
+analysis.py: I confirmed that a target containing NaN passes the analyzer and produces a NaN success probability. Add explicit finite-value checks before numerical comparisons. This does not mean the full CLI successfully emits a repair for that input.
+__main__.py: The fixed baseline’s feasibility currently gates the entire run. A user circuit may have a feasible selected policy even when the generic fixed baseline is infeasible. Report that baseline as unavailable and evaluate the remaining valid alternatives.
+verifier.py: Keep the existing unnormalized branch checks, but also expose conditional branch error when the branch probability is large enough to evaluate reliably. Otherwise, a very rare timeout can make an absolute residual look small despite poor conditional behavior.
+compiler.py: Add the complete source-based retry generator. Keep its results visibly separate from contract-based replacement circuits.
+What I would design in Figma
+Keep it to three views:
+The strongest demonstration is: success passes → timeout fails → generate correction → both pass → inspect the executable artifact. A decorative dashboard contributes less.
+No Figma design was supplied, so this is the proposed design scope, not a review of an existing screen.
+Where the project’s differentiation must come from
+The strongest hypothesis to test is:
+Can RetryGuard help a developer diagnose and correctly repair bounded quantum retry behavior with less manual work than a well-prepared Qiskit script?
+Measure correct completion, time, manual edits, and missed timeout failures on held-out tasks. Existing tools such as AutoQ already perform quantum-program verification, so “we verify quantum circuits” is insufficient differentiation. fmlab-iis/AutoQ · GitHub
+Your current average round savings are below 1%, and the deterministic option remains competitive. Therefore, lead with repair correctness and developer usefulness; keep optimization as a measured secondary result.
+For the next sprint, I would assign source-loop generation, validation, and failure explanations first, followed by held-out evaluation. Defer QML, broad language parsing, hardware execution, and a large frontend until that core workflow demonstrates a useful advantage.

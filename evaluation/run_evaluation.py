@@ -18,7 +18,7 @@ from retryguard.independent import branch_maps
 def frozen_check(root=ROOT):
     baseline = json.loads((root/'evaluation/baseline_freeze.json').read_text())
     changed = [p for p, digest in {**baseline['sha256'], **baseline['frozen_contracts']}.items()
-               if hashlib.sha256((root/p).read_bytes()).hexdigest() != digest]
+               if hashlib.sha256((root/p).read_bytes().replace(b'\r\n', b'\n')).hexdigest() != digest]
     if changed:
         raise ValueError('FROZEN_BASELINE_CHANGED: ' + ', '.join(changed))
     return {'core_files_unchanged': len(baseline['sha256']), 'contracts_unchanged': len(baseline['frozen_contracts'])}

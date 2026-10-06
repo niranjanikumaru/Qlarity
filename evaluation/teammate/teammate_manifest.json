@@ -1,0 +1,11 @@
+[
+  {
+    "name": "t_injection",
+    "qasm": "teammate_trial.qasm",
+    "target_real": [[1, 0], [0, 0.7071067811865476]],
+    "target_imag": [[0, 0], [0, 0.7071067811865476]],
+    "source": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/fault-tolerant-quantum-computing/controlling-error-propagation",
+    "lineage": "magic-state gate injection",
+    "note": "Independent submission"
+  }
+]

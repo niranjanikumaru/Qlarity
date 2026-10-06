@@ -1,0 +1,45 @@
+I recommend settling on a narrower version of RetryGuard:
+RetryGuard — Coherence-Aware Analysis and Compilation of Quantum Retry Loops
+The important change is that we now have a specific, documented failure mechanism and a real application, rather than a generic proposal to repair quantum programs.
+Final problem statement
+How can developers detect and prevent quantum-information loss when probabilistic subroutines are used under coherent control, while respecting a maximum retry count and execution budget?
+“Coherent control” means the decision to perform an operation can itself be in a quantum superposition.
+A routine may work correctly when its control is definitely 0 or definitely 1, yet distort a superposition of both. This happens when its measurement outcomes or number of retries reveal which control branch was active.
+Why this is a stronger foundation
+I found three relevant pieces of evidence:
+The failure is documented. Guerreschi’s research explains amplitude distortion when RUS routines are conditionally applied and develops amplitude-amplification approaches to reduce it. We would build on this work, not claim to discover the effect. Phys. Rev. A
+There is a real application. A superconducting-processor demonstration of a quantum neural network uses RUS circuits and discusses this distortion and its possible mitigation. That establishes relevance beyond a deliberately broken toy program; it does not mean the published experiment contains an undisclosed bug. npj Quantum Information
+Existing verification tools provide a concrete comparison. AutoQ 2.0 verifies RUS programs, but its published framework requires loop invariants and identifies more complex loops producing mixed states as future work. Other quantum model-checking approaches already support superoperator-based analysis, so mixed-state support alone is not a novelty claim. Springer Nature Link
+What we would build
+The user supplies a supported small circuit, its intended operation, a retry limit, and an acceptable error tolerance.
+RetryGuard would:
+The alternatives would come from a small, explicit set: ordinary bounded retry, an applicable amplitude-amplified construction, and a deterministic implementation where available.
+The compiler must check each transformation’s assumptions. It cannot generally repair information after measurement has already destroyed it; it must change the circuit before execution.
+A numerical example already checked
+I evaluated a simple valid measurement model in which the two control branches have per-attempt success probabilities of 0.2 and 0.8. The intended action on the control is identity.
+For an input \(|+\rangle\), after combining successful histories:
+Increasing the success probability does not necessarily make the computation more correct.
+These are results from a small mathematical simulation, not a completed RetryGuard prototype or a new scientific discovery. They give us a reproducible starting test.
+The contribution we would pursue
+Automatically choose and emit a supported implementation of a coherently controlled probabilistic routine that satisfies declared error and retry constraints, with explicit accounting for success, timeout, and discarded measurement histories.
+That is more substantial than displaying distortion or inserting a missing correction gate.
+The distinction to establish against existing work is the automated path from a supplied routine and constraints to a checked implementation choice. I have not proved that no existing tool offers this complete capability. We should treat that as the contribution hypothesis and test it directly.
+Scope to freeze for the hackathon
+For Round 1:
+One coherent control qubit, one target qubit, and a few helper qubits.
+A restricted Qiskit circuit interface.
+Exact branch accounting for small bounded loops.
+Separate success and timeout outputs.
+Two supported implementation choices, with automatic selection under a gate budget.
+One literature-derived example and independently generated variations.
+A demonstration showing both a successful selection and a case where no candidate meets the constraints.
+For the enhancement sprint:
+Add the literature’s controlled-RUS/QNN example where feasible.
+Broaden the supported implementation choices.
+Compare with fixed strategies and relevant existing tools.
+Measure analysis runtime and emitted circuit cost.
+Add noise only after the ideal semantics are correct.
+What we are finalizing—and what remains open
+We can finalize this problem, title, and prototype scope now. We should leave the exact selection algorithm open until implementation shows which approach works.
+The project’s success criterion is concrete: given an unfamiliar instance within the supported family, does the tool select and emit a circuit that meets the declared constraints, and correctly report when none does?
+I would proceed with this topic. Its practical mechanism is now grounded, its scope is buildable, and its proposed contribution is specific enough to evaluate. Finalist potential will depend on demonstrating that contribution—not on another speculative numerical rating.

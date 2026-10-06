@@ -1,0 +1,52 @@
+Both—but your teammates should own the judgment, while automation does most of the repetitive testing. Simply asking another AI “is this novel?” will not establish an advantage.
+A useful teammate assignment is: independently choose one supported routine, define its expected behavior before testing, and compare solving its failure with and without RetryGuard. They can use AI to write the test harness. They should check the assumptions and results themselves.
+For the prototype, I would focus on these remaining tasks:
+What I would postpone: a full Clifford+T mode, noisy simulation, real hardware execution, and more elaborate graphics. None is currently necessary to complete the core story.
+The narrow Clifford+T benchmark remains useful if resource savings becomes your main claim. If your claim is reliable diagnosis and repair, independent correctness and workflow evidence matter more.
+The prototype already has substantial functionality. Its biggest remaining gap is evidence of usefulness and advantage, followed by installation reliability—not another feature tab.
+
+
+
+
+
+I’d like you to independently assess whether RetryGuard offers a meaningful advantage over existing approaches. We need evidence we can defend to judges, including findings that challenge our idea.
+The prototype analyzes small probabilistic quantum circuits, identifies unsafe failure outcomes, generates bounded retry repairs, verifies success and timeout behavior, and compares implementations. Its supported input class is one data qubit with one or two ancillas—not arbitrary quantum programs.
+Please divide the assessment into these three workstreams:
+1. Existing tools and research
+Find the closest existing approaches to quantum circuit verification, RUS synthesis, recovery, and bounded retries. Use primary papers, official documentation and working implementations.
+For each relevant approach, establish:
+What inputs and failure behavior it supports.
+Whether it diagnoses the problem, generates a repair, or only verifies a supplied circuit.
+Whether it checks that data is preserved after the final failed attempt.
+Whether it exports an executable result and compares alternatives.
+What our prototype adds, duplicates, or does less well.
+Distinguish “not supported” from “we couldn’t find documentation.” A competitor does not need an identical interface to solve the same problem.
+2. Independent practical test
+Choose or write a supported routine independently of the prototype’s existing examples. Freeze the input and expected behavior before running it through RetryGuard.
+Include a correct case and realistic mistakes, such as missing recovery after the last failure or resetting data instead of preserving it. Clearly label deliberately introduced faults; don’t present them as discovered upstream bugs.
+Check whether RetryGuard:
+Identifies the actual problem and explains it correctly.
+Produces an executable repair.
+Applies the target on success and preserves arbitrary input data on timeout.
+Rejects unsupported or irreversible cases honestly.
+Independently check outputs using coherent/superposition inputs as well as basis states. Don’t use RetryGuard’s own “verified” label as the only evidence. Record any analyzer changes needed to support your example—those would weaken the claim of generality.
+3. Measurable advantage
+Compare the same task against a reasonable existing-tool or manual workflow. Measure what you can reproduce:
+Time and manual steps needed to locate the failure.
+Time and code needed to obtain a correct bounded implementation.
+Bugs caught or missed.
+Quality and reproducibility of the resulting evidence.
+Separate first-time setup from repeated use. Small teammate trials are preliminary evidence, not a general usability study.
+For resource savings, there is an important limitation: our current model makes arbitrary single-qubit rotations cheap, so deterministic execution wins on the existing examples. Do not force a RUS win by hiding deterministic execution, choosing favorable weights, or imposing an unjustified source-preservation constraint.
+Any Clifford+T comparison must use actual decompositions, the same target accuracy, explicit timeout requirements, and include recovery/measurement/ancilla overhead. Treat this as an optional separate experiment if time permits.
+What I need back
+Please provide:
+A comparison table with source links and versions.
+Reproducible inputs, commands, outputs and failures.
+The strongest advantage we can currently substantiate.
+Claims we should remove or qualify.
+One next experiment that would most improve the evidence.
+For each proposed advantage, use:
+Claim → baseline → experiment → measured result → limitation
+Keep the backend unchanged during the assessment. Report issues and proposed fixes separately.
+The final conclusion should distinguish technical novelty, workflow convenience, correctness coverage and resource savings. It is completely acceptable to conclude that we have a useful integration but have not yet demonstrated a distinctive advantage. That is more valuable than a claim we cannot defend.
