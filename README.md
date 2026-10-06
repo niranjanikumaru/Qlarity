@@ -1,4 +1,4 @@
-# RetryGuard 0.5
+# Qlarity 0.5
 
 A small, runnable research prototype for **bounded quantum retry contracts**. It analyzes source-derived trial circuits, emits recovery and coherence-safe alternatives, verifies success and timeout maps after OpenQASM round-trip, and reports honest resource comparisons.
 
