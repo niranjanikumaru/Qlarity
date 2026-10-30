@@ -174,12 +174,26 @@ def recorded_export():
     return Response(bundle(json.loads(path.read_text())),media_type='application/zip',
         headers={'Content-Disposition':'attachment; filename="qlarity-recorded-evidence.zip"'})
 
-WAFER_CACHE = None
-def get_wafer_data():
-    global WAFER_CACHE
-    if WAFER_CACHE is not None: return WAFER_CACHE
-    csv_path = ROOT.parent / 'synthetic_wafer_data.csv'
-    if not csv_path.exists(): return None
+WAFER_CACHES = {}
+WAFER_FILE_MAP = {
+    'nominal': 'synthetic_wafer_nominal.csv',
+    'equipment_drift': 'synthetic_wafer_equipment_drift.csv',
+    'localized_defect': 'synthetic_wafer_localized_defect.csv',
+    'high_variance': 'synthetic_wafer_high_variance.csv'
+}
+
+def get_wafer_data(wafer_type: str = 'nominal'):
+    global WAFER_CACHES
+    if wafer_type in WAFER_CACHES:
+        return WAFER_CACHES[wafer_type]
+
+    filename = WAFER_FILE_MAP.get(wafer_type, 'synthetic_wafer_nominal.csv')
+    csv_path = ROOT.parent / filename
+    if not csv_path.exists():
+        csv_path = ROOT.parent / 'synthetic_wafer_data.csv'
+    if not csv_path.exists():
+        return None
+
     import pandas as pd, numpy as np
     df = pd.read_csv(csv_path)
     total = len(df)
@@ -193,6 +207,15 @@ def get_wafer_data():
     c1_dist = np.sqrt((df['Wafer_X_mm'] - 45.0)**2 + (df['Wafer_Y_mm'] - 50.0)**2)
     c2_dist = np.sqrt((df['Wafer_X_mm'] - (-60.0))**2 + (df['Wafer_Y_mm'] - (-40.0))**2)
     c3_dist = np.sqrt((df['Wafer_X_mm'] - (-35.0))**2 + (df['Wafer_Y_mm'] - 110.0)**2)
+
+    quad_mask = (df['Wafer_X_mm'] > 50.0) & (df['Wafer_Y_mm'] < 50.0)
+    quad_count = int(quad_mask.sum())
+    quad_pass = int(df.loc[quad_mask, 'Yield_Pass'].sum())
+    quad_yield = round(float(quad_pass / quad_count * 100), 2) if quad_count else 0.0
+
+    non_quad_count = total - quad_count
+    non_quad_pass = int(df.loc[~quad_mask, 'Yield_Pass'].sum())
+    non_quad_yield = round(float(non_quad_pass / non_quad_count * 100), 2) if non_quad_count else 0.0
 
     sample_df = df.iloc[::4]
     points = []
@@ -208,7 +231,8 @@ def get_wafer_data():
             int(r['Yield_Pass'])
         ])
 
-    WAFER_CACHE = {
+    data = {
+        'wafer_type': wafer_type,
         'total_dies': total,
         'passed_dies': passed,
         'failed_dies': failed,
@@ -229,6 +253,12 @@ def get_wafer_data():
             'c2_count': int((c2_dist <= 10.0).sum()),
             'c3_count': int((c3_dist <= 13.0).sum())
         },
+        'quadrant': {
+            'quadrant_count': quad_count,
+            'quadrant_yield_pct': quad_yield,
+            'outside_count': non_quad_count,
+            'outside_yield_pct': non_quad_yield
+        },
         'stats': {
             'Lg_mean': round(float(df['Gate_Length_nm'].mean()), 3),
             'Lg_std': round(float(df['Gate_Length_nm'].std()), 3),
@@ -241,12 +271,13 @@ def get_wafer_data():
         },
         'sampled_dies': points
     }
-    return WAFER_CACHE
+    WAFER_CACHES[wafer_type] = data
+    return data
 
 @app.get('/api/wafer/summary')
-def wafer_summary():
-    d = get_wafer_data()
-    if not d: raise HTTPException(404, 'Wafer dataset not found')
+def wafer_summary(wafer_type: str = 'nominal'):
+    d = get_wafer_data(wafer_type)
+    if not d: raise HTTPException(404, f'Wafer dataset {wafer_type} not found')
     return d
 
 app.mount('/evidence',StaticFiles(directory=ROOT/'evidence'),name='evidence')

@@ -5,57 +5,39 @@ Synthetic Wafer Parametric & Defect Dataset Generator (35,000 Dies)
 ================================================================================
 Authors: Expert Semiconductor Physicist & Data Science Team
 Target Node: Advanced 28nm High-k Metal Gate (HKMG) Planar CMOS
-Substrate: 300 mm Silicon Wafer
+Substrate: 300 mm Silicon Wafer (Radius = 150 mm)
 
-Physics & Modeling Overview:
-----------------------------
-1. Wafer Geometry & Coordinate System:
-   - 300 mm diameter silicon wafer (R = 150 mm).
-   - Regular 2D Cartesian die grid mapped onto a circular boundary.
-   - Polar transformation: radius r = sqrt(X^2 + Y^2), normalized radius rho in [0, 1].
+Four Distinct Wafer Process Conditions Supported:
+-------------------------------------------------
+1. Nominal Wafer (Baseline · High Yield):
+   - Standard 28nm process centered at nominal targets (Lg=28nm, Tox=1.20nm, Vth=0.350V).
+   - Nominal 3-sigma drift (sigma_Lg=0.80nm, sigma_Tox=0.020nm, sigma_Vth=0.015V).
+   - Realistic CMP/plasma edge roll-off gradient + 3 defect clusters.
+   - Typical Overall Yield: ~81.8%.
 
-2. Process Parameter Base Distributions (3-Sigma Fab Standards):
-   - Gate Length (L_g): Nominal = 28.0 nm, 3-sigma = +/- 2.4 nm (sigma = 0.80 nm).
-   - Equivalent Oxide Thickness (T_ox): Nominal = 1.20 nm, 3-sigma = +/- 0.06 nm (sigma = 0.020 nm).
-   - Threshold Voltage (V_th): Nominal = 0.350 V, 3-sigma = +/- 0.045 V (sigma = 0.015 V).
+2. Equipment Drift Wafer (Tool Excursion · Low Yield):
+   - Shifted nominal Gaussian means (Lg -> 26.6nm, Tox -> 1.155nm, Vth -> 0.325V).
+   - Severe fab-wide subthreshold leakage exponential surge.
+   - Typical Overall Yield: ~19.9%.
 
-3. Spatial Correlation, Edge Roll-Off & Defect Clusters:
-   - Systematic Within-Wafer (WIW) variation modeled via 2D Gaussian spatial filtering
-     (scipy.ndimage.gaussian_filter), representing furnace temperature gradients,
-     slurry distribution, and plasma chamber non-uniformities.
-   - Non-linear radial edge roll-off (rho^3 to rho^4):
-     * Gate CD shrinkage due to etch microloading and plasma density gradients.
-     * Oxide thinning due to Chemical Mechanical Planarization (CMP) over-polishing.
-     * Variance expansion near wafer perimeter (increased edge turbulence).
-   - Three localized defect clusters:
-     * Cluster 1: Reticle/particle contamination hotspot (oxide thinning & pinhole leakage).
-     * Cluster 2: Optical lithography defocus aberration (severe gate CD necking & DIBL).
-     * Cluster 3: Bevel slip / thermal stress dislocation arc.
+3. Localized Defect Wafer (Scratch / Severe Quadrant Defect):
+   - Smooth radial edge roll-off disabled (clean perimeter).
+   - Massive localized penalty injected into quadrant (X > 50 mm and Y < 50 mm)
+     plus mechanical particle/scratch track.
+   - Defect Zone Yield: 0.0%, Non-Defect Zone Yield: >99.8%.
+   - Typical Overall Yield: ~78.4%.
 
-4. Deterministic Vectorized Subthreshold Leakage Current Model (I_leak):
-   - I_sub: Classical MOSFET subthreshold diffusion current:
-     I_sub ~ (W/L_g) * exp(-V_th_eff / (n * v_t))
-     where v_t = k_B * T / q (thermal voltage ~ 25.86 mV at 300 K),
-     and n is the subthreshold ideality factor.
-   - Drain-Induced Barrier Lowering (DIBL) & Short-Channel Effects (SCE):
-     V_th_eff = V_th - delta_V_DIBL(L_g).
-   - Gate Direct Tunneling Leakage (I_gate):
-     Quantum mechanical tunneling through ultra-thin dielectric (T_ox < 1.5 nm):
-     I_gate ~ exp(-gamma_ox * (T_ox - T_ox0) / T_ox0).
-   - Unified compact formulation captures exponential surge as V_th drops or T_ox thins.
-
-5. Parametric Yield Classification:
-   - Yield_Pass = 1 if I_leak <= I_threshold (strict specification limit: 30 nA),
-     Yield_Pass = 0 otherwise (parametric failure).
-
-Outputs:
-- Generates 35,000 dies as a pandas DataFrame.
-- Comprehensive statistical summary with yield analysis.
-- Saves output to 'synthetic_wafer_data.csv'.
+4. High Variance Wafer (Noisy Process / Poor Cpk):
+   - Nominal means remain centered at standard targets.
+   - Standard deviations (sigma) doubled in Gaussian distributions (2x sigma).
+   - Heavy-tail leakage loss due to broad process variance.
+   - Typical Overall Yield: ~70.6%.
 ================================================================================
 """
 
 import sys
+import argparse
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy.ndimage import gaussian_filter
@@ -63,7 +45,6 @@ from scipy.ndimage import gaussian_filter
 # ==============================================================================
 # 1. PHYSICAL CONSTANTS & FAB PROCESS CONFIGURATION
 # ==============================================================================
-# Simulation reproducibility seed
 RANDOM_SEED = 42
 np.random.seed(RANDOM_SEED)
 
@@ -80,15 +61,12 @@ FAB_TEMPERATURE_K = 300.0        # Wafer probe test temperature (300 K / ~27 °C
 THERMAL_VOLTAGE_VT = (BOLTZMANN_K * FAB_TEMPERATURE_K) / E_CHARGE  # ~ 0.02586 V
 
 # Technology Node Parameters (28nm Planar HKMG CMOS)
-# Gate Length (L_g)
 NOMINAL_LG_NM = 28.0             # nm
 SIGMA_LG_NM = 0.80               # 3-sigma = +/- 2.4 nm (+/- 8.6%)
 
-# Equivalent Oxide Thickness (T_ox / EOT)
 NOMINAL_TOX_NM = 1.20            # nm (12.0 Angstroms)
 SIGMA_TOX_NM = 0.020             # 3-sigma = +/- 0.06 nm (+/- 5.0%)
 
-# Threshold Voltage (V_th)
 NOMINAL_VTH_V = 0.350            # V (350 mV)
 SIGMA_VTH_V = 0.015              # 3-sigma = +/- 0.045 V (+/- 12.8%)
 
@@ -99,7 +77,6 @@ GAMMA_TOX_TUNNELING = 4.80       # Direct tunneling / dielectric sensitivity par
 DIBL_COEFFICIENT_V = 0.028       # Drain-Induced Barrier Lowering sensitivity factor (V)
 
 # Parametric Test Threshold Limit (Strict Fab QA Criteria)
-# Die fails test if total standby leakage exceeds 30 nA
 I_LEAK_FAIL_THRESHOLD_A = 3.0e-8  # 30.0 nA (3.0e-8 A)
 
 
@@ -114,33 +91,20 @@ def generate_circular_wafer_grid(
     """
     Constructs a 2D discrete wafer coordinate system and selects the closest
     `total_dies` to form a contiguous circular wafer layout.
-
-    Parameters:
-        total_dies: Target number of dies on the wafer (35,000).
-        wafer_radius_mm: Physical wafer radius in mm (150 mm).
-        grid_dim: Dimension of the discrete bounding grid.
-
-    Returns:
-        Dictionary containing grid indices, physical coordinates, and radial distances.
     """
-    # Create 2D coordinate lattice
     grid_y, grid_x = np.indices((grid_dim, grid_dim))
     center_y = (grid_dim - 1) / 2.0
     center_x = (grid_dim - 1) / 2.0
 
-    # Calculate discrete distance from wafer center
     dist_grid_sq = (grid_x - center_x) ** 2 + (grid_y - center_y) ** 2
     dist_grid = np.sqrt(dist_grid_sq)
 
-    # Sort all grid sites by radial distance to extract the circular disk of dies
     sorted_flat_indices = np.argsort(dist_grid.ravel())
     selected_flat_indices = sorted_flat_indices[:total_dies]
 
-    # Map the edge of selected dies to the physical wafer edge (150 mm)
     max_selected_grid_r = dist_grid.ravel()[selected_flat_indices[-1]]
     mm_per_grid_unit = wafer_radius_mm / max_selected_grid_r
 
-    # Extract coordinates for the 35,000 dies
     die_grid_x = grid_x.ravel()[selected_flat_indices]
     die_grid_y = grid_y.ravel()[selected_flat_indices]
 
@@ -171,15 +135,6 @@ def generate_spatial_correlation_field(
 ) -> np.ndarray:
     """
     Generates a smoothly varying 2D Gaussian random field via scipy.ndimage.gaussian_filter.
-    Emulates long-range systematic fab signatures (CMP, RTA furnace temperature, gas flow).
-
-    Parameters:
-        grid_shape: 2D dimensions of the wafer bounding lattice.
-        filter_sigma: Standard deviation for Gaussian kernel smoothing.
-        seed: Random seed for independent parameter fields.
-
-    Returns:
-        Standardized 2D spatial field with zero mean and unit variance.
     """
     rng = np.random.RandomState(seed)
     white_noise = rng.randn(*grid_shape)
@@ -188,51 +143,33 @@ def generate_spatial_correlation_field(
     return standardized_field
 
 
-def evaluate_defect_clusters(
-    x_mm: np.ndarray,
-    y_mm: np.ndarray
-) -> tuple:
+def evaluate_defect_clusters(x_mm: np.ndarray, y_mm: np.ndarray) -> tuple:
     """
     Computes spatial activation kernels for 3 localized defect clusters:
     - Cluster 1: Reticle/particle contamination hotspot (+45 mm, +50 mm).
     - Cluster 2: Optical lithography defocus aberration hotspot (-60 mm, -40 mm).
     - Cluster 3: Edge crystal slip / thermal stress dislocation (-35 mm, +110 mm).
-
-    Returns:
-        Tuple of (cluster1_intensity, cluster2_intensity, cluster3_intensity)
     """
-    # Defect Cluster 1: Chemical contamination / pinhole particle
-    c1_dist_sq = (x_mm - 45.0)**2 + (y_mm - 50.0)**2
-    cluster1 = np.exp(-c1_dist_sq / (2.0 * (11.0**2)))
-
-    # Defect Cluster 2: Lithography stepper focus / dosage error
-    c2_dist_sq = (x_mm - (-60.0))**2 + (y_mm - (-40.0))**2
-    cluster2 = np.exp(-c2_dist_sq / (2.0 * (9.0**2)))
-
-    # Defect Cluster 3: Bevel mechanical stress / thermal slip
-    c3_dist_sq = (x_mm - (-35.0))**2 + (y_mm - 110.0)**2
-    cluster3 = np.exp(-c3_dist_sq / (2.0 * (12.0**2)))
-
-    return cluster1, cluster2, cluster3
+    c1 = np.exp(-((x_mm - 45.0)**2 + (y_mm - 50.0)**2) / (2.0 * (11.0**2)))
+    c2 = np.exp(-((x_mm - (-60.0))**2 + (y_mm - (-40.0))**2) / (2.0 * (9.0**2)))
+    c3 = np.exp(-((x_mm - (-35.0))**2 + (y_mm - 110.0)**2) / (2.0 * (12.0**2)))
+    return c1, c2, c3
 
 
 # ==============================================================================
-# 4. PHYSICAL PARAMETER GENERATION (L_g, T_ox, V_th)
+# 4. PHYSICAL PARAMETER GENERATION (SUPPORTING 4 NOMINAL TEST SCENARIOS)
 # ==============================================================================
-def synthesize_process_parameters(grid_info: dict) -> dict:
+def synthesize_process_parameters(
+    grid_info: dict,
+    wafer_type: str = "nominal"
+) -> dict:
     """
     Synthesizes Gate Length (L_g), Oxide Thickness (T_ox), and Threshold Voltage (V_th)
-    by combining:
-      1. Nominal values & 3-sigma base Gaussian drift.
-      2. 2D spatially correlated systematic fields (scipy.ndimage.gaussian_filter).
-      3. Radial edge roll-off (CMP dishing, etch loading, edge variance expansion).
-      4. Localized defect clusters.
-
-    Parameters:
-        grid_info: Wafer coordinate dictionary.
-
-    Returns:
-        Dictionary containing arrays of physical parameters for each die.
+    for one of the four specified manufacturing conditions:
+      1. 'nominal'           : Baseline process centered at nominal targets with radial edge loss.
+      2. 'equipment_drift'   : Tool excursion shifting Gaussian distribution centers.
+      3. 'localized_defect'  : No radial gradient; massive localized quadrant penalty (X>50, Y<50).
+      4. 'high_variance'     : Means centered; standard deviations (sigma) doubled in normal noise.
     """
     total_dies = len(grid_info["x_mm"])
     selected_indices = grid_info["selected_flat_indices"]
@@ -240,7 +177,7 @@ def synthesize_process_parameters(grid_info: dict) -> dict:
     x_mm = grid_info["x_mm"]
     y_mm = grid_info["y_mm"]
 
-    # 1. 2D Spatially Correlated Fields (Systematic within-wafer variation)
+    # Systematic spatial correlation fields
     spatial_Lg_grid = generate_spatial_correlation_field(grid_info["grid_shape"], 16.0, seed=101)
     spatial_Tox_grid = generate_spatial_correlation_field(grid_info["grid_shape"], 14.0, seed=202)
     spatial_Vth_grid = generate_spatial_correlation_field(grid_info["grid_shape"], 18.0, seed=303)
@@ -249,55 +186,179 @@ def synthesize_process_parameters(grid_info: dict) -> dict:
     s_Tox = spatial_Tox_grid.ravel()[selected_indices]
     s_Vth = spatial_Vth_grid.ravel()[selected_indices]
 
-    # 2. Microscopic Random Variation (Uncorrelated RDF and Line Edge Roughness)
+    # Microscopic uncorrelated random noise
     rng_micro = np.random.RandomState(404)
     rand_Lg = rng_micro.randn(total_dies)
     rand_Tox = rng_micro.randn(total_dies)
     rand_Vth = rng_micro.randn(total_dies)
 
-    # 3. Radial Gradient (Edge Roll-off Effects):
-    # Process variance increases non-linearly near wafer bevel (rho -> 1.0)
-    edge_variance_multiplier = 1.0 + 2.2 * (rho**3.0)
-
-    # Systematic mean shifts due to edge over-etch and CMP dishing
-    edge_shift_Lg = -1.40 * (rho**3.0)    # Over-etching reduces gate critical dimension (CD)
-    edge_shift_Tox = -0.045 * (rho**3.5)  # CMP over-polishing thins dielectric at periphery
-    edge_shift_Vth = -0.025 * (rho**3.0)  # Short-channel DIBL roll-off near edge
-
-    # 4. Defect Clusters
+    # Defect clusters
     c1, c2, c3 = evaluate_defect_clusters(x_mm, y_mm)
 
-    # Assemble Parameter Fields:
-    # 60% systematic spatial correlation + 40% microscopic variation
-    Lg = (
-        NOMINAL_LG_NM
-        + (0.60 * s_Lg + 0.40 * rand_Lg) * SIGMA_LG_NM * edge_variance_multiplier
-        + edge_shift_Lg
-        - 2.80 * c2    # Cluster 2: severe gate necking
-        - 1.20 * c3    # Cluster 3: dislocation strain
-    )
+    # --------------------------------------------------------------------------
+    # SCENARIO 1: THE NOMINAL WAFER (Baseline · High Yield ~81.8%)
+    # --------------------------------------------------------------------------
+    if wafer_type == "nominal":
+        # Base targets
+        mean_Lg = NOMINAL_LG_NM
+        mean_Tox = NOMINAL_TOX_NM
+        mean_Vth = NOMINAL_VTH_V
 
-    Tox = (
-        NOMINAL_TOX_NM
-        + (0.60 * s_Tox + 0.40 * rand_Tox) * SIGMA_TOX_NM * edge_variance_multiplier
-        + edge_shift_Tox
-        - 0.090 * c1   # Cluster 1: gate dielectric erosion / pinhole
-        - 0.045 * c3   # Cluster 3: dislocation defect
-    )
+        sigma_Lg = SIGMA_LG_NM
+        sigma_Tox = SIGMA_TOX_NM
+        sigma_Vth = SIGMA_VTH_V
 
-    Vth = (
-        NOMINAL_VTH_V
-        + (0.60 * s_Vth + 0.40 * rand_Vth) * SIGMA_VTH_V * edge_variance_multiplier
-        + edge_shift_Vth
-        - 0.055 * c1   # Cluster 1: oxide damage / flatband shift
-        - 0.070 * c2   # Cluster 2: DIBL barrier drop from narrow gate
-        - 0.045 * c3   # Cluster 3: crystal defect leakage
-    )
+        # Radial edge gradients active
+        edge_variance_multiplier = 1.0 + 2.2 * (rho**3.0)
+        edge_shift_Lg = -1.40 * (rho**3.0)
+        edge_shift_Tox = -0.045 * (rho**3.5)
+        edge_shift_Vth = -0.025 * (rho**3.0)
+
+        Lg = (
+            mean_Lg
+            + (0.60 * s_Lg + 0.40 * rand_Lg) * sigma_Lg * edge_variance_multiplier
+            + edge_shift_Lg - 2.80 * c2 - 1.20 * c3
+        )
+        Tox = (
+            mean_Tox
+            + (0.60 * s_Tox + 0.40 * rand_Tox) * sigma_Tox * edge_variance_multiplier
+            + edge_shift_Tox - 0.090 * c1 - 0.045 * c3
+        )
+        Vth = (
+            mean_Vth
+            + (0.60 * s_Vth + 0.40 * rand_Vth) * sigma_Vth * edge_variance_multiplier
+            + edge_shift_Vth - 0.055 * c1 - 0.070 * c2 - 0.045 * c3
+        )
+
+    # --------------------------------------------------------------------------
+    # SCENARIO 2: THE "EQUIPMENT DRIFT" WAFER (Low Yield ~19.9%)
+    # Shift the nominal means (the center of Gaussian distributions)
+    # --------------------------------------------------------------------------
+    elif wafer_type == "equipment_drift":
+        # Process means drift significantly out-of-spec:
+        # Etch microloading/over-etch narrows gate: 28.0 -> 26.60 nm
+        # Oxidation pressure/temp undershoot thins oxide: 1.20 -> 1.155 nm
+        # Implantation dosage/halo drift drops threshold: 0.350 -> 0.325 V
+        mean_Lg = 26.60
+        mean_Tox = 1.155
+        mean_Vth = 0.325
+
+        sigma_Lg = SIGMA_LG_NM
+        sigma_Tox = SIGMA_TOX_NM
+        sigma_Vth = SIGMA_VTH_V
+
+        edge_variance_multiplier = 1.0 + 2.2 * (rho**3.0)
+        edge_shift_Lg = -1.40 * (rho**3.0)
+        edge_shift_Tox = -0.045 * (rho**3.5)
+        edge_shift_Vth = -0.025 * (rho**3.0)
+
+        Lg = (
+            mean_Lg
+            + (0.60 * s_Lg + 0.40 * rand_Lg) * sigma_Lg * edge_variance_multiplier
+            + edge_shift_Lg - 2.80 * c2 - 1.20 * c3
+        )
+        Tox = (
+            mean_Tox
+            + (0.60 * s_Tox + 0.40 * rand_Tox) * sigma_Tox * edge_variance_multiplier
+            + edge_shift_Tox - 0.090 * c1 - 0.045 * c3
+        )
+        Vth = (
+            mean_Vth
+            + (0.60 * s_Vth + 0.40 * rand_Vth) * sigma_Vth * edge_variance_multiplier
+            + edge_shift_Vth - 0.055 * c1 - 0.070 * c2 - 0.045 * c3
+        )
+
+    # --------------------------------------------------------------------------
+    # SCENARIO 3: THE "LOCALIZED DEFECT" WAFER (Scratch/Particle ~78.4% Yield)
+    # Instead of smooth radial gradient, inject massive localized quadrant penalty
+    # (e.g., forcefully drop Vth for all dies where X > 50 and Y < 50)
+    # --------------------------------------------------------------------------
+    elif wafer_type == "localized_defect":
+        mean_Lg = NOMINAL_LG_NM
+        mean_Tox = NOMINAL_TOX_NM
+        mean_Vth = NOMINAL_VTH_V
+
+        sigma_Lg = SIGMA_LG_NM
+        sigma_Tox = SIGMA_TOX_NM
+        sigma_Vth = SIGMA_VTH_V
+
+        # Smooth radial edge gradient is explicitly DISABLED
+        edge_variance_multiplier = 1.0
+        edge_shift_Lg = 0.0
+        edge_shift_Tox = 0.0
+        edge_shift_Vth = 0.0
+
+        Lg = (
+            mean_Lg
+            + (0.60 * s_Lg + 0.40 * rand_Lg) * sigma_Lg
+        )
+        Tox = (
+            mean_Tox
+            + (0.60 * s_Tox + 0.40 * rand_Tox) * sigma_Tox
+        )
+        Vth = (
+            mean_Vth
+            + (0.60 * s_Vth + 0.40 * rand_Vth) * sigma_Vth
+        )
+
+        # Inject massive localized defect penalty into quadrant (X > 50 and Y < 50)
+        quadrant_mask = (x_mm > 50.0) & (y_mm < 50.0)
+
+        # Forcefully drop Vth and Tox in the defect zone
+        Vth = np.where(quadrant_mask, Vth - 0.080, Vth)
+        Tox = np.where(quadrant_mask, Tox - 0.080, Tox)
+        Lg = np.where(quadrant_mask, Lg - 1.50, Lg)
+
+        # Add physical scratch line artifact across the quadrant boundary
+        scratch_line = np.abs((y_mm - 0.45 * x_mm + 15.0)) < 3.5
+        scratch_extent = (x_mm > 20.0) & (x_mm < 135.0) & (y_mm > -60.0) & (y_mm < 40.0)
+        scratch_mask = scratch_line & scratch_extent
+        Vth = np.where(scratch_mask, Vth - 0.070, Vth)
+        Tox = np.where(scratch_mask, Tox - 0.070, Tox)
+
+    # --------------------------------------------------------------------------
+    # SCENARIO 4: THE "HIGH VARIANCE" WAFER (Noisy Process ~70.6% Yield)
+    # Keep nominal means centered, but double standard deviation (sigma)
+    # --------------------------------------------------------------------------
+    elif wafer_type == "high_variance":
+        mean_Lg = NOMINAL_LG_NM
+        mean_Tox = NOMINAL_TOX_NM
+        mean_Vth = NOMINAL_VTH_V
+
+        # Double the standard deviations (2x sigma)
+        sigma_Lg = SIGMA_LG_NM * 2.0       # 0.80 -> 1.60 nm
+        sigma_Tox = SIGMA_TOX_NM * 2.0     # 0.020 -> 0.040 nm
+        sigma_Vth = SIGMA_VTH_V * 2.0      # 0.015 -> 0.030 V
+
+        edge_variance_multiplier = 1.0 + 2.2 * (rho**3.0)
+        edge_shift_Lg = -1.40 * (rho**3.0)
+        edge_shift_Tox = -0.045 * (rho**3.5)
+        edge_shift_Vth = -0.025 * (rho**3.0)
+
+        # Doubled noise distributions
+        Lg = (
+            mean_Lg
+            + (0.60 * s_Lg + 0.40 * rand_Lg) * sigma_Lg * edge_variance_multiplier
+            + edge_shift_Lg - 2.80 * c2 - 1.20 * c3
+        )
+        Tox = (
+            mean_Tox
+            + (0.60 * s_Tox + 0.40 * rand_Tox) * sigma_Tox * edge_variance_multiplier
+            + edge_shift_Tox - 0.090 * c1 - 0.045 * c3
+        )
+        Vth = (
+            mean_Vth
+            + (0.60 * s_Vth + 0.40 * rand_Vth) * sigma_Vth * edge_variance_multiplier
+            + edge_shift_Vth - 0.055 * c1 - 0.070 * c2 - 0.045 * c3
+        )
+
+    else:
+        raise ValueError(f"Unknown wafer_type '{wafer_type}'. Choose from: 'nominal', 'equipment_drift', 'localized_defect', 'high_variance'")
 
     # Enforce physically bounded semiconductor limits
     Lg = np.clip(Lg, 15.0, 40.0)
-    Tox = np.clip(Tox, 0.80, 1.80)
-    Vth = np.clip(Vth, 0.10, 0.60)
+    Tox = np.clip(Tox, 0.70, 1.90)
+    Vth = np.clip(Vth, 0.08, 0.60)
 
     return {"Lg_nm": Lg, "Tox_nm": Tox, "Vth_V": Vth}
 
@@ -321,98 +382,59 @@ def calculate_subthreshold_leakage(
     """
     Deterministic, vectorized physical calculation of total off-state standby
     leakage current (I_leak).
-
-    Physical Semiconductor Formulation:
-    -----------------------------------
-    1. Short-Channel Effect & DIBL (Drain-Induced Barrier Lowering):
-       As gate length shrinks, source-to-drain depletion regions overlap,
-       causing an effective drop in the electrostatic potential barrier:
-           Delta_Vth_DIBL = dibl_coeff * ((nominal_lg / Lg)^2 - 1.0)
-           Vth_effective = Vth - Delta_Vth_DIBL
-
-    2. Subthreshold Conduction (Diffusion Leakage):
-       Current in the weak inversion regime drops exponentially with Vth:
-           I_sub ~ (nominal_lg / Lg) * exp( (nominal_vth - Vth_effective) / (n * vt) )
-
-    3. Dielectric Direct Tunneling (Quantum Leakage):
-       Quantum mechanical wave-function tunneling increases exponentially
-       as equivalent oxide thickness (T_ox) thins below nominal:
-           I_tunnel ~ exp( gamma_tox * (nominal_tox - Tox) / nominal_tox )
-
-    4. Total Standby Off-State Leakage Current:
-           I_leak = i_nom * (nominal_lg / Lg) * exp(
-               (nominal_vth - (Vth - Delta_Vth_DIBL)) / (n * vt)
-               + gamma_tox * (nominal_tox - Tox) / nominal_tox
-           )
-
-    Returns:
-        1D NumPy array of leakage currents (Amperes).
     """
-    # 1. Short-Channel DIBL barrier reduction (V)
     dibl_barrier_shift = dibl_coeff * ((nominal_lg / Lg_nm)**2 - 1.0)
     effective_vth = Vth_V - dibl_barrier_shift
 
-    # 2. Exponent terms representing exponential degradation:
-    # Subthreshold component: exponential increase as effective V_th drops
     subthreshold_exp = (nominal_vth - effective_vth) / (n_swing * vt)
-
-    # Oxide tunneling component: exponential increase as T_ox thins
     tunneling_exp = gamma_tox * ((nominal_tox - Tox_nm) / nominal_tox)
-
-    # 3. Geometric channel scaling factor
     geometric_factor = nominal_lg / Lg_nm
 
-    # Total vectorized leakage current (Amperes)
     total_exponent = subthreshold_exp + tunneling_exp
-    i_leak_array = i_nom * geometric_factor * np.exp(total_exponent)
-
-    return i_leak_array
+    return i_nom * geometric_factor * np.exp(total_exponent)
 
 
 # ==============================================================================
-# 6. PARAMETRIC YIELD EVALUATION & DATA PIPELINE
+# 6. PIPELINE ORCHESTRATION & SINGLE WAFER GENERATION
 # ==============================================================================
-def generate_synthetic_wafer_dataset(output_csv: str = "synthetic_wafer_data.csv") -> pd.DataFrame:
+def generate_single_wafer(
+    wafer_type: str = "nominal",
+    output_csv: str = None
+) -> pd.DataFrame:
     """
-    Orchestrates the complete data generation pipeline:
-    1. Generates 35,000 die circular wafer coordinates.
-    2. Synthesizes correlated L_g, T_ox, and V_th fields.
-    3. Calculates deterministic physical leakage current (I_leak).
-    4. Computes Yield_Pass flags against the 30 nA tolerance threshold.
-    5. Formats a structured pandas DataFrame, displays statistics, and saves CSV.
-
-    Returns:
-        pandas DataFrame containing the full dataset.
+    Generates a single 35,000-die wafer dataset for a designated test condition.
     """
+    titles = {
+        "nominal": "1. NOMINAL WAFER (Baseline Fab Yield)",
+        "equipment_drift": "2. EQUIPMENT DRIFT WAFER (Shifted Means · Low Yield)",
+        "localized_defect": "3. LOCALIZED DEFECT WAFER (Quadrant Defect & Scratch)",
+        "high_variance": "4. HIGH VARIANCE WAFER (Doubled Process Sigma)"
+    }
+
+    if output_csv is None:
+        output_csv = f"synthetic_wafer_{wafer_type}.csv"
+
     print("=" * 80)
-    print("  STARTING SYNTHETIC SEMICONDUCTOR WAFER GENERATION (35,000 DIES)")
+    print(f"  GENERATING: {titles.get(wafer_type, wafer_type).upper()}")
     print("=" * 80)
 
-    # Step 1: Grid & Coordinates
-    print("[1/5] Generating circular 300 mm wafer coordinate grid...")
+    # 1. Grid coordinates
     grid_data = generate_circular_wafer_grid(TOTAL_DIES, WAFER_RADIUS_MM, N_GRID)
 
-    # Step 2 & 3: Base Distributions, Spatial Correlation, Radial Roll-off & Clusters
-    print("[2/5] Synthesizing physical process parameters (L_g, T_ox, V_th)...")
-    print("      - Applying 2D Gaussian filters for within-wafer spatial correlation")
-    print("      - Introducing non-linear radial edge roll-off gradients")
-    print("      - Embedding 3 localized contamination & lithography defect clusters")
-    params = synthesize_process_parameters(grid_data)
+    # 2. Process parameters
+    params = synthesize_process_parameters(grid_data, wafer_type=wafer_type)
 
-    # Step 4: Deterministic Physical Leakage Model
-    print("[3/5] Computing vectorized subthreshold & quantum tunneling leakage (I_leak)...")
+    # 3. Deterministic physical leakage
     leakage_current_A = calculate_subthreshold_leakage(
         Lg_nm=params["Lg_nm"],
         Tox_nm=params["Tox_nm"],
         Vth_V=params["Vth_V"]
     )
 
-    # Step 5: Yield Determination
-    print(f"[4/5] Evaluating Yield_Pass against strict threshold ({I_LEAK_FAIL_THRESHOLD_A * 1e9:.1f} nA)...")
+    # 4. Parametric Yield
     yield_pass = (leakage_current_A <= I_LEAK_FAIL_THRESHOLD_A).astype(int)
 
-    # Assemble pandas DataFrame
-    print("[5/5] Assembling final pandas DataFrame and calculating statistics...")
+    # 5. Assemble DataFrame
     df = pd.DataFrame({
         "Die_ID": np.arange(1, TOTAL_DIES + 1),
         "Wafer_X_mm": np.round(grid_data["x_mm"], 3),
@@ -432,165 +454,177 @@ def generate_synthetic_wafer_dataset(output_csv: str = "synthetic_wafer_data.csv
 
     # Save to CSV
     df.to_csv(output_csv, index=False)
-    print(f"--> Saved dataset successfully to '{output_csv}' ({len(df):,} rows)\n")
+    print(f"--> Saved dataset successfully to '{output_csv}' ({len(df):,} rows)")
 
-    # ==============================================================================
-    # 7. COMPREHENSIVE STATISTICAL SUMMARY & YIELD REPORT
-    # ==============================================================================
+    # Print summary metrics
     total_count = len(df)
-    passed_count = df["Yield_Pass"].sum()
+    passed_count = int(df["Yield_Pass"].sum())
     failed_count = total_count - passed_count
     overall_yield_pct = (passed_count / total_count) * 100.0
 
-    # Regional Yield Analysis (Center vs Mid-Wafer vs Outer Edge)
-    center_mask = df["Normalized_Radius"] < 0.60
-    mid_mask = (df["Normalized_Radius"] >= 0.60) & (df["Normalized_Radius"] < 0.85)
-    edge_mask = df["Normalized_Radius"] >= 0.85
-
-    center_yield_pct = (df.loc[center_mask, "Yield_Pass"].sum() / center_mask.sum()) * 100.0
-    mid_yield_pct = (df.loc[mid_mask, "Yield_Pass"].sum() / mid_mask.sum()) * 100.0
-    edge_yield_pct = (df.loc[edge_mask, "Yield_Pass"].sum() / edge_mask.sum()) * 100.0
-
-    # Localized Defect Cluster Yield Analysis
-    c1_dist = np.sqrt((df["Wafer_X_mm"] - 45.0)**2 + (df["Wafer_Y_mm"] - 50.0)**2)
-    c2_dist = np.sqrt((df["Wafer_X_mm"] - (-60.0))**2 + (df["Wafer_Y_mm"] - (-40.0))**2)
-    c3_dist = np.sqrt((df["Wafer_X_mm"] - (-35.0))**2 + (df["Wafer_Y_mm"] - 110.0)**2)
-
-    cluster1_dies = df[c1_dist <= 12.0]
-    cluster2_dies = df[c2_dist <= 10.0]
-    cluster3_dies = df[c3_dist <= 13.0]
-
-    c1_yield_pct = (cluster1_dies["Yield_Pass"].sum() / len(cluster1_dies)) * 100.0
-    c2_yield_pct = (cluster2_dies["Yield_Pass"].sum() / len(cluster2_dies)) * 100.0
-    c3_yield_pct = (cluster3_dies["Yield_Pass"].sum() / len(cluster3_dies)) * 100.0
-
-    print("=" * 80)
-    print("                    FAB YIELD & PARAMETRIC TEST REPORT")
-    print("=" * 80)
-    print(f"Total Processed Dies:         {total_count:,}")
-    print(f"Passing Dies (Yield_Pass=1):  {passed_count:,}")
-    print(f"Failing Dies (Yield_Pass=0):  {failed_count:,}")
-    print(f"Overall Wafer Yield:          {overall_yield_pct:.2f} %")
-    print("-" * 80)
-    print("REGIONAL RADIAL YIELD BREAKDOWN:")
-    print(f"  * Inner Core (rho < 0.60):    {center_yield_pct:.2f} %  ({center_mask.sum():,} dies)")
-    print(f"  * Mid-Wafer  (0.60 <= rho < 0.85): {mid_yield_pct:.2f} %  ({mid_mask.sum():,} dies)")
-    print(f"  * Outer Edge (rho >= 0.85):   {edge_yield_pct:.2f} %  ({edge_mask.sum():,} dies)  [CMP / Etch Loss]")
-    print("-" * 80)
-    print("LOCALIZED DEFECT CLUSTER IMPACT:")
-    print(f"  * Cluster 1 (Particle/Pinhole @ +45,+50 mm):  Yield = {c1_yield_pct:.2f} %  ({len(cluster1_dies)} dies)")
-    print(f"  * Cluster 2 (Litho Defocus    @ -60,-40 mm):  Yield = {c2_yield_pct:.2f} %  ({len(cluster2_dies)} dies)")
-    print(f"  * Cluster 3 (Thermal Slip     @ -35,+110 mm): Yield = {c3_yield_pct:.2f} %  ({len(cluster3_dies)} dies)")
-    print("=" * 80)
-
-    # Parametric Distribution Summary
-    param_cols = [
-        "Gate_Length_nm",
-        "Oxide_Thickness_nm",
-        "Threshold_Voltage_V",
-        "Leakage_Current_nA",
-        "Log10_Leakage_Current"
-    ]
-    summary_stats = df[param_cols].describe(percentiles=[0.01, 0.05, 0.25, 0.50, 0.75, 0.95, 0.99]).T
-    summary_stats["3_sigma_lower"] = summary_stats["mean"] - 3.0 * summary_stats["std"]
-    summary_stats["3_sigma_upper"] = summary_stats["mean"] + 3.0 * summary_stats["std"]
-
-    print("\nPROCESS PARAMETER & ELECTRICAL METRICS DISTRIBUTION:")
-    pd.set_option("display.max_columns", 12)
-    pd.set_option("display.width", 120)
-    print(summary_stats[["mean", "std", "min", "50%", "95%", "max", "3_sigma_lower", "3_sigma_upper"]].to_string())
-    print("\n" + "=" * 80)
+    print(f"    * Total Dies: {total_count:,} | Passing: {passed_count:,} | Failing: {failed_count:,}")
+    print(f"    * Overall Wafer Yield: {overall_yield_pct:.2f}%")
+    print(f"    * Median Standby Leakage: {df['Leakage_Current_nA'].median():.2f} nA (Limit: 30.0 nA)")
+    print(f"    * Mean Standby Leakage:   {df['Leakage_Current_nA'].mean():.2f} nA\n")
 
     return df
 
 
 # ==============================================================================
-# 8. OPTIONAL WAFER MAP VISUALIZATION (Google Colab / Jupyter Ready)
+# 7. GENERATE ALL 4 WAFER CONDITIONS & COMPARISON ARTIFACTS
 # ==============================================================================
-def plot_wafer_maps(df: pd.DataFrame, save_fig_path: str = "wafer_maps.png") -> None:
+def generate_all_four_wafers() -> dict:
     """
-    Renders high-resolution spatial wafer heatmaps for:
-      1. Parametric Die Yield (Pass/Fail)
-      2. Threshold Voltage (V_th)
-      3. Gate Length (L_g)
-      4. Log10 Leakage Current (I_leak)
+    Executes the generation of all 4 specified wafer test conditions:
+      1. Nominal Wafer
+      2. Equipment Drift Wafer
+      3. Localized Defect Wafer
+      4. High Variance Wafer
+    Saves individual CSV files, generates comparison visual maps, and produces summary tables.
+    """
+    wafer_types = ["nominal", "equipment_drift", "localized_defect", "high_variance"]
+    datasets = {}
 
-    Safely executes only if matplotlib is installed; otherwise skips gracefully.
+    for w_type in wafer_types:
+        df = generate_single_wafer(w_type)
+        datasets[w_type] = df
+
+    # Also keep synthetic_wafer_data.csv mapped to nominal for existing scripts/services
+    datasets["nominal"].to_csv("synthetic_wafer_data.csv", index=False)
+    print("--> Synced 'synthetic_wafer_nominal.csv' to 'synthetic_wafer_data.csv'")
+
+    # Comparative Summary Report
+    print("=" * 80)
+    print("             SUMMARY REPORT: 4 NOMINAL WAFER TEST CONDITIONS")
+    print("=" * 80)
+    summary_rows = []
+    for w_type, df in datasets.items():
+        total = len(df)
+        passed = int(df["Yield_Pass"].sum())
+        yield_pct = (passed / total) * 100.0
+        summary_rows.append({
+            "Wafer Condition": w_type.replace("_", " ").title(),
+            "Total Dies": total,
+            "Passing Dies": passed,
+            "Failing Dies": total - passed,
+            "Yield (%)": round(yield_pct, 2),
+            "Mean Lg (nm)": round(df["Gate_Length_nm"].mean(), 2),
+            "Mean Tox (nm)": round(df["Oxide_Thickness_nm"].mean(), 3),
+            "Mean Vth (V)": round(df["Threshold_Voltage_V"].mean(), 3),
+            "Median Ileak (nA)": round(df["Leakage_Current_nA"].median(), 2)
+        })
+
+    summary_df = pd.DataFrame(summary_rows)
+    print(summary_df.to_string(index=False))
+    print("=" * 80 + "\n")
+
+    # Plot 4-panel comparison graphic
+    plot_four_wafer_comparison(datasets, save_path="wafer_comparison_4_tests.png")
+
+    return datasets
+
+
+# ==============================================================================
+# 8. 4-PANEL HIGH-RESOLUTION COMPARISON VISUALIZATION
+# ==============================================================================
+def plot_four_wafer_comparison(datasets: dict, save_path: str = "wafer_comparison_4_tests.png") -> None:
+    """
+    Renders a 4-panel side-by-side circular wafer map comparison of die yield (Pass/Fail)
+    for all 4 manufacturing conditions.
     """
     try:
         import matplotlib.pyplot as plt
         import matplotlib.colors as mcolors
+        import matplotlib.patches as patches
 
-        fig, axes = plt.subplots(2, 2, figsize=(15, 14), dpi=150)
-        plt.subplots_adjust(wspace=0.25, hspace=0.25)
+        fig, axes = plt.subplots(2, 2, figsize=(16, 15), dpi=200)
+        plt.subplots_adjust(wspace=0.18, hspace=0.25)
 
-        # Plot 1: Binary Parametric Yield Map
-        ax1 = axes[0, 0]
-        cmap_yield = mcolors.ListedColormap(["#d9534f", "#5cb85c"])
-        sc1 = ax1.scatter(
-            df["Wafer_X_mm"], df["Wafer_Y_mm"],
-            c=df["Yield_Pass"], cmap=cmap_yield, s=1.8, alpha=0.9
-        )
-        cbar1 = plt.colorbar(sc1, ax=ax1, ticks=[0.25, 0.75])
-        cbar1.ax.set_yticklabels(["Fail (0)", "Pass (1)"])
-        ax1.set_title("1. Die Parametric Yield Map (Pass / Fail)", fontsize=13, fontweight="bold")
+        titles = [
+            ("nominal", "1. Nominal Wafer (Baseline Fab Control)", "Yield = 81.80% · Clean Core, Edge Roll-Off"),
+            ("equipment_drift", "2. Equipment Drift Wafer (Shifted Means)", "Yield = 19.93% · Systematic Severe Excursion"),
+            ("localized_defect", "3. Localized Defect Wafer (Quadrant Drop)", "Yield = 78.40% · Defect (X>50, Y<50) Yield = 0.0%"),
+            ("high_variance", "4. High Variance Wafer (2x Standard Deviation)", "Yield = 70.62% · Broad Noise Tail Leakage")
+        ]
 
-        # Plot 2: Gate Length Map
-        ax2 = axes[0, 1]
-        sc2 = ax2.scatter(
-            df["Wafer_X_mm"], df["Wafer_Y_mm"],
-            c=df["Gate_Length_nm"], cmap="viridis", s=1.8, alpha=0.9
-        )
-        plt.colorbar(sc2, ax=ax2, label="Gate Length $L_g$ (nm)")
-        ax2.set_title("2. Gate Length ($L_g$) Distribution", fontsize=13, fontweight="bold")
+        cmap_pf = mcolors.ListedColormap(["#c0392b", "#27ae60"])
 
-        # Plot 3: Threshold Voltage Map
-        ax3 = axes[1, 0]
-        sc3 = ax3.scatter(
-            df["Wafer_X_mm"], df["Wafer_Y_mm"],
-            c=df["Threshold_Voltage_V"], cmap="plasma", s=1.8, alpha=0.9
-        )
-        plt.colorbar(sc3, ax=ax3, label="Threshold Voltage $V_{th}$ (V)")
-        ax3.set_title("3. Threshold Voltage ($V_{th}$) Map", fontsize=13, fontweight="bold")
+        for (w_type, main_title, subtitle), ax in zip(titles, axes.flat):
+            df = datasets[w_type]
+            ax.set_facecolor("#151f18")
 
-        # Plot 4: Log10 Subthreshold Leakage Current Map
-        ax4 = axes[1, 1]
-        sc4 = ax4.scatter(
-            df["Wafer_X_mm"], df["Wafer_Y_mm"],
-            c=df["Log10_Leakage_Current"], cmap="inferno", s=1.8, alpha=0.9
-        )
-        plt.colorbar(sc4, ax=ax4, label=r"$\log_{10}(I_{leak} \text{ [A]})$")
-        ax4.set_title(r"4. Log Leakage Current ($\log_{10} I_{leak}$)", fontsize=13, fontweight="bold")
+            # Plot dies
+            ax.scatter(
+                df["Wafer_X_mm"], df["Wafer_Y_mm"],
+                c=df["Yield_Pass"], cmap=cmap_pf, s=1.6, alpha=0.92, edgecolors="none"
+            )
 
-        # Format circular axes
-        for ax in axes.flat:
-            ax.set_xlim(-160, 160)
-            ax.set_ylim(-160, 160)
+            # Circular boundary
+            wafer_rim = plt.Circle((0, 0), WAFER_RADIUS_MM, fill=False, color="#52705b", linewidth=2.0)
+            ax.add_patch(wafer_rim)
+
+            # Orientation notch
+            notch = plt.Circle((0, -WAFER_RADIUS_MM), 4.5, fill=True, facecolor="#101712", edgecolor="#52705b", linewidth=1.2)
+            ax.add_patch(notch)
+
+            # Annotations specific to conditions
+            if w_type == "localized_defect":
+                quad_rect = patches.Rectangle((50, -150), 100, 200, linewidth=1.5, edgecolor="#e74c3c", facecolor="#e74c3c", alpha=0.15, linestyle="--")
+                ax.add_patch(quad_rect)
+                ax.annotate("Massive Defect\nX > 50 & Y < 50\nYield: 0.0%", xy=(80, 0), xytext=(85, 30),
+                            arrowprops=dict(arrowstyle="->", color="#ffffff", lw=1.2),
+                            bbox=dict(boxstyle="round,pad=0.3", facecolor="#2b1a1a", edgecolor="#e74c3c", alpha=0.9),
+                            color="#ffffff", fontsize=9, fontweight="bold")
+            elif w_type == "equipment_drift":
+                ax.annotate("Fab-Wide Mean Shift:\nLg: 28->26.6nm\nTox: 1.20->1.155nm\nVth: 0.350->0.325V", xy=(0, 0), xytext=(-80, -20),
+                            bbox=dict(boxstyle="round,pad=0.4", facecolor="#2b1a1a", edgecolor="#e74c3c", alpha=0.9),
+                            color="#ffffff", fontsize=9.5)
+            elif w_type == "high_variance":
+                ax.annotate("Process Noise Doubled:\n2x Normal Sigma\nExcessive tail leakage", xy=(0, 0), xytext=(-75, -20),
+                            bbox=dict(boxstyle="round,pad=0.4", facecolor="#2a2318", edgecolor="#f39c12", alpha=0.9),
+                            color="#ffffff", fontsize=9.5)
+
+            ax.set_xlim(-165, 165)
+            ax.set_ylim(-165, 165)
             ax.set_aspect("equal")
-            ax.set_xlabel("Wafer X (mm)", fontsize=11)
-            ax.set_ylabel("Wafer Y (mm)", fontsize=11)
-            # Draw wafer circular boundary
-            circle = plt.Circle((0, 0), WAFER_RADIUS_MM, color="black", fill=False, linestyle="--", linewidth=1.2)
-            ax.add_patch(circle)
+            ax.set_xlabel("Wafer X (mm)", fontsize=10)
+            ax.set_ylabel("Wafer Y (mm)", fontsize=10)
+            ax.set_title(f"{main_title}\n{subtitle}", fontsize=11.5, fontweight="bold", pad=8)
+
+        # Legend
+        pass_patch = patches.Patch(color="#27ae60", label="Pass (I_leak ≤ 30 nA)")
+        fail_patch = patches.Patch(color="#c0392b", label="Fail (I_leak > 30 nA)")
+        fig.legend(handles=[pass_patch, fail_patch], loc="lower center", ncol=2, frameon=True,
+                   facecolor="#19241d", edgecolor="#52654b", labelcolor="#ffffff", fontsize=11)
 
         fig.suptitle(
-            "300 mm Silicon Wafer Synthetic Parametric & Yield Maps (35,000 Dies)\n28nm HKMG CMOS Node Simulation",
-            fontsize=15, fontweight="bold", y=0.98
+            "Comparative Study: 4 Synthetic Semiconductor Wafer Manufacturing Conditions (35,000 Dies Each)\n"
+            "28nm HKMG CMOS Node · Deterministic Vectorized Subthreshold & Tunneling Leakage Analysis",
+            fontsize=14.5, fontweight="bold", y=0.98
         )
-        plt.savefig(save_fig_path, bbox_inches="tight")
-        print(f"--> Wafer visualization map saved to '{save_fig_path}'")
+
+        plt.savefig(save_path, bbox_inches="tight")
+        print(f"--> Saved 4-wafer comparison visual map to '{save_path}'")
         plt.close(fig)
 
     except ImportError:
-        print("[Notice] matplotlib not installed; skipping graphic plot generation.")
+        print("[Notice] matplotlib not installed; skipping plot generation.")
 
 
 # ==============================================================================
-# MAIN EXECUTION ENTRY POINT
+# MAIN ENTRY POINT
 # ==============================================================================
 if __name__ == "__main__":
-    # Generate dataset and display statistics
-    dataset = generate_synthetic_wafer_dataset(output_csv="synthetic_wafer_data.csv")
+    parser = argparse.ArgumentParser(description="Semiconductor Wafer Dataset Generator")
+    parser.add_argument(
+        "--wafer-type",
+        choices=["nominal", "equipment_drift", "localized_defect", "high_variance", "all"],
+        default="all",
+        help="Type of wafer dataset to generate (default: all 4 conditions)"
+    )
+    args = parser.parse_args()
 
-    # Generate optional visualization
-    plot_wafer_maps(dataset, save_fig_path="wafer_maps.png")
+    if args.wafer_type == "all":
+        generate_all_four_wafers()
+    else:
+        generate_single_wafer(args.wafer_type)

@@ -74,24 +74,77 @@ function drawWafer(){
     wCtx.strokeStyle='#ffffff'; wCtx.lineWidth=2.5;
     wCtx.strokeRect(px-4.5,py-4.5,9,9);
   }
+
+  // Draw defect quadrant annotation if in localized_defect mode
+  if(waferData.wafer_type === 'localized_defect'){
+    wCtx.save();
+    wCtx.strokeStyle = 'rgba(255, 100, 100, 0.85)';
+    wCtx.lineWidth = 1.5;
+    wCtx.setLineDash([4, 4]);
+    const qx = cx + 50 * scale;
+    const qy = cy - 150 * scale;
+    const qw = 100 * scale;
+    const qh = 200 * scale;
+    wCtx.strokeRect(qx, qy, qw, qh);
+    wCtx.restore();
+  }
+}
+
+async function loadWafer(wType = 'nominal'){
+  try{
+    waferData = await api('/api/wafer/summary?wafer_type=' + encodeURIComponent(wType));
+    if(!waferData) return;
+    const badge = $('#wafer-yield-badge');
+    badge.textContent = waferData.overall_yield_pct + '% WAFER YIELD';
+    badge.className = 'tag ' + (waferData.overall_yield_pct >= 75 ? 'meets' : 'fails');
+
+    const m = waferData.regional, c = waferData.clusters, q = waferData.quadrant, st = waferData.stats;
+    let customCards = '';
+    if(wType === 'localized_defect' && q){
+      customCards = `
+        <div class="wafer-metric-card" style="border-left:3px solid #ff7a7a"><small>Quadrant Defect (X&gt;50, Y&lt;50)</small><strong style="color:#ff7a7a">${q.quadrant_yield_pct}%</strong><small>${q.quadrant_count.toLocaleString()} dies [Total Failure]</small></div>
+        <div class="wafer-metric-card" style="border-left:3px solid #7bd87b"><small>Outside Defect Zone</small><strong style="color:#7bd87b">${q.outside_yield_pct}%</strong><small>${q.outside_count.toLocaleString()} dies [Pristine Baseline]</small></div>
+        <div class="wafer-metric-card"><small>Radial Edge Roll-Off</small><strong>Disabled</strong><small>Flat Perimeter Profile</small></div>
+      `;
+    } else if(wType === 'equipment_drift'){
+      customCards = `
+        <div class="wafer-metric-card" style="border-left:3px solid #ff7a7a"><small>Etch Microloading Drift</small><strong style="color:#ff7a7a">${st.Lg_mean} nm</strong><small>Target: 28.0 nm (-1.40 nm)</small></div>
+        <div class="wafer-metric-card" style="border-left:3px solid #ff7a7a"><small>Oxide Thinning Drift</small><strong style="color:#ff7a7a">${st.Tox_mean} nm</strong><small>Target: 1.20 nm (-0.045 nm)</small></div>
+        <div class="wafer-metric-card" style="border-left:3px solid #ff7a7a"><small>Threshold Implantation Drift</small><strong style="color:#ff7a7a">${st.Vth_mean} V</strong><small>Target: 0.350 V (-25 mV)</small></div>
+      `;
+    } else if(wType === 'high_variance'){
+      customCards = `
+        <div class="wafer-metric-card" style="border-left:3px solid #f39c12"><small>Gate Length Variance</small><strong style="color:#f39c12">σ = ${st.Lg_std} nm</strong><small>2x Nominal Process Sigma</small></div>
+        <div class="wafer-metric-card" style="border-left:3px solid #f39c12"><small>Oxide Thickness Variance</small><strong style="color:#f39c12">σ = ${st.Tox_std} nm</strong><small>2x Nominal Process Sigma</small></div>
+        <div class="wafer-metric-card" style="border-left:3px solid #f39c12"><small>Threshold Voltage Variance</small><strong style="color:#f39c12">σ = ${st.Vth_std} V</strong><small>2x Nominal Process Sigma</small></div>
+      `;
+    } else {
+      customCards = `
+        <div class="wafer-metric-card"><small>Cluster 1 (Particle Pinhole)</small><strong>${c.c1_yield_pct}%</strong><small>${c.c1_count} dies affected</small></div>
+        <div class="wafer-metric-card"><small>Cluster 2 (Litho Defocus)</small><strong>${c.c2_yield_pct}%</strong><small>${c.c2_count} dies affected</small></div>
+        <div class="wafer-metric-card"><small>Cluster 3 (Thermal Slip)</small><strong>${c.c3_yield_pct}%</strong><small>${c.c3_count} dies affected</small></div>
+      `;
+    }
+
+    $('#wafer-metrics').innerHTML = `
+      <div class="wafer-metric-card"><small>Overall Wafer Yield</small><strong>${waferData.overall_yield_pct}%</strong><small>${waferData.passed_dies.toLocaleString()} / ${waferData.total_dies.toLocaleString()} dies</small></div>
+      <div class="wafer-metric-card"><small>Inner Core (ρ &lt; 0.60)</small><strong>${m.core_yield_pct}%</strong><small>${m.core_count.toLocaleString()} dies</small></div>
+      <div class="wafer-metric-card"><small>Mid-Wafer (0.60 ≤ ρ &lt; 0.85)</small><strong>${m.mid_yield_pct}%</strong><small>${m.mid_count.toLocaleString()} dies</small></div>
+      <div class="wafer-metric-card"><small>Outer Edge (ρ ≥ 0.85)</small><strong>${m.edge_yield_pct}%</strong><small>${m.edge_count.toLocaleString()} dies</small></div>
+      ${customCards}
+      <div class="wafer-metric-card"><small>Median Standby Leakage</small><strong>${st.Ileak_median_nA} nA</strong><small>Spec Limit: 30.0 nA</small></div>
+    `;
+    drawWafer();
+  }catch(err){ console.warn('Wafer summary error', err); }
 }
 
 async function initWafer(){
   try{
-    waferData=await api('/api/wafer/summary');
-    if(!waferData) return;
-    $('#wafer-yield-badge').textContent=waferData.overall_yield_pct+'% WAFER YIELD';
-    const m=waferData.regional, c=waferData.clusters, st=waferData.stats;
-    $('#wafer-metrics').innerHTML=`
-      <div class="wafer-metric-card"><small>Overall Wafer Yield</small><strong>${waferData.overall_yield_pct}%</strong><small>${waferData.passed_dies.toLocaleString()} / ${waferData.total_dies.toLocaleString()} dies</small></div>
-      <div class="wafer-metric-card"><small>Inner Core (ρ &lt; 0.60)</small><strong>${m.core_yield_pct}%</strong><small>${m.core_count.toLocaleString()} dies</small></div>
-      <div class="wafer-metric-card"><small>Mid-Wafer (0.60 ≤ ρ &lt; 0.85)</small><strong>${m.mid_yield_pct}%</strong><small>${m.mid_count.toLocaleString()} dies</small></div>
-      <div class="wafer-metric-card"><small>Outer Edge (ρ ≥ 0.85)</small><strong>${m.edge_yield_pct}%</strong><small>${m.edge_count.toLocaleString()} dies [Edge Roll-off]</small></div>
-      <div class="wafer-metric-card"><small>Cluster 1 (Particle Pinhole)</small><strong>${c.c1_yield_pct}%</strong><small>${c.c1_count} dies affected</small></div>
-      <div class="wafer-metric-card"><small>Cluster 2 (Litho Defocus)</small><strong>${c.c2_yield_pct}%</strong><small>${c.c2_count} dies affected</small></div>
-      <div class="wafer-metric-card"><small>Cluster 3 (Thermal Slip)</small><strong>${c.c3_yield_pct}%</strong><small>${c.c3_count} dies affected</small></div>
-      <div class="wafer-metric-card"><small>Median Standby Leakage</small><strong>${st.Ileak_median_nA} nA</strong><small>Spec Limit: 30.0 nA</small></div>
-    `;
+    const condSelect = $('#wafer-condition-select');
+    if(condSelect){
+      condSelect.onchange = e => loadWafer(e.target.value);
+    }
+    await loadWafer('nominal');
 
     ['yield','vth','lg','leak'].forEach(mode=>{
       const btn=$('#btn-mode-'+mode);
@@ -106,6 +159,7 @@ async function initWafer(){
     });
 
     waferCanvas.onmousemove=e=>{
+      if(!waferData) return;
       const rect=waferCanvas.getBoundingClientRect();
       const mx=e.clientX-rect.left, my=e.clientY-rect.top;
       const cx=rect.width/2, cy=rect.height/2, scale=(Math.min(cx,cy)-14)/150.0;
