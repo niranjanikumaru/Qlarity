@@ -1,0 +1,101 @@
+{
+  "rows": [
+    {
+      "method": "Exact encoded",
+      "runs": 24,
+      "within_accuracy_target": 24,
+      "accuracy_target_fraction": 1.0,
+      "interval_half_width_target": 24,
+      "covered": 24,
+      "coverage": 1.0,
+      "coverage_binomial_interval": [
+        0.8575264022774743,
+        1.0
+      ],
+      "mean_absolute_error": 0.0,
+      "max_absolute_error": 0.0,
+      "total_classical_evaluations": 1536,
+      "total_conditional_queries": 0,
+      "total_oracle_calls": 0,
+      "mean_elapsed_s": 0.019921975041668816
+    },
+    {
+      "method": "Conditional CDF",
+      "runs": 24,
+      "within_accuracy_target": 24,
+      "accuracy_target_fraction": 1.0,
+      "interval_half_width_target": 24,
+      "covered": 24,
+      "coverage": 1.0,
+      "coverage_binomial_interval": [
+        0.8575264022774743,
+        1.0
+      ],
+      "mean_absolute_error": 0.0,
+      "max_absolute_error": 0.0,
+      "total_classical_evaluations": 0,
+      "total_conditional_queries": 384,
+      "total_oracle_calls": 0,
+      "mean_elapsed_s": 0.00013461216665670386
+    },
+    {
+      "method": "Monte Carlo",
+      "runs": 24,
+      "within_accuracy_target": 24,
+      "accuracy_target_fraction": 1.0,
+      "interval_half_width_target": 24,
+      "covered": 22,
+      "coverage": 0.9166666666666666,
+      "coverage_binomial_interval": [
+        0.7300271984423964,
+        0.9897436587187498
+      ],
+      "mean_absolute_error": 0.005158431415423853,
+      "max_absolute_error": 0.02168021680216803,
+      "total_classical_evaluations": 177084,
+      "total_conditional_queries": 0,
+      "total_oracle_calls": 0,
+      "mean_elapsed_s": 0.001222032541652614
+    },
+    {
+      "method": "Importance sampling",
+      "runs": 24,
+      "within_accuracy_target": 24,
+      "accuracy_target_fraction": 1.0,
+      "interval_half_width_target": 24,
+      "covered": 24,
+      "coverage": 1.0,
+      "coverage_binomial_interval": [
+        0.8575264022774743,
+        1.0
+      ],
+      "mean_absolute_error": 0.004871352427282778,
+      "max_absolute_error": 0.019861164010611276,
+      "total_classical_evaluations": 177084,
+      "total_conditional_queries": 0,
+      "total_oracle_calls": 0,
+      "mean_elapsed_s": 0.0021897440833242854
+    },
+    {
+      "method": "IQAE",
+      "runs": 24,
+      "within_accuracy_target": 24,
+      "accuracy_target_fraction": 1.0,
+      "interval_half_width_target": 24,
+      "covered": 24,
+      "coverage": 1.0,
+      "coverage_binomial_interval": [
+        0.8575264022774743,
+        1.0
+      ],
+      "mean_absolute_error": 0.0041292684024679645,
+      "max_absolute_error": 0.013295190938345525,
+      "total_classical_evaluations": 0,
+      "total_conditional_queries": 0,
+      "total_oracle_calls": 53248,
+      "mean_elapsed_s": 1.8687687422916734
+    }
+  ],
+  "errors": [],
+  "note": "Descriptive aggregation across heterogeneous cases. Binomial intervals summarize observed coverage but do not certify uniform algorithm coverage. Fixed budgets; no practical speedup established. Shared preprocessing excluded from method-specific resource columns."
+}

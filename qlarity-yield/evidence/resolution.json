@@ -1,0 +1,58 @@
+{
+  "resolution": [
+    {
+      "bins": 2,
+      "states": 8,
+      "p_float": 0.25,
+      "continuous": 0.28668949274522737,
+      "difference": -0.03668949274522737
+    },
+    {
+      "bins": 4,
+      "states": 64,
+      "p_float": 0.3125,
+      "continuous": 0.28668949274522737,
+      "difference": 0.02581050725477263
+    },
+    {
+      "bins": 8,
+      "states": 512,
+      "p_float": 0.283203125,
+      "continuous": 0.28668949274522737,
+      "difference": -0.00348636774522737
+    },
+    {
+      "bins": 16,
+      "states": 4096,
+      "p_float": 0.285400390625,
+      "continuous": 0.28668949274522737,
+      "difference": -0.00128910212022737
+    }
+  ],
+  "precision": [
+    {
+      "scale": 4,
+      "disagreement": 0.125,
+      "qubits": 10,
+      "two_qubit_gates": 498
+    },
+    {
+      "scale": 8,
+      "disagreement": 0.0625,
+      "qubits": 11,
+      "two_qubit_gates": 808
+    },
+    {
+      "scale": 16,
+      "disagreement": 0.0,
+      "qubits": 12,
+      "two_qubit_gates": 1462
+    },
+    {
+      "scale": 32,
+      "disagreement": 0.0,
+      "qubits": 13,
+      "two_qubit_gates": 2580
+    }
+  ]
+}

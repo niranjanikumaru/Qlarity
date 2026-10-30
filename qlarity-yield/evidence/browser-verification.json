@@ -1,0 +1,15 @@
+{
+  "desktop": "1440×1000",
+  "mobile": "390×844",
+  "horizontal_overflow": false,
+  "recorded_load": true,
+  "scenario_inspection": true,
+  "keyboard_inspection": true,
+  "csv_download": true,
+  "fresh_classical": true,
+  "fresh_quantum": true,
+  "zip_download": true,
+  "cancellation": true,
+  "reload": true,
+  "javascript_errors": []
+}

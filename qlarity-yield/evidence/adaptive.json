@@ -1,0 +1,2106 @@
+{
+  "adaptive": {
+    "attempts": [
+      {
+        "step": 1,
+        "reason": "encoding dominates",
+        "result": {
+          "schema_version": 2,
+          "scenario": {
+            "label": "Illustrative 65 nm bulk nMOS",
+            "sigma_L_nm": 3.0,
+            "sigma_tox_nm": 0.1,
+            "sigma_vth_mV": 15.0,
+            "I_limit_A": 1.25e-10,
+            "temperature_K": 300.0,
+            "bins": 4,
+            "scale": 8,
+            "max_failure_probability": 0.3,
+            "reduction": 0.25,
+            "alpha": 0.016666666666666666,
+            "epsilon": 0.05,
+            "samples": 4096,
+            "shots": 256,
+            "seed": 42,
+            "quantum": true,
+            "adaptive": false,
+            "compare": false
+          },
+          "target_id": "illustrative-bulk-nmos-v2:7f75f06e8868e175",
+          "model": {
+            "id": "illustrative-bulk-nmos-v2",
+            "device": {
+              "L0_nm": 65.0,
+              "tox0_nm": 1.8,
+              "Vth0_V": 0.35,
+              "I0_A_per_um": 1e-07,
+              "n_ideality": 1.4,
+              "alpha_L_V_per_nm": 0.0015,
+              "alpha_tox_V_per_nm": 0.008,
+              "I_ref_A": 1e-09
+            },
+            "operating": {
+              "Vds": 1.0,
+              "Vgs": 0.0,
+              "Vbs": 0.0,
+              "temperature_K": 300.0,
+              "W_um": 1.0
+            },
+            "formula": "Ioff = I0*(W/L_um)*exp(-(Vth0 + alpha_L*dL + alpha_tox*dtox + dVth_mV/1000 - Vgs)/(n*kT/q))",
+            "provenance": "Illustrative educational subthreshold expression, not a foundry-calibrated BSIM implementation.",
+            "reference": "https://bsim.berkeley.edu/models/bsim4/",
+            "validation": "Numerical implementation checks only; no independent SPICE or fabrication validation supplied.",
+            "limitations": [
+              "Independent inputs; no correlations.",
+              "Vds and Vbs are metadata only: this model has no drain/body dependence.",
+              "No aging, circuit-level aggregation or overall chip-yield prediction.",
+              "Distribution and device parameters are illustrative.",
+              "Continuous Gaussian tails include physically invalid geometries: only the truncated domain is modeled."
+            ],
+            "distribution": "Independent N(0,sigma), conditioned on all three inputs lying within \u00b13 sigma; equal-mass bins represented by conditional means.",
+            "units": {
+              "sigma_L_nm": "nm",
+              "sigma_tox_nm": "nm",
+              "sigma_vth_mV": "mV",
+              "I_limit_A": "A",
+              "temperature_K": "K"
+            },
+            "failure": "Ioff >= I_limit; equality is failure",
+            "default_scenario": {
+              "label": "Illustrative 65 nm bulk nMOS",
+              "sigma_L_nm": 3.0,
+              "sigma_tox_nm": 0.1,
+              "sigma_vth_mV": 15.0,
+              "I_limit_A": 1.25e-10,
+              "temperature_K": 300.0,
+              "bins": 4,
+              "scale": 8,
+              "max_failure_probability": 0.3,
+              "reduction": 0.25,
+              "alpha": 0.05,
+              "epsilon": 0.05,
+              "samples": 4096,
+              "shots": 256,
+              "seed": 42,
+              "quantum": true,
+              "adaptive": false,
+              "compare": true
+            }
+          },
+          "distribution": {
+            "var_L": {
+              "name": "delta_L",
+              "unit": "nm",
+              "values": [
+                -3.7757848974431365,
+                -0.9711560589373657,
+                0.9711560589373657,
+                3.7757848974431365
+              ],
+              "probabilities": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+              ],
+              "sigma": 3.0,
+              "truncation_sigma": 3.0,
+              "omitted_tail_mass": 0.002699796063260207,
+              "distribution_source": "Truncated Gaussian, illustrative sigma"
+            },
+            "var_tox": {
+              "name": "delta_tox",
+              "unit": "nm",
+              "values": [
+                -0.1258594965814379,
+                -0.03237186863124552,
+                0.03237186863124552,
+                0.12585949658143789
+              ],
+              "probabilities": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+              ],
+              "sigma": 0.1,
+              "truncation_sigma": 3.0,
+              "omitted_tail_mass": 0.002699796063260207,
+              "distribution_source": "Truncated Gaussian, illustrative sigma"
+            },
+            "var_vth": {
+              "name": "delta_vth",
+              "unit": "mV",
+              "values": [
+                -18.878924487215677,
+                -4.855780294686828,
+                4.855780294686828,
+                18.878924487215677
+              ],
+              "probabilities": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+              ],
+              "sigma": 15.0,
+              "truncation_sigma": 3.0,
+              "omitted_tail_mass": 0.002699796063260207,
+              "distribution_source": "Truncated Gaussian, illustrative sigma"
+            }
+          },
+          "execution": "fresh",
+          "reference": {
+            "encoded": 0.25,
+            "discrete_float": 0.3125,
+            "signed_encoding_difference": -0.0625,
+            "states": 64,
+            "preprocessing_s": 0.015920894000032604,
+            "reference_evaluations": 64
+          },
+          "approximation": {
+            "disagreement_mass": 0.0625,
+            "score_error_observed": 0.14785009747137634,
+            "score_error_bound": 0.25,
+            "float_probability_bracket": [
+              0.0625,
+              0.5
+            ],
+            "omitted_tail_mass": 0.008077541171971236,
+            "discretization": "Not covered by decision interval; see continuous reference and resolution study.",
+            "physical_model": "Unquantified; illustrative, not fabrication validated.",
+            "rounding": "Python nearest integer (ties to even); threshold ceil(scale*log(limit/Iref)).",
+            "bound_scope": "Exact weighted disagreement on this finite grid; exhaustive validation cost included separately. No scalable shortcut claimed."
+          },
+          "results": [
+            {
+              "method": "Exact encoded",
+              "p_fail": 0.25,
+              "yield_estimate": 0.75,
+              "ci": [
+                0.25,
+                0.25
+              ],
+              "yield_ci": [
+                0.75,
+                0.75
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:7f75f06e8868e175:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:7f75f06e8868e175:discrete-float",
+              "decision_ci": [
+                0.1875,
+                0.3125
+              ],
+              "decision": "unresolved",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 0.015920894000032604,
+              "seed": 42,
+              "model_evaluations": 64,
+              "interval_method": "Exact finite sum"
+            },
+            {
+              "method": "Conditional CDF",
+              "p_fail": 0.25,
+              "yield_estimate": 0.75,
+              "ci": [
+                0.25,
+                0.25
+              ],
+              "yield_ci": [
+                0.75,
+                0.75
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:7f75f06e8868e175:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:7f75f06e8868e175:discrete-float",
+              "decision_ci": [
+                0.1875,
+                0.3125
+              ],
+              "decision": "unresolved",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 8.51459999466897e-05,
+              "seed": 42,
+              "model_evaluations": 0,
+              "conditional_queries": 16,
+              "interval_method": "Exact weighted marginal CDF",
+              "preprocessing_contributions": 13
+            },
+            {
+              "method": "Monte Carlo",
+              "p_fail": 0.256103515625,
+              "yield_estimate": 0.743896484375,
+              "ci": [
+                0.239910042096586,
+                0.2727965210743068
+              ],
+              "yield_ci": [
+                0.7272034789256931,
+                0.7600899579034139
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:7f75f06e8868e175:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:7f75f06e8868e175:discrete-float",
+              "decision_ci": [
+                0.177410042096586,
+                0.3352965210743068
+              ],
+              "decision": "unresolved",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 0.0006973220000645597,
+              "seed": 42,
+              "model_evaluations": 4096,
+              "failures": 1049,
+              "interval_method": "Clopper-Pearson fixed sample"
+            },
+            {
+              "method": "Importance sampling",
+              "p_fail": 0.2441508047908479,
+              "yield_estimate": 0.7558491952091522,
+              "ci": [
+                0.19580163258976158,
+                0.2924999769919342
+              ],
+              "yield_ci": [
+                0.7075000230080658,
+                0.8041983674102384
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:7f75f06e8868e175:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:7f75f06e8868e175:discrete-float",
+              "decision_ci": [
+                0.13330163258976158,
+                0.3549999769919342
+              ],
+              "decision": "unresolved",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 0.0009007529999962571,
+              "seed": 42,
+              "model_evaluations": 4096,
+              "pilot_evaluations": 0,
+              "interval_method": "Bounded-weight Hoeffding; conservative finite-sample",
+              "proposal": "0.5 original + 0.5 product of lower-tail exponential tilts; fixed before sampling",
+              "ess": 3346.460806886521,
+              "max_weight": 1.9245633142248733,
+              "weight_cv": 0.47326490654681436,
+              "diagnostics": []
+            },
+            {
+              "method": "IQAE",
+              "p_fail": 0.2482972185616784,
+              "yield_estimate": 0.7517027814383216,
+              "ci": [
+                0.23251534154505177,
+                0.26407909557830506
+              ],
+              "yield_ci": [
+                0.735920904421695,
+                0.7674846584549482
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:7f75f06e8868e175:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:7f75f06e8868e175:discrete-float",
+              "decision_ci": [
+                0.17001534154505177,
+                0.32657909557830506
+              ],
+              "decision": "unresolved",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 0.8883700690000751,
+              "seed": 42,
+              "model_evaluations": 0,
+              "oracle_calls": 1536,
+              "interval_method": "IQAE beta intervals",
+              "quantum": {
+                "p_fail_estimate": 0.2482972185616784,
+                "yield_estimate": 0.7517027814383216,
+                "p_fail_ci_lower": 0.23251534154505177,
+                "p_fail_ci_upper": 0.26407909557830506,
+                "yield_ci_lower": 0.735920904421695,
+                "yield_ci_upper": 0.7674846584549482,
+                "amplitude_estimate": 0.4982943091805067,
+                "amplitude_ci": [
+                  0.48219844622836744,
+                  0.5138862671625941
+                ],
+                "epsilon_target": 0.05,
+                "alpha": 0.016666666666666666,
+                "confint_method": "beta",
+                "powers": [
+                  0,
+                  2
+                ],
+                "shots_per_circuit": [
+                  256,
+                  256
+                ],
+                "num_oracle_queries": 512,
+                "NA_our_count": 1536,
+                "n_total_qubits": 11,
+                "circuit_depth_raw": 2,
+                "n_acc_qubits": 4,
+                "elapsed_s": 0.8883700690000751,
+                "seed": 42,
+                "backend": "StatevectorSampler (ideal, finite-shot)",
+                "exact_p_fail": 0.25,
+                "error_vs_exact": 0.0017027814383215878,
+                "interval_contains_exact": true,
+                "grover_power_notes": [],
+                "executed_rounds": [
+                  {
+                    "circuit_id": "round_1_k0",
+                    "k": 0,
+                    "shots": 256,
+                    "counts": {
+                      "1": 63,
+                      "0": 193
+                    },
+                    "probability_interval": [
+                      0.17351173845716703,
+                      0.33045910620793806
+                    ],
+                    "A_calls": 256,
+                    "A_inverse_calls": 0,
+                    "predicate_calls": 256,
+                    "seed": 42,
+                    "qubits": 11,
+                    "depth": 1210,
+                    "two_qubit_gates": 808
+                  },
+                  {
+                    "circuit_id": "round_2_k2",
+                    "k": 2,
+                    "shots": 256,
+                    "counts": {
+                      "1": 66,
+                      "0": 190
+                    },
+                    "probability_interval": [
+                      0.23251534154505177,
+                      0.26407909557830506
+                    ],
+                    "A_calls": 768,
+                    "A_inverse_calls": 512,
+                    "predicate_calls": 1280,
+                    "seed": 42,
+                    "qubits": 11,
+                    "depth": 6528,
+                    "two_qubit_gates": 4764
+                  }
+                ],
+                "resources": {
+                  "A": {
+                    "qubits": 11,
+                    "depth": 1209,
+                    "two_qubit_gates": 808
+                  },
+                  "basis_gates": [
+                    "cx",
+                    "rz",
+                    "sx",
+                    "x"
+                  ],
+                  "optimization_level": 1,
+                  "hardware_connectivity": "All-to-all abstract basis; no physical-device routing",
+                  "compilation_s": 0.7856671240000423,
+                  "total_shots": 512,
+                  "total_two_qubit_gate_executions": 1426432,
+                  "max_executed_depth": 6528,
+                  "state_preparation_note": "Included inside every A/A-inverse; not a free oracle",
+                  "query_convention": "A and A-inverse each contain one failure predicate; sum shots*(2k+1)",
+                  "library_query_convention": "sum shots*k Grover iterations, excluding initial A",
+                  "state_preparation": {
+                    "qubits": 6,
+                    "depth": 3,
+                    "two_qubit_gates": 0
+                  }
+                }
+              }
+            }
+          ],
+          "elapsed_s": 1.711879217000046
+        }
+      },
+      {
+        "step": 2,
+        "reason": "sampling dominates",
+        "result": {
+          "schema_version": 2,
+          "scenario": {
+            "label": "Illustrative 65 nm bulk nMOS",
+            "sigma_L_nm": 3.0,
+            "sigma_tox_nm": 0.1,
+            "sigma_vth_mV": 15.0,
+            "I_limit_A": 1.25e-10,
+            "temperature_K": 300.0,
+            "bins": 4,
+            "scale": 16,
+            "max_failure_probability": 0.3,
+            "reduction": 0.25,
+            "alpha": 0.016666666666666666,
+            "epsilon": 0.05,
+            "samples": 4096,
+            "shots": 256,
+            "seed": 43,
+            "quantum": true,
+            "adaptive": false,
+            "compare": false
+          },
+          "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb",
+          "model": {
+            "id": "illustrative-bulk-nmos-v2",
+            "device": {
+              "L0_nm": 65.0,
+              "tox0_nm": 1.8,
+              "Vth0_V": 0.35,
+              "I0_A_per_um": 1e-07,
+              "n_ideality": 1.4,
+              "alpha_L_V_per_nm": 0.0015,
+              "alpha_tox_V_per_nm": 0.008,
+              "I_ref_A": 1e-09
+            },
+            "operating": {
+              "Vds": 1.0,
+              "Vgs": 0.0,
+              "Vbs": 0.0,
+              "temperature_K": 300.0,
+              "W_um": 1.0
+            },
+            "formula": "Ioff = I0*(W/L_um)*exp(-(Vth0 + alpha_L*dL + alpha_tox*dtox + dVth_mV/1000 - Vgs)/(n*kT/q))",
+            "provenance": "Illustrative educational subthreshold expression, not a foundry-calibrated BSIM implementation.",
+            "reference": "https://bsim.berkeley.edu/models/bsim4/",
+            "validation": "Numerical implementation checks only; no independent SPICE or fabrication validation supplied.",
+            "limitations": [
+              "Independent inputs; no correlations.",
+              "Vds and Vbs are metadata only: this model has no drain/body dependence.",
+              "No aging, circuit-level aggregation or overall chip-yield prediction.",
+              "Distribution and device parameters are illustrative.",
+              "Continuous Gaussian tails include physically invalid geometries: only the truncated domain is modeled."
+            ],
+            "distribution": "Independent N(0,sigma), conditioned on all three inputs lying within \u00b13 sigma; equal-mass bins represented by conditional means.",
+            "units": {
+              "sigma_L_nm": "nm",
+              "sigma_tox_nm": "nm",
+              "sigma_vth_mV": "mV",
+              "I_limit_A": "A",
+              "temperature_K": "K"
+            },
+            "failure": "Ioff >= I_limit; equality is failure",
+            "default_scenario": {
+              "label": "Illustrative 65 nm bulk nMOS",
+              "sigma_L_nm": 3.0,
+              "sigma_tox_nm": 0.1,
+              "sigma_vth_mV": 15.0,
+              "I_limit_A": 1.25e-10,
+              "temperature_K": 300.0,
+              "bins": 4,
+              "scale": 8,
+              "max_failure_probability": 0.3,
+              "reduction": 0.25,
+              "alpha": 0.05,
+              "epsilon": 0.05,
+              "samples": 4096,
+              "shots": 256,
+              "seed": 42,
+              "quantum": true,
+              "adaptive": false,
+              "compare": true
+            }
+          },
+          "distribution": {
+            "var_L": {
+              "name": "delta_L",
+              "unit": "nm",
+              "values": [
+                -3.7757848974431365,
+                -0.9711560589373657,
+                0.9711560589373657,
+                3.7757848974431365
+              ],
+              "probabilities": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+              ],
+              "sigma": 3.0,
+              "truncation_sigma": 3.0,
+              "omitted_tail_mass": 0.002699796063260207,
+              "distribution_source": "Truncated Gaussian, illustrative sigma"
+            },
+            "var_tox": {
+              "name": "delta_tox",
+              "unit": "nm",
+              "values": [
+                -0.1258594965814379,
+                -0.03237186863124552,
+                0.03237186863124552,
+                0.12585949658143789
+              ],
+              "probabilities": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+              ],
+              "sigma": 0.1,
+              "truncation_sigma": 3.0,
+              "omitted_tail_mass": 0.002699796063260207,
+              "distribution_source": "Truncated Gaussian, illustrative sigma"
+            },
+            "var_vth": {
+              "name": "delta_vth",
+              "unit": "mV",
+              "values": [
+                -18.878924487215677,
+                -4.855780294686828,
+                4.855780294686828,
+                18.878924487215677
+              ],
+              "probabilities": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+              ],
+              "sigma": 15.0,
+              "truncation_sigma": 3.0,
+              "omitted_tail_mass": 0.002699796063260207,
+              "distribution_source": "Truncated Gaussian, illustrative sigma"
+            }
+          },
+          "execution": "fresh",
+          "reference": {
+            "encoded": 0.3125,
+            "discrete_float": 0.3125,
+            "signed_encoding_difference": 0.0,
+            "states": 64,
+            "preprocessing_s": 0.014969025000027614,
+            "reference_evaluations": 64
+          },
+          "approximation": {
+            "disagreement_mass": 0.0,
+            "score_error_observed": 0.09428511321717892,
+            "score_error_bound": 0.125,
+            "float_probability_bracket": [
+              0.1875,
+              0.375
+            ],
+            "omitted_tail_mass": 0.008077541171971236,
+            "discretization": "Not covered by decision interval; see continuous reference and resolution study.",
+            "physical_model": "Unquantified; illustrative, not fabrication validated.",
+            "rounding": "Python nearest integer (ties to even); threshold ceil(scale*log(limit/Iref)).",
+            "bound_scope": "Exact weighted disagreement on this finite grid; exhaustive validation cost included separately. No scalable shortcut claimed."
+          },
+          "results": [
+            {
+              "method": "Exact encoded",
+              "p_fail": 0.3125,
+              "yield_estimate": 0.6875,
+              "ci": [
+                0.3125,
+                0.3125
+              ],
+              "yield_ci": [
+                0.6875,
+                0.6875
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+              "decision_ci": [
+                0.3125,
+                0.3125
+              ],
+              "decision": "misses modeled target",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 0.014969025000027614,
+              "seed": 43,
+              "model_evaluations": 64,
+              "interval_method": "Exact finite sum"
+            },
+            {
+              "method": "Conditional CDF",
+              "p_fail": 0.3125,
+              "yield_estimate": 0.6875,
+              "ci": [
+                0.3125,
+                0.3125
+              ],
+              "yield_ci": [
+                0.6875,
+                0.6875
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+              "decision_ci": [
+                0.3125,
+                0.3125
+              ],
+              "decision": "misses modeled target",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 8.199800004149438e-05,
+              "seed": 43,
+              "model_evaluations": 0,
+              "conditional_queries": 16,
+              "interval_method": "Exact weighted marginal CDF",
+              "preprocessing_contributions": 13
+            },
+            {
+              "method": "Monte Carlo",
+              "p_fail": 0.30517578125,
+              "yield_estimate": 0.69482421875,
+              "ci": [
+                0.2880349178298735,
+                0.3227154617426908
+              ],
+              "yield_ci": [
+                0.6772845382573092,
+                0.7119650821701264
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+              "decision_ci": [
+                0.2880349178298735,
+                0.3227154617426908
+              ],
+              "decision": "unresolved",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 0.0007154510000191294,
+              "seed": 43,
+              "model_evaluations": 4096,
+              "failures": 1250,
+              "interval_method": "Clopper-Pearson fixed sample"
+            },
+            {
+              "method": "Importance sampling",
+              "p_fail": 0.31362243684546853,
+              "yield_estimate": 0.6863775631545315,
+              "ci": [
+                0.2652732646443822,
+                0.36197160904655484
+              ],
+              "yield_ci": [
+                0.6380283909534452,
+                0.7347267353556177
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+              "decision_ci": [
+                0.2652732646443822,
+                0.36197160904655484
+              ],
+              "decision": "unresolved",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 0.0008208069999682266,
+              "seed": 43,
+              "model_evaluations": 4096,
+              "pilot_evaluations": 0,
+              "interval_method": "Bounded-weight Hoeffding; conservative finite-sample",
+              "proposal": "0.5 original + 0.5 product of lower-tail exponential tilts; fixed before sampling",
+              "ess": 3314.815548771293,
+              "max_weight": 1.9245633142248733,
+              "weight_cv": 0.48545291313586064,
+              "diagnostics": []
+            },
+            {
+              "method": "IQAE",
+              "p_fail": 0.3119131850050775,
+              "yield_estimate": 0.6880868149949225,
+              "ci": [
+                0.29982852295858764,
+                0.32399784705156726
+              ],
+              "yield_ci": [
+                0.6760021529484328,
+                0.7001714770414124
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+              "decision_ci": [
+                0.29982852295858764,
+                0.32399784705156726
+              ],
+              "decision": "unresolved",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 1.9179821630000333,
+              "seed": 43,
+              "model_evaluations": 0,
+              "oracle_calls": 2048,
+              "interval_method": "IQAE beta intervals",
+              "quantum": {
+                "p_fail_estimate": 0.3119131850050775,
+                "yield_estimate": 0.6880868149949225,
+                "p_fail_ci_lower": 0.29982852295858764,
+                "p_fail_ci_upper": 0.32399784705156726,
+                "yield_ci_lower": 0.6760021529484328,
+                "yield_ci_upper": 0.7001714770414124,
+                "amplitude_estimate": 0.5584918844576683,
+                "amplitude_ci": [
+                  0.5475659987239782,
+                  0.569208087654741
+                ],
+                "epsilon_target": 0.05,
+                "alpha": 0.016666666666666666,
+                "confint_method": "beta",
+                "powers": [
+                  0,
+                  3
+                ],
+                "shots_per_circuit": [
+                  256,
+                  256
+                ],
+                "num_oracle_queries": 768,
+                "NA_our_count": 2048,
+                "n_total_qubits": 12,
+                "circuit_depth_raw": 2,
+                "n_acc_qubits": 5,
+                "elapsed_s": 1.9179821630000333,
+                "seed": 43,
+                "backend": "StatevectorSampler (ideal, finite-shot)",
+                "exact_p_fail": 0.3125,
+                "error_vs_exact": 0.0005868149949225243,
+                "interval_contains_exact": true,
+                "grover_power_notes": [],
+                "executed_rounds": [
+                  {
+                    "circuit_id": "round_1_k0",
+                    "k": 0,
+                    "shots": 256,
+                    "counts": {
+                      "0": 182,
+                      "1": 74
+                    },
+                    "probability_interval": [
+                      0.2115068115133521,
+                      0.3763928702937659
+                    ],
+                    "A_calls": 256,
+                    "A_inverse_calls": 0,
+                    "predicate_calls": 256,
+                    "seed": 43,
+                    "qubits": 12,
+                    "depth": 2083,
+                    "two_qubit_gates": 1462
+                  },
+                  {
+                    "circuit_id": "round_2_k3",
+                    "k": 3,
+                    "shots": 256,
+                    "counts": {
+                      "1": 183,
+                      "0": 73
+                    },
+                    "probability_interval": [
+                      0.29982852295858764,
+                      0.32399784705156726
+                    ],
+                    "A_calls": 1024,
+                    "A_inverse_calls": 768,
+                    "predicate_calls": 1792,
+                    "seed": 43,
+                    "qubits": 12,
+                    "depth": 15382,
+                    "two_qubit_gates": 11560
+                  }
+                ],
+                "resources": {
+                  "A": {
+                    "qubits": 12,
+                    "depth": 2082,
+                    "two_qubit_gates": 1462
+                  },
+                  "basis_gates": [
+                    "cx",
+                    "rz",
+                    "sx",
+                    "x"
+                  ],
+                  "optimization_level": 1,
+                  "hardware_connectivity": "All-to-all abstract basis; no physical-device routing",
+                  "compilation_s": 1.4582058990000633,
+                  "total_shots": 512,
+                  "total_two_qubit_gate_executions": 3333632,
+                  "max_executed_depth": 15382,
+                  "state_preparation_note": "Included inside every A/A-inverse; not a free oracle",
+                  "query_convention": "A and A-inverse each contain one failure predicate; sum shots*(2k+1)",
+                  "library_query_convention": "sum shots*k Grover iterations, excluding initial A",
+                  "state_preparation": {
+                    "qubits": 6,
+                    "depth": 3,
+                    "two_qubit_gates": 0
+                  }
+                }
+              }
+            }
+          ],
+          "elapsed_s": 3.417017785999974
+        }
+      },
+      {
+        "step": 3,
+        "reason": "decision resolved",
+        "result": {
+          "schema_version": 2,
+          "scenario": {
+            "label": "Illustrative 65 nm bulk nMOS",
+            "sigma_L_nm": 3.0,
+            "sigma_tox_nm": 0.1,
+            "sigma_vth_mV": 15.0,
+            "I_limit_A": 1.25e-10,
+            "temperature_K": 300.0,
+            "bins": 4,
+            "scale": 16,
+            "max_failure_probability": 0.3,
+            "reduction": 0.25,
+            "alpha": 0.016666666666666666,
+            "epsilon": 0.025,
+            "samples": 4096,
+            "shots": 512,
+            "seed": 44,
+            "quantum": true,
+            "adaptive": false,
+            "compare": false
+          },
+          "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb",
+          "model": {
+            "id": "illustrative-bulk-nmos-v2",
+            "device": {
+              "L0_nm": 65.0,
+              "tox0_nm": 1.8,
+              "Vth0_V": 0.35,
+              "I0_A_per_um": 1e-07,
+              "n_ideality": 1.4,
+              "alpha_L_V_per_nm": 0.0015,
+              "alpha_tox_V_per_nm": 0.008,
+              "I_ref_A": 1e-09
+            },
+            "operating": {
+              "Vds": 1.0,
+              "Vgs": 0.0,
+              "Vbs": 0.0,
+              "temperature_K": 300.0,
+              "W_um": 1.0
+            },
+            "formula": "Ioff = I0*(W/L_um)*exp(-(Vth0 + alpha_L*dL + alpha_tox*dtox + dVth_mV/1000 - Vgs)/(n*kT/q))",
+            "provenance": "Illustrative educational subthreshold expression, not a foundry-calibrated BSIM implementation.",
+            "reference": "https://bsim.berkeley.edu/models/bsim4/",
+            "validation": "Numerical implementation checks only; no independent SPICE or fabrication validation supplied.",
+            "limitations": [
+              "Independent inputs; no correlations.",
+              "Vds and Vbs are metadata only: this model has no drain/body dependence.",
+              "No aging, circuit-level aggregation or overall chip-yield prediction.",
+              "Distribution and device parameters are illustrative.",
+              "Continuous Gaussian tails include physically invalid geometries: only the truncated domain is modeled."
+            ],
+            "distribution": "Independent N(0,sigma), conditioned on all three inputs lying within \u00b13 sigma; equal-mass bins represented by conditional means.",
+            "units": {
+              "sigma_L_nm": "nm",
+              "sigma_tox_nm": "nm",
+              "sigma_vth_mV": "mV",
+              "I_limit_A": "A",
+              "temperature_K": "K"
+            },
+            "failure": "Ioff >= I_limit; equality is failure",
+            "default_scenario": {
+              "label": "Illustrative 65 nm bulk nMOS",
+              "sigma_L_nm": 3.0,
+              "sigma_tox_nm": 0.1,
+              "sigma_vth_mV": 15.0,
+              "I_limit_A": 1.25e-10,
+              "temperature_K": 300.0,
+              "bins": 4,
+              "scale": 8,
+              "max_failure_probability": 0.3,
+              "reduction": 0.25,
+              "alpha": 0.05,
+              "epsilon": 0.05,
+              "samples": 4096,
+              "shots": 256,
+              "seed": 42,
+              "quantum": true,
+              "adaptive": false,
+              "compare": true
+            }
+          },
+          "distribution": {
+            "var_L": {
+              "name": "delta_L",
+              "unit": "nm",
+              "values": [
+                -3.7757848974431365,
+                -0.9711560589373657,
+                0.9711560589373657,
+                3.7757848974431365
+              ],
+              "probabilities": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+              ],
+              "sigma": 3.0,
+              "truncation_sigma": 3.0,
+              "omitted_tail_mass": 0.002699796063260207,
+              "distribution_source": "Truncated Gaussian, illustrative sigma"
+            },
+            "var_tox": {
+              "name": "delta_tox",
+              "unit": "nm",
+              "values": [
+                -0.1258594965814379,
+                -0.03237186863124552,
+                0.03237186863124552,
+                0.12585949658143789
+              ],
+              "probabilities": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+              ],
+              "sigma": 0.1,
+              "truncation_sigma": 3.0,
+              "omitted_tail_mass": 0.002699796063260207,
+              "distribution_source": "Truncated Gaussian, illustrative sigma"
+            },
+            "var_vth": {
+              "name": "delta_vth",
+              "unit": "mV",
+              "values": [
+                -18.878924487215677,
+                -4.855780294686828,
+                4.855780294686828,
+                18.878924487215677
+              ],
+              "probabilities": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+              ],
+              "sigma": 15.0,
+              "truncation_sigma": 3.0,
+              "omitted_tail_mass": 0.002699796063260207,
+              "distribution_source": "Truncated Gaussian, illustrative sigma"
+            }
+          },
+          "execution": "fresh",
+          "reference": {
+            "encoded": 0.3125,
+            "discrete_float": 0.3125,
+            "signed_encoding_difference": 0.0,
+            "states": 64,
+            "preprocessing_s": 0.013071285000023636,
+            "reference_evaluations": 64
+          },
+          "approximation": {
+            "disagreement_mass": 0.0,
+            "score_error_observed": 0.09428511321717892,
+            "score_error_bound": 0.125,
+            "float_probability_bracket": [
+              0.1875,
+              0.375
+            ],
+            "omitted_tail_mass": 0.008077541171971236,
+            "discretization": "Not covered by decision interval; see continuous reference and resolution study.",
+            "physical_model": "Unquantified; illustrative, not fabrication validated.",
+            "rounding": "Python nearest integer (ties to even); threshold ceil(scale*log(limit/Iref)).",
+            "bound_scope": "Exact weighted disagreement on this finite grid; exhaustive validation cost included separately. No scalable shortcut claimed."
+          },
+          "results": [
+            {
+              "method": "Exact encoded",
+              "p_fail": 0.3125,
+              "yield_estimate": 0.6875,
+              "ci": [
+                0.3125,
+                0.3125
+              ],
+              "yield_ci": [
+                0.6875,
+                0.6875
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+              "decision_ci": [
+                0.3125,
+                0.3125
+              ],
+              "decision": "misses modeled target",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 0.013071285000023636,
+              "seed": 44,
+              "model_evaluations": 64,
+              "interval_method": "Exact finite sum"
+            },
+            {
+              "method": "Conditional CDF",
+              "p_fail": 0.3125,
+              "yield_estimate": 0.6875,
+              "ci": [
+                0.3125,
+                0.3125
+              ],
+              "yield_ci": [
+                0.6875,
+                0.6875
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+              "decision_ci": [
+                0.3125,
+                0.3125
+              ],
+              "decision": "misses modeled target",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 0.0002698559999316785,
+              "seed": 44,
+              "model_evaluations": 0,
+              "conditional_queries": 16,
+              "interval_method": "Exact weighted marginal CDF",
+              "preprocessing_contributions": 13
+            },
+            {
+              "method": "Monte Carlo",
+              "p_fail": 0.3134765625,
+              "yield_estimate": 0.6865234375,
+              "ci": [
+                0.2961992072084212,
+                0.33113571585596663
+              ],
+              "yield_ci": [
+                0.6688642841440333,
+                0.7038007927915788
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+              "decision_ci": [
+                0.2961992072084212,
+                0.33113571585596663
+              ],
+              "decision": "unresolved",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 0.0006116790000305627,
+              "seed": 44,
+              "model_evaluations": 4096,
+              "failures": 1284,
+              "interval_method": "Clopper-Pearson fixed sample"
+            },
+            {
+              "method": "Importance sampling",
+              "p_fail": 0.3216166566196457,
+              "yield_estimate": 0.6783833433803543,
+              "ci": [
+                0.2732674844185594,
+                0.36996582882073203
+              ],
+              "yield_ci": [
+                0.630034171179268,
+                0.7267325155814406
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+              "decision_ci": [
+                0.2732674844185594,
+                0.36996582882073203
+              ],
+              "decision": "unresolved",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 0.0009645339999906355,
+              "seed": 44,
+              "model_evaluations": 4096,
+              "pilot_evaluations": 0,
+              "interval_method": "Bounded-weight Hoeffding; conservative finite-sample",
+              "proposal": "0.5 original + 0.5 product of lower-tail exponential tilts; fixed before sampling",
+              "ess": 3322.74439463576,
+              "max_weight": 1.9245633142248733,
+              "weight_cv": 0.48240641172703547,
+              "diagnostics": []
+            },
+            {
+              "method": "IQAE",
+              "p_fail": 0.3171760842674475,
+              "yield_estimate": 0.6828239157325525,
+              "ci": [
+                0.31037864761681133,
+                0.3239735209180837
+              ],
+              "yield_ci": [
+                0.6760264790819164,
+                0.6896213523831887
+              ],
+              "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+              "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+              "decision_ci": [
+                0.31037864761681133,
+                0.3239735209180837
+              ],
+              "decision": "misses modeled target",
+              "alpha": 0.016666666666666666,
+              "elapsed_s": 2.781400281999936,
+              "seed": 44,
+              "model_evaluations": 0,
+              "oracle_calls": 5120,
+              "interval_method": "IQAE beta intervals",
+              "quantum": {
+                "p_fail_estimate": 0.3171760842674475,
+                "yield_estimate": 0.6828239157325525,
+                "p_fail_ci_lower": 0.31037864761681133,
+                "p_fail_ci_upper": 0.3239735209180837,
+                "yield_ci_lower": 0.6760264790819164,
+                "yield_ci_upper": 0.6896213523831887,
+                "amplitude_estimate": 0.5631838813988265,
+                "amplitude_ci": [
+                  0.557116368110659,
+                  0.5691867188525077
+                ],
+                "epsilon_target": 0.025,
+                "alpha": 0.016666666666666666,
+                "confint_method": "beta",
+                "powers": [
+                  0,
+                  4
+                ],
+                "shots_per_circuit": [
+                  512,
+                  512
+                ],
+                "num_oracle_queries": 2048,
+                "NA_our_count": 5120,
+                "n_total_qubits": 12,
+                "circuit_depth_raw": 2,
+                "n_acc_qubits": 5,
+                "elapsed_s": 2.781400281999936,
+                "seed": 44,
+                "backend": "StatevectorSampler (ideal, finite-shot)",
+                "exact_p_fail": 0.3125,
+                "error_vs_exact": 0.004676084267447478,
+                "interval_contains_exact": true,
+                "grover_power_notes": [],
+                "executed_rounds": [
+                  {
+                    "circuit_id": "round_1_k0",
+                    "k": 0,
+                    "shots": 512,
+                    "counts": {
+                      "0": 351,
+                      "1": 161
+                    },
+                    "probability_interval": [
+                      0.2557584378633775,
+                      0.3776254953294203
+                    ],
+                    "A_calls": 512,
+                    "A_inverse_calls": 0,
+                    "predicate_calls": 512,
+                    "seed": 44,
+                    "qubits": 12,
+                    "depth": 2083,
+                    "two_qubit_gates": 1462
+                  },
+                  {
+                    "circuit_id": "round_2_k4",
+                    "k": 4,
+                    "shots": 512,
+                    "counts": {
+                      "0": 198,
+                      "1": 314
+                    },
+                    "probability_interval": [
+                      0.31037864761681133,
+                      0.3239735209180837
+                    ],
+                    "A_calls": 2560,
+                    "A_inverse_calls": 2048,
+                    "predicate_calls": 4608,
+                    "seed": 44,
+                    "qubits": 12,
+                    "depth": 19815,
+                    "two_qubit_gates": 14926
+                  }
+                ],
+                "resources": {
+                  "A": {
+                    "qubits": 12,
+                    "depth": 2082,
+                    "two_qubit_gates": 1462
+                  },
+                  "basis_gates": [
+                    "cx",
+                    "rz",
+                    "sx",
+                    "x"
+                  ],
+                  "optimization_level": 1,
+                  "hardware_connectivity": "All-to-all abstract basis; no physical-device routing",
+                  "compilation_s": 2.0278009229999725,
+                  "total_shots": 1024,
+                  "total_two_qubit_gate_executions": 8390656,
+                  "max_executed_depth": 19815,
+                  "state_preparation_note": "Included inside every A/A-inverse; not a free oracle",
+                  "query_convention": "A and A-inverse each contain one failure predicate; sum shots*(2k+1)",
+                  "library_query_convention": "sum shots*k Grover iterations, excluding initial A",
+                  "state_preparation": {
+                    "qubits": 6,
+                    "depth": 3,
+                    "two_qubit_gates": 0
+                  }
+                }
+              }
+            }
+          ],
+          "elapsed_s": 4.851694703000021
+        }
+      }
+    ],
+    "result": {
+      "schema_version": 2,
+      "scenario": {
+        "label": "Illustrative 65 nm bulk nMOS",
+        "sigma_L_nm": 3.0,
+        "sigma_tox_nm": 0.1,
+        "sigma_vth_mV": 15.0,
+        "I_limit_A": 1.25e-10,
+        "temperature_K": 300.0,
+        "bins": 4,
+        "scale": 16,
+        "max_failure_probability": 0.3,
+        "reduction": 0.25,
+        "alpha": 0.016666666666666666,
+        "epsilon": 0.025,
+        "samples": 4096,
+        "shots": 512,
+        "seed": 44,
+        "quantum": true,
+        "adaptive": false,
+        "compare": false
+      },
+      "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb",
+      "model": {
+        "id": "illustrative-bulk-nmos-v2",
+        "device": {
+          "L0_nm": 65.0,
+          "tox0_nm": 1.8,
+          "Vth0_V": 0.35,
+          "I0_A_per_um": 1e-07,
+          "n_ideality": 1.4,
+          "alpha_L_V_per_nm": 0.0015,
+          "alpha_tox_V_per_nm": 0.008,
+          "I_ref_A": 1e-09
+        },
+        "operating": {
+          "Vds": 1.0,
+          "Vgs": 0.0,
+          "Vbs": 0.0,
+          "temperature_K": 300.0,
+          "W_um": 1.0
+        },
+        "formula": "Ioff = I0*(W/L_um)*exp(-(Vth0 + alpha_L*dL + alpha_tox*dtox + dVth_mV/1000 - Vgs)/(n*kT/q))",
+        "provenance": "Illustrative educational subthreshold expression, not a foundry-calibrated BSIM implementation.",
+        "reference": "https://bsim.berkeley.edu/models/bsim4/",
+        "validation": "Numerical implementation checks only; no independent SPICE or fabrication validation supplied.",
+        "limitations": [
+          "Independent inputs; no correlations.",
+          "Vds and Vbs are metadata only: this model has no drain/body dependence.",
+          "No aging, circuit-level aggregation or overall chip-yield prediction.",
+          "Distribution and device parameters are illustrative.",
+          "Continuous Gaussian tails include physically invalid geometries: only the truncated domain is modeled."
+        ],
+        "distribution": "Independent N(0,sigma), conditioned on all three inputs lying within \u00b13 sigma; equal-mass bins represented by conditional means.",
+        "units": {
+          "sigma_L_nm": "nm",
+          "sigma_tox_nm": "nm",
+          "sigma_vth_mV": "mV",
+          "I_limit_A": "A",
+          "temperature_K": "K"
+        },
+        "failure": "Ioff >= I_limit; equality is failure",
+        "default_scenario": {
+          "label": "Illustrative 65 nm bulk nMOS",
+          "sigma_L_nm": 3.0,
+          "sigma_tox_nm": 0.1,
+          "sigma_vth_mV": 15.0,
+          "I_limit_A": 1.25e-10,
+          "temperature_K": 300.0,
+          "bins": 4,
+          "scale": 8,
+          "max_failure_probability": 0.3,
+          "reduction": 0.25,
+          "alpha": 0.05,
+          "epsilon": 0.05,
+          "samples": 4096,
+          "shots": 256,
+          "seed": 42,
+          "quantum": true,
+          "adaptive": false,
+          "compare": true
+        }
+      },
+      "distribution": {
+        "var_L": {
+          "name": "delta_L",
+          "unit": "nm",
+          "values": [
+            -3.7757848974431365,
+            -0.9711560589373657,
+            0.9711560589373657,
+            3.7757848974431365
+          ],
+          "probabilities": [
+            0.25,
+            0.25,
+            0.25,
+            0.25
+          ],
+          "sigma": 3.0,
+          "truncation_sigma": 3.0,
+          "omitted_tail_mass": 0.002699796063260207,
+          "distribution_source": "Truncated Gaussian, illustrative sigma"
+        },
+        "var_tox": {
+          "name": "delta_tox",
+          "unit": "nm",
+          "values": [
+            -0.1258594965814379,
+            -0.03237186863124552,
+            0.03237186863124552,
+            0.12585949658143789
+          ],
+          "probabilities": [
+            0.25,
+            0.25,
+            0.25,
+            0.25
+          ],
+          "sigma": 0.1,
+          "truncation_sigma": 3.0,
+          "omitted_tail_mass": 0.002699796063260207,
+          "distribution_source": "Truncated Gaussian, illustrative sigma"
+        },
+        "var_vth": {
+          "name": "delta_vth",
+          "unit": "mV",
+          "values": [
+            -18.878924487215677,
+            -4.855780294686828,
+            4.855780294686828,
+            18.878924487215677
+          ],
+          "probabilities": [
+            0.25,
+            0.25,
+            0.25,
+            0.25
+          ],
+          "sigma": 15.0,
+          "truncation_sigma": 3.0,
+          "omitted_tail_mass": 0.002699796063260207,
+          "distribution_source": "Truncated Gaussian, illustrative sigma"
+        }
+      },
+      "execution": "fresh",
+      "reference": {
+        "encoded": 0.3125,
+        "discrete_float": 0.3125,
+        "signed_encoding_difference": 0.0,
+        "states": 64,
+        "preprocessing_s": 0.013071285000023636,
+        "reference_evaluations": 64
+      },
+      "approximation": {
+        "disagreement_mass": 0.0,
+        "score_error_observed": 0.09428511321717892,
+        "score_error_bound": 0.125,
+        "float_probability_bracket": [
+          0.1875,
+          0.375
+        ],
+        "omitted_tail_mass": 0.008077541171971236,
+        "discretization": "Not covered by decision interval; see continuous reference and resolution study.",
+        "physical_model": "Unquantified; illustrative, not fabrication validated.",
+        "rounding": "Python nearest integer (ties to even); threshold ceil(scale*log(limit/Iref)).",
+        "bound_scope": "Exact weighted disagreement on this finite grid; exhaustive validation cost included separately. No scalable shortcut claimed."
+      },
+      "results": [
+        {
+          "method": "Exact encoded",
+          "p_fail": 0.3125,
+          "yield_estimate": 0.6875,
+          "ci": [
+            0.3125,
+            0.3125
+          ],
+          "yield_ci": [
+            0.6875,
+            0.6875
+          ],
+          "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+          "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+          "decision_ci": [
+            0.3125,
+            0.3125
+          ],
+          "decision": "misses modeled target",
+          "alpha": 0.016666666666666666,
+          "elapsed_s": 0.013071285000023636,
+          "seed": 44,
+          "model_evaluations": 64,
+          "interval_method": "Exact finite sum"
+        },
+        {
+          "method": "Conditional CDF",
+          "p_fail": 0.3125,
+          "yield_estimate": 0.6875,
+          "ci": [
+            0.3125,
+            0.3125
+          ],
+          "yield_ci": [
+            0.6875,
+            0.6875
+          ],
+          "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+          "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+          "decision_ci": [
+            0.3125,
+            0.3125
+          ],
+          "decision": "misses modeled target",
+          "alpha": 0.016666666666666666,
+          "elapsed_s": 0.0002698559999316785,
+          "seed": 44,
+          "model_evaluations": 0,
+          "conditional_queries": 16,
+          "interval_method": "Exact weighted marginal CDF",
+          "preprocessing_contributions": 13
+        },
+        {
+          "method": "Monte Carlo",
+          "p_fail": 0.3134765625,
+          "yield_estimate": 0.6865234375,
+          "ci": [
+            0.2961992072084212,
+            0.33113571585596663
+          ],
+          "yield_ci": [
+            0.6688642841440333,
+            0.7038007927915788
+          ],
+          "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+          "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+          "decision_ci": [
+            0.2961992072084212,
+            0.33113571585596663
+          ],
+          "decision": "unresolved",
+          "alpha": 0.016666666666666666,
+          "elapsed_s": 0.0006116790000305627,
+          "seed": 44,
+          "model_evaluations": 4096,
+          "failures": 1284,
+          "interval_method": "Clopper-Pearson fixed sample"
+        },
+        {
+          "method": "Importance sampling",
+          "p_fail": 0.3216166566196457,
+          "yield_estimate": 0.6783833433803543,
+          "ci": [
+            0.2732674844185594,
+            0.36996582882073203
+          ],
+          "yield_ci": [
+            0.630034171179268,
+            0.7267325155814406
+          ],
+          "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+          "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+          "decision_ci": [
+            0.2732674844185594,
+            0.36996582882073203
+          ],
+          "decision": "unresolved",
+          "alpha": 0.016666666666666666,
+          "elapsed_s": 0.0009645339999906355,
+          "seed": 44,
+          "model_evaluations": 4096,
+          "pilot_evaluations": 0,
+          "interval_method": "Bounded-weight Hoeffding; conservative finite-sample",
+          "proposal": "0.5 original + 0.5 product of lower-tail exponential tilts; fixed before sampling",
+          "ess": 3322.74439463576,
+          "max_weight": 1.9245633142248733,
+          "weight_cv": 0.48240641172703547,
+          "diagnostics": []
+        },
+        {
+          "method": "IQAE",
+          "p_fail": 0.3171760842674475,
+          "yield_estimate": 0.6828239157325525,
+          "ci": [
+            0.31037864761681133,
+            0.3239735209180837
+          ],
+          "yield_ci": [
+            0.6760264790819164,
+            0.6896213523831887
+          ],
+          "target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:encoded",
+          "decision_target_id": "illustrative-bulk-nmos-v2:a19caf019382fafb:discrete-float",
+          "decision_ci": [
+            0.31037864761681133,
+            0.3239735209180837
+          ],
+          "decision": "misses modeled target",
+          "alpha": 0.016666666666666666,
+          "elapsed_s": 2.781400281999936,
+          "seed": 44,
+          "model_evaluations": 0,
+          "oracle_calls": 5120,
+          "interval_method": "IQAE beta intervals",
+          "quantum": {
+            "p_fail_estimate": 0.3171760842674475,
+            "yield_estimate": 0.6828239157325525,
+            "p_fail_ci_lower": 0.31037864761681133,
+            "p_fail_ci_upper": 0.3239735209180837,
+            "yield_ci_lower": 0.6760264790819164,
+            "yield_ci_upper": 0.6896213523831887,
+            "amplitude_estimate": 0.5631838813988265,
+            "amplitude_ci": [
+              0.557116368110659,
+              0.5691867188525077
+            ],
+            "epsilon_target": 0.025,
+            "alpha": 0.016666666666666666,
+            "confint_method": "beta",
+            "powers": [
+              0,
+              4
+            ],
+            "shots_per_circuit": [
+              512,
+              512
+            ],
+            "num_oracle_queries": 2048,
+            "NA_our_count": 5120,
+            "n_total_qubits": 12,
+            "circuit_depth_raw": 2,
+            "n_acc_qubits": 5,
+            "elapsed_s": 2.781400281999936,
+            "seed": 44,
+            "backend": "StatevectorSampler (ideal, finite-shot)",
+            "exact_p_fail": 0.3125,
+            "error_vs_exact": 0.004676084267447478,
+            "interval_contains_exact": true,
+            "grover_power_notes": [],
+            "executed_rounds": [
+              {
+                "circuit_id": "round_1_k0",
+                "k": 0,
+                "shots": 512,
+                "counts": {
+                  "0": 351,
+                  "1": 161
+                },
+                "probability_interval": [
+                  0.2557584378633775,
+                  0.3776254953294203
+                ],
+                "A_calls": 512,
+                "A_inverse_calls": 0,
+                "predicate_calls": 512,
+                "seed": 44,
+                "qubits": 12,
+                "depth": 2083,
+                "two_qubit_gates": 1462
+              },
+              {
+                "circuit_id": "round_2_k4",
+                "k": 4,
+                "shots": 512,
+                "counts": {
+                  "0": 198,
+                  "1": 314
+                },
+                "probability_interval": [
+                  0.31037864761681133,
+                  0.3239735209180837
+                ],
+                "A_calls": 2560,
+                "A_inverse_calls": 2048,
+                "predicate_calls": 4608,
+                "seed": 44,
+                "qubits": 12,
+                "depth": 19815,
+                "two_qubit_gates": 14926
+              }
+            ],
+            "resources": {
+              "A": {
+                "qubits": 12,
+                "depth": 2082,
+                "two_qubit_gates": 1462
+              },
+              "basis_gates": [
+                "cx",
+                "rz",
+                "sx",
+                "x"
+              ],
+              "optimization_level": 1,
+              "hardware_connectivity": "All-to-all abstract basis; no physical-device routing",
+              "compilation_s": 2.0278009229999725,
+              "total_shots": 1024,
+              "total_two_qubit_gate_executions": 8390656,
+              "max_executed_depth": 19815,
+              "state_preparation_note": "Included inside every A/A-inverse; not a free oracle",
+              "query_convention": "A and A-inverse each contain one failure predicate; sum shots*(2k+1)",
+              "library_query_convention": "sum shots*k Grover iterations, excluding initial A",
+              "state_preparation": {
+                "qubits": 6,
+                "depth": 3,
+                "two_qubit_gates": 0
+              }
+            }
+          }
+        }
+      ],
+      "elapsed_s": 4.851694703000021
+    },
+    "family_alpha": 0.05,
+    "stopping": "Bonferroni alpha/3; at most three checks; no sample reuse",
+    "total_oracle_calls": 8704,
+    "total_elapsed_s": 9.980591706000041,
+    "exhausted": false
+  },
+  "fixed": {
+    "schema_version": 2,
+    "scenario": {
+      "label": "Illustrative 65 nm bulk nMOS",
+      "sigma_L_nm": 3.0,
+      "sigma_tox_nm": 0.1,
+      "sigma_vth_mV": 15.0,
+      "I_limit_A": 1.25e-10,
+      "temperature_K": 300.0,
+      "bins": 4,
+      "scale": 32,
+      "max_failure_probability": 0.3,
+      "reduction": 0.25,
+      "alpha": 0.05,
+      "epsilon": 0.02,
+      "samples": 4096,
+      "shots": 256,
+      "seed": 42,
+      "quantum": true,
+      "adaptive": false,
+      "compare": false
+    },
+    "target_id": "illustrative-bulk-nmos-v2:950c977c97670891",
+    "model": {
+      "id": "illustrative-bulk-nmos-v2",
+      "device": {
+        "L0_nm": 65.0,
+        "tox0_nm": 1.8,
+        "Vth0_V": 0.35,
+        "I0_A_per_um": 1e-07,
+        "n_ideality": 1.4,
+        "alpha_L_V_per_nm": 0.0015,
+        "alpha_tox_V_per_nm": 0.008,
+        "I_ref_A": 1e-09
+      },
+      "operating": {
+        "Vds": 1.0,
+        "Vgs": 0.0,
+        "Vbs": 0.0,
+        "temperature_K": 300.0,
+        "W_um": 1.0
+      },
+      "formula": "Ioff = I0*(W/L_um)*exp(-(Vth0 + alpha_L*dL + alpha_tox*dtox + dVth_mV/1000 - Vgs)/(n*kT/q))",
+      "provenance": "Illustrative educational subthreshold expression, not a foundry-calibrated BSIM implementation.",
+      "reference": "https://bsim.berkeley.edu/models/bsim4/",
+      "validation": "Numerical implementation checks only; no independent SPICE or fabrication validation supplied.",
+      "limitations": [
+        "Independent inputs; no correlations.",
+        "Vds and Vbs are metadata only: this model has no drain/body dependence.",
+        "No aging, circuit-level aggregation or overall chip-yield prediction.",
+        "Distribution and device parameters are illustrative.",
+        "Continuous Gaussian tails include physically invalid geometries: only the truncated domain is modeled."
+      ],
+      "distribution": "Independent N(0,sigma), conditioned on all three inputs lying within \u00b13 sigma; equal-mass bins represented by conditional means.",
+      "units": {
+        "sigma_L_nm": "nm",
+        "sigma_tox_nm": "nm",
+        "sigma_vth_mV": "mV",
+        "I_limit_A": "A",
+        "temperature_K": "K"
+      },
+      "failure": "Ioff >= I_limit; equality is failure",
+      "default_scenario": {
+        "label": "Illustrative 65 nm bulk nMOS",
+        "sigma_L_nm": 3.0,
+        "sigma_tox_nm": 0.1,
+        "sigma_vth_mV": 15.0,
+        "I_limit_A": 1.25e-10,
+        "temperature_K": 300.0,
+        "bins": 4,
+        "scale": 8,
+        "max_failure_probability": 0.3,
+        "reduction": 0.25,
+        "alpha": 0.05,
+        "epsilon": 0.05,
+        "samples": 4096,
+        "shots": 256,
+        "seed": 42,
+        "quantum": true,
+        "adaptive": false,
+        "compare": true
+      }
+    },
+    "distribution": {
+      "var_L": {
+        "name": "delta_L",
+        "unit": "nm",
+        "values": [
+          -3.7757848974431365,
+          -0.9711560589373657,
+          0.9711560589373657,
+          3.7757848974431365
+        ],
+        "probabilities": [
+          0.25,
+          0.25,
+          0.25,
+          0.25
+        ],
+        "sigma": 3.0,
+        "truncation_sigma": 3.0,
+        "omitted_tail_mass": 0.002699796063260207,
+        "distribution_source": "Truncated Gaussian, illustrative sigma"
+      },
+      "var_tox": {
+        "name": "delta_tox",
+        "unit": "nm",
+        "values": [
+          -0.1258594965814379,
+          -0.03237186863124552,
+          0.03237186863124552,
+          0.12585949658143789
+        ],
+        "probabilities": [
+          0.25,
+          0.25,
+          0.25,
+          0.25
+        ],
+        "sigma": 0.1,
+        "truncation_sigma": 3.0,
+        "omitted_tail_mass": 0.002699796063260207,
+        "distribution_source": "Truncated Gaussian, illustrative sigma"
+      },
+      "var_vth": {
+        "name": "delta_vth",
+        "unit": "mV",
+        "values": [
+          -18.878924487215677,
+          -4.855780294686828,
+          4.855780294686828,
+          18.878924487215677
+        ],
+        "probabilities": [
+          0.25,
+          0.25,
+          0.25,
+          0.25
+        ],
+        "sigma": 15.0,
+        "truncation_sigma": 3.0,
+        "omitted_tail_mass": 0.002699796063260207,
+        "distribution_source": "Truncated Gaussian, illustrative sigma"
+      }
+    },
+    "execution": "fresh",
+    "reference": {
+      "encoded": 0.3125,
+      "discrete_float": 0.3125,
+      "signed_encoding_difference": 0.0,
+      "states": 64,
+      "preprocessing_s": 0.0143712729999379,
+      "reference_evaluations": 64
+    },
+    "approximation": {
+      "disagreement_mass": 0.0,
+      "score_error_observed": 0.036061225241625916,
+      "score_error_bound": 0.0625,
+      "float_probability_bracket": [
+        0.25,
+        0.328125
+      ],
+      "omitted_tail_mass": 0.008077541171971236,
+      "discretization": "Not covered by decision interval; see continuous reference and resolution study.",
+      "physical_model": "Unquantified; illustrative, not fabrication validated.",
+      "rounding": "Python nearest integer (ties to even); threshold ceil(scale*log(limit/Iref)).",
+      "bound_scope": "Exact weighted disagreement on this finite grid; exhaustive validation cost included separately. No scalable shortcut claimed."
+    },
+    "results": [
+      {
+        "method": "Exact encoded",
+        "p_fail": 0.3125,
+        "yield_estimate": 0.6875,
+        "ci": [
+          0.3125,
+          0.3125
+        ],
+        "yield_ci": [
+          0.6875,
+          0.6875
+        ],
+        "target_id": "illustrative-bulk-nmos-v2:950c977c97670891:encoded",
+        "decision_target_id": "illustrative-bulk-nmos-v2:950c977c97670891:discrete-float",
+        "decision_ci": [
+          0.3125,
+          0.3125
+        ],
+        "decision": "misses modeled target",
+        "alpha": 0.05,
+        "elapsed_s": 0.0143712729999379,
+        "seed": 42,
+        "model_evaluations": 64,
+        "interval_method": "Exact finite sum"
+      },
+      {
+        "method": "Conditional CDF",
+        "p_fail": 0.3125,
+        "yield_estimate": 0.6875,
+        "ci": [
+          0.3125,
+          0.3125
+        ],
+        "yield_ci": [
+          0.6875,
+          0.6875
+        ],
+        "target_id": "illustrative-bulk-nmos-v2:950c977c97670891:encoded",
+        "decision_target_id": "illustrative-bulk-nmos-v2:950c977c97670891:discrete-float",
+        "decision_ci": [
+          0.3125,
+          0.3125
+        ],
+        "decision": "misses modeled target",
+        "alpha": 0.05,
+        "elapsed_s": 8.792099993115698e-05,
+        "seed": 42,
+        "model_evaluations": 0,
+        "conditional_queries": 16,
+        "interval_method": "Exact weighted marginal CDF",
+        "preprocessing_contributions": 13
+      },
+      {
+        "method": "Monte Carlo",
+        "p_fail": 0.316650390625,
+        "yield_estimate": 0.683349609375,
+        "ci": [
+          0.3024176807736617,
+          0.33114505765786717
+        ],
+        "yield_ci": [
+          0.6688549423421328,
+          0.6975823192263383
+        ],
+        "target_id": "illustrative-bulk-nmos-v2:950c977c97670891:encoded",
+        "decision_target_id": "illustrative-bulk-nmos-v2:950c977c97670891:discrete-float",
+        "decision_ci": [
+          0.3024176807736617,
+          0.33114505765786717
+        ],
+        "decision": "misses modeled target",
+        "alpha": 0.05,
+        "elapsed_s": 0.0005709850000812366,
+        "seed": 42,
+        "model_evaluations": 4096,
+        "failures": 1297,
+        "interval_method": "Clopper-Pearson fixed sample"
+      },
+      {
+        "method": "Importance sampling",
+        "p_fail": 0.31271279182991735,
+        "yield_estimate": 0.6872872081700827,
+        "ci": [
+          0.270272119463023,
+          0.3551534641968117
+        ],
+        "yield_ci": [
+          0.6448465358031883,
+          0.729727880536977
+        ],
+        "target_id": "illustrative-bulk-nmos-v2:950c977c97670891:encoded",
+        "decision_target_id": "illustrative-bulk-nmos-v2:950c977c97670891:discrete-float",
+        "decision_ci": [
+          0.270272119463023,
+          0.3551534641968117
+        ],
+        "decision": "unresolved",
+        "alpha": 0.05,
+        "elapsed_s": 0.0007005940000226474,
+        "seed": 42,
+        "model_evaluations": 4096,
+        "pilot_evaluations": 0,
+        "interval_method": "Bounded-weight Hoeffding; conservative finite-sample",
+        "proposal": "0.5 original + 0.5 product of lower-tail exponential tilts; fixed before sampling",
+        "ess": 3346.460806886521,
+        "max_weight": 1.9245633142248733,
+        "weight_cv": 0.47326490654681436,
+        "diagnostics": []
+      },
+      {
+        "method": "IQAE",
+        "p_fail": 0.3155633277831328,
+        "yield_estimate": 0.6844366722168672,
+        "ci": [
+          0.3068707297972842,
+          0.32425592576898143
+        ],
+        "yield_ci": [
+          0.6757440742310186,
+          0.6931292702027159
+        ],
+        "target_id": "illustrative-bulk-nmos-v2:950c977c97670891:encoded",
+        "decision_target_id": "illustrative-bulk-nmos-v2:950c977c97670891:discrete-float",
+        "decision_ci": [
+          0.3068707297972842,
+          0.32425592576898143
+        ],
+        "decision": "misses modeled target",
+        "alpha": 0.05,
+        "elapsed_s": 4.921167850000074,
+        "seed": 42,
+        "model_evaluations": 0,
+        "oracle_calls": 2816,
+        "interval_method": "IQAE beta intervals",
+        "quantum": {
+          "p_fail_estimate": 0.3155633277831328,
+          "yield_estimate": 0.6844366722168672,
+          "p_fail_ci_lower": 0.3068707297972842,
+          "p_fail_ci_upper": 0.32425592576898143,
+          "yield_ci_lower": 0.6757440742310186,
+          "yield_ci_upper": 0.6931292702027159,
+          "amplitude_estimate": 0.5617502361220089,
+          "amplitude_ci": [
+            0.5539591409095839,
+            0.5694347423269689
+          ],
+          "epsilon_target": 0.02,
+          "alpha": 0.05,
+          "confint_method": "beta",
+          "powers": [
+            0,
+            0,
+            4
+          ],
+          "shots_per_circuit": [
+            256,
+            256,
+            256
+          ],
+          "num_oracle_queries": 1024,
+          "NA_our_count": 2816,
+          "n_total_qubits": 13,
+          "circuit_depth_raw": 2,
+          "n_acc_qubits": 6,
+          "elapsed_s": 4.921167850000074,
+          "seed": 42,
+          "backend": "StatevectorSampler (ideal, finite-shot)",
+          "exact_p_fail": 0.3125,
+          "error_vs_exact": 0.0030633277831327854,
+          "interval_contains_exact": true,
+          "grover_power_notes": [],
+          "executed_rounds": [
+            {
+              "circuit_id": "round_1_k0",
+              "k": 0,
+              "shots": 256,
+              "counts": {
+                "1": 79,
+                "0": 177
+              },
+              "probability_interval": [
+                0.2348625766392481,
+                0.3899484052987859
+              ],
+              "A_calls": 256,
+              "A_inverse_calls": 0,
+              "predicate_calls": 256,
+              "seed": 42,
+              "qubits": 13,
+              "depth": 3292,
+              "two_qubit_gates": 2580
+            },
+            {
+              "circuit_id": "round_2_k0",
+              "k": 0,
+              "shots": 256,
+              "counts": {
+                "1": 79,
+                "0": 177
+              },
+              "probability_interval": [
+                0.2558569264100123,
+                0.3651236659244155
+              ],
+              "A_calls": 256,
+              "A_inverse_calls": 0,
+              "predicate_calls": 256,
+              "seed": 42,
+              "qubits": 13,
+              "depth": 3292,
+              "two_qubit_gates": 2580
+            },
+            {
+              "circuit_id": "round_3_k4",
+              "k": 4,
+              "shots": 256,
+              "counts": {
+                "0": 95,
+                "1": 161
+              },
+              "probability_interval": [
+                0.3068707297972842,
+                0.32425592576898143
+              ],
+              "A_calls": 1280,
+              "A_inverse_calls": 1024,
+              "predicate_calls": 2304,
+              "seed": 42,
+              "qubits": 13,
+              "depth": 30808,
+              "two_qubit_gates": 25340
+            }
+          ],
+          "resources": {
+            "A": {
+              "qubits": 13,
+              "depth": 3291,
+              "two_qubit_gates": 2580
+            },
+            "basis_gates": [
+              "cx",
+              "rz",
+              "sx",
+              "x"
+            ],
+            "optimization_level": 1,
+            "hardware_connectivity": "All-to-all abstract basis; no physical-device routing",
+            "compilation_s": 4.420740284999965,
+            "total_shots": 768,
+            "total_two_qubit_gate_executions": 7808000,
+            "max_executed_depth": 30808,
+            "state_preparation_note": "Included inside every A/A-inverse; not a free oracle",
+            "query_convention": "A and A-inverse each contain one failure predicate; sum shots*(2k+1)",
+            "library_query_convention": "sum shots*k Grover iterations, excluding initial A",
+            "state_preparation": {
+              "qubits": 6,
+              "depth": 3,
+              "two_qubit_gates": 0
+            }
+          }
+        }
+      }
+    ],
+    "elapsed_s": 9.397455481999941
+  },
+  "note": "Same nominal family confidence; different stopping goals. Report costs and decisions without assuming savings."
+}

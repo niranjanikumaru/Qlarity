@@ -1,0 +1,50 @@
+BENCH 1.1e-10 8 0.05 11
+BENCH 1.1e-10 8 0.05 29
+BENCH 1.1e-10 8 0.05 47
+BENCH 1.1e-10 8 0.025 11
+BENCH 1.1e-10 8 0.025 29
+BENCH 1.1e-10 8 0.025 47
+BENCH 1.1e-10 16 0.05 11
+BENCH 1.1e-10 16 0.05 29
+BENCH 1.1e-10 16 0.05 47
+BENCH 1.1e-10 16 0.025 11
+BENCH 1.1e-10 16 0.025 29
+BENCH 1.1e-10 16 0.025 47
+BENCH 1.5e-10 8 0.05 11
+BENCH 1.5e-10 8 0.05 29
+BENCH 1.5e-10 8 0.05 47
+BENCH 1.5e-10 8 0.025 11
+BENCH 1.5e-10 8 0.025 29
+BENCH 1.5e-10 8 0.025 47
+BENCH 1.5e-10 16 0.05 11
+BENCH 1.5e-10 16 0.05 29
+BENCH 1.5e-10 16 0.05 47
+BENCH 1.5e-10 16 0.025 11
+BENCH 1.5e-10 16 0.025 29
+BENCH 1.5e-10 16 0.025 47
+RECORDED EXAMPLE
+Baseline: Monte Carlo
+Baseline: importance sampling
+Baseline: constructing and executing IQAE
+Tighter gate length: Monte Carlo
+Tighter gate length: importance sampling
+Tighter gate length: constructing and executing IQAE
+Tighter threshold voltage: Monte Carlo
+Tighter threshold voltage: importance sampling
+Tighter threshold voltage: constructing and executing IQAE
+Combined: Monte Carlo
+Combined: importance sampling
+Combined: constructing and executing IQAE
+Continuous reference (separate target)
+Completed
+ADAPTIVE COMPARISON
+Illustrative 65 nm bulk nMOS: Monte Carlo
+Illustrative 65 nm bulk nMOS: importance sampling
+Illustrative 65 nm bulk nMOS: constructing and executing IQAE
+Illustrative 65 nm bulk nMOS: Monte Carlo
+Illustrative 65 nm bulk nMOS: importance sampling
+Illustrative 65 nm bulk nMOS: constructing and executing IQAE
+Illustrative 65 nm bulk nMOS: Monte Carlo
+Illustrative 65 nm bulk nMOS: importance sampling
+Illustrative 65 nm bulk nMOS: constructing and executing IQAE
+DONE
