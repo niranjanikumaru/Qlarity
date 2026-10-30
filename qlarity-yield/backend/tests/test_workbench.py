@@ -1,8 +1,10 @@
-import io,json,time,zipfile
+import io, json, sys, time, zipfile
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import numpy as np
 import pytest
 from fastapi.testclient import TestClient
-from backend.app.workbench import Scenario,analyze,domain,variants,decision,continuous_reference,identity
+from backend.app.workbench import Scenario, analyze, domain, variants, decision, continuous_reference, identity
 from backend.app.classical.monte_carlo import clopper_pearson
 
 @pytest.mark.parametrize('ci,target,expected',[([.1,.2],.2,'meets modeled target'),([.21,.3],.2,'misses modeled target'),([.1,.3],.2,'unresolved'),([.2,.3],.2,'unresolved')])
@@ -128,3 +130,35 @@ def test_adaptive_export_includes_intermediate_circuits():
     z=zipfile.ZipFile(io.BytesIO(bundle(data)))
     assert 'circuits/scenario_0/adaptive_step_1/A.qasm' in z.namelist()
     assert 'benchmark/benchmark-summary.json' in z.namelist()
+
+
+def test_quantum_resource_estimator_and_comparison():
+    from backend.app.benchmark_report import estimate_quantum_resources, estimate_and_compare_resources
+    from backend.app.physics.leakage import NominalDevice, OperatingPoint
+    from backend.app.physics.variations import default_joint_distribution
+    from backend.app.physics.discretize import build_quantised_score
+    from backend.app.quantum.oracle import build_oracle
+
+    joint = default_joint_distribution()
+    qmodel = build_quantised_score(joint, 1.25e-10, OperatingPoint(), NominalDevice(), scale=4.0)
+    oracle_res = build_oracle(joint, qmodel, validate=False)
+    A_qc = oracle_res.A_circuit
+
+    q_res = estimate_quantum_resources(A_qc, n_input_qubits=6)
+    assert q_res['total_qubits'] == 10
+    assert q_res['ancilla_count'] == 4
+    assert q_res['cnot_count'] > 0
+    assert q_res['circuit_depth'] > 0
+
+    comparison = estimate_and_compare_resources(
+        A_qc,
+        classical_evaluations=100000,
+        total_oracle_calls=5000,
+        n_input_qubits=6
+    )
+    assert comparison['Classical Evaluations'] == 100000
+    assert comparison['Total Oracle Calls'] == 5000
+    assert comparison['Estimated Circuit Depth'] == q_res['circuit_depth']
+    assert comparison['Ancilla Count'] == 4
+    assert comparison['2-Qubit Gate Count (CNOTs)'] == q_res['cnot_count']
+    assert 'Comparative Analysis' in comparison

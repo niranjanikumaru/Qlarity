@@ -1,0 +1,14 @@
+{
+  "success": true,
+  "states_verified": 64,
+  "reversibility_verified": true,
+  "max_unitary_deviation": 9.742188067442442e-15,
+  "calibrated_node": "28nm HKMG Planar CMOS",
+  "device_nominal": {
+    "Lg_nm": 28.0,
+    "Tox_nm": 1.2,
+    "Vth_V": 0.35,
+    "subthreshold_n": 1.26
+  },
+  "timestamp": "2026-10-30T16:50:22.281095+00:00"
+}

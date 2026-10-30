@@ -1,0 +1,218 @@
+{
+  "wafer_ground_truth": {
+    "total_dies": 35000,
+    "true_yield_pct": 81.8,
+    "true_fail_rate_pct": 18.200000000000006
+  },
+  "classical_empirical_sampling": {
+    "sample_budgets": [
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000
+    ],
+    "methods": {
+      "Simple Monte Carlo (MC)": {
+        "rmse": [
+          0.05817903402429435,
+          0.0409975609030586,
+          0.025486205419141265,
+          0.017152647997709637,
+          0.011938872085195737,
+          0.007362897980188686,
+          0.005069595644624923,
+          0.0032737134877689005
+        ],
+        "mean_ci_width": [
+          0.2280132958930246,
+          0.16054376896313627,
+          0.09987035834173547,
+          0.06723673467066436,
+          0.0467690646011037,
+          0.0288383785617122,
+          0.01986686938985607,
+          0.012831797720101427
+        ],
+        "mean_time_ms": [
+          1.0027986664014559,
+          1.0677710000891238,
+          1.0045606666244566,
+          0.979118999869873,
+          0.9779230000761648,
+          0.9897740002876769,
+          0.9901640001529206,
+          1.002663333201781
+        ]
+      },
+      "Stratified Spatial Sampling": {
+        "rmse": [
+          0.05042016028774107,
+          0.035182237653697275,
+          0.022282523262008587,
+          0.015803458464268897,
+          0.010877799821692735,
+          0.006778386345444034,
+          0.004419812175780804,
+          0.0029241274787497273
+        ],
+        "mean_ci_width": [
+          0.1971326520903913,
+          0.13790869779267165,
+          0.08714564081668835,
+          0.061643498313485465,
+          0.042624496631095174,
+          0.02657066750818716,
+          0.0173178786341931,
+          0.011458740833535838
+        ],
+        "mean_time_ms": [
+          1.2958820001222193,
+          1.3152249999499568,
+          1.3263523334171623,
+          1.340593999872605,
+          1.315175333681206,
+          1.334027333650738,
+          1.3401856669224799,
+          1.3685556668012093
+        ]
+      },
+      "Classical Importance Sampling (IS)": {
+        "rmse": [
+          0.037881828283397354,
+          0.026193083306619958,
+          0.01666134585739293,
+          0.011496142486592182,
+          0.00846887467129328,
+          0.0051545862926053515,
+          0.0037296694753906155,
+          0.0027049001373286247
+        ],
+        "mean_ci_width": [
+          0.14794351791555757,
+          0.10213500309092664,
+          0.06503465720947298,
+          0.044712091123997454,
+          0.03295716067218782,
+          0.020074556098515575,
+          0.014574404793518854,
+          0.01052043135998737
+        ],
+        "mean_time_ms": [
+          0.45612966680588823,
+          0.500645333280166,
+          0.49215666678113246,
+          0.5176576669327915,
+          0.5791116668842733,
+          0.7462713331915438,
+          1.0186686665595819,
+          1.5785296664883692
+        ]
+      }
+    }
+  },
+  "workbench_comparison": {
+    "rows": [
+      {
+        "method": "Exact encoded",
+        "runs": 24,
+        "within_accuracy_target": 24,
+        "accuracy_target_fraction": 1.0,
+        "interval_half_width_target": 24,
+        "covered": 24,
+        "coverage": 1.0,
+        "coverage_binomial_interval": [
+          0.8575264022774743,
+          1.0
+        ],
+        "mean_absolute_error": 0.0,
+        "max_absolute_error": 0.0,
+        "total_classical_evaluations": 1536,
+        "total_conditional_queries": 0,
+        "total_oracle_calls": 0,
+        "mean_elapsed_s": 0.019921975041668816
+      },
+      {
+        "method": "Conditional CDF",
+        "runs": 24,
+        "within_accuracy_target": 24,
+        "accuracy_target_fraction": 1.0,
+        "interval_half_width_target": 24,
+        "covered": 24,
+        "coverage": 1.0,
+        "coverage_binomial_interval": [
+          0.8575264022774743,
+          1.0
+        ],
+        "mean_absolute_error": 0.0,
+        "max_absolute_error": 0.0,
+        "total_classical_evaluations": 0,
+        "total_conditional_queries": 384,
+        "total_oracle_calls": 0,
+        "mean_elapsed_s": 0.00013461216665670386
+      },
+      {
+        "method": "Monte Carlo",
+        "runs": 24,
+        "within_accuracy_target": 24,
+        "accuracy_target_fraction": 1.0,
+        "interval_half_width_target": 24,
+        "covered": 22,
+        "coverage": 0.9166666666666666,
+        "coverage_binomial_interval": [
+          0.7300271984423964,
+          0.9897436587187498
+        ],
+        "mean_absolute_error": 0.005158431415423853,
+        "max_absolute_error": 0.02168021680216803,
+        "total_classical_evaluations": 177084,
+        "total_conditional_queries": 0,
+        "total_oracle_calls": 0,
+        "mean_elapsed_s": 0.001222032541652614
+      },
+      {
+        "method": "Importance sampling",
+        "runs": 24,
+        "within_accuracy_target": 24,
+        "accuracy_target_fraction": 1.0,
+        "interval_half_width_target": 24,
+        "covered": 24,
+        "coverage": 1.0,
+        "coverage_binomial_interval": [
+          0.8575264022774743,
+          1.0
+        ],
+        "mean_absolute_error": 0.004871352427282778,
+        "max_absolute_error": 0.019861164010611276,
+        "total_classical_evaluations": 177084,
+        "total_conditional_queries": 0,
+        "total_oracle_calls": 0,
+        "mean_elapsed_s": 0.0021897440833242854
+      },
+      {
+        "method": "IQAE",
+        "runs": 24,
+        "within_accuracy_target": 24,
+        "accuracy_target_fraction": 1.0,
+        "interval_half_width_target": 24,
+        "covered": 24,
+        "coverage": 1.0,
+        "coverage_binomial_interval": [
+          0.8575264022774743,
+          1.0
+        ],
+        "mean_absolute_error": 0.0041292684024679645,
+        "max_absolute_error": 0.013295190938345525,
+        "total_classical_evaluations": 0,
+        "total_conditional_queries": 0,
+        "total_oracle_calls": 53248,
+        "mean_elapsed_s": 1.8687687422916734
+      }
+    ],
+    "errors": [],
+    "note": "Descriptive aggregation across heterogeneous cases. Binomial intervals summarize observed coverage but do not certify uniform algorithm coverage. Fixed budgets; no practical speedup established. Shared preprocessing excluded from method-specific resource columns."
+  }
+}

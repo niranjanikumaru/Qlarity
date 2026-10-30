@@ -1,0 +1,30 @@
+[
+  {
+    "Target Error (epsilon)": 0.05,
+    "Classical Evaluations": 331,
+    "Classical Evaluations (Hoeffding)": 738,
+    "Total Oracle Calls": 512,
+    "Query Speedup Ratio": 0.6
+  },
+  {
+    "Target Error (epsilon)": 0.01,
+    "Classical Evaluations": 8254,
+    "Classical Evaluations (Hoeffding)": 18445,
+    "Total Oracle Calls": 9472,
+    "Query Speedup Ratio": 0.9
+  },
+  {
+    "Target Error (epsilon)": 0.005,
+    "Classical Evaluations": 33013,
+    "Classical Evaluations (Hoeffding)": 73778,
+    "Total Oracle Calls": 15872,
+    "Query Speedup Ratio": 2.1
+  },
+  {
+    "Target Error (epsilon)": 0.001,
+    "Classical Evaluations": 825311,
+    "Classical Evaluations (Hoeffding)": 1844440,
+    "Total Oracle Calls": 31744,
+    "Query Speedup Ratio": 26.0
+  }
+]

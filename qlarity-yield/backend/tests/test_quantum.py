@@ -29,7 +29,7 @@ from typing import List
 import numpy as np
 import pytest
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from backend.app.physics.leakage import NominalDevice, OperatingPoint
 from backend.app.physics.variations import default_joint_distribution, JointDistribution

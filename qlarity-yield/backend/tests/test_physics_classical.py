@@ -28,7 +28,7 @@ import pytest
 # ---------------------------------------------------------------------------
 # Ensure the backend package is importable from the repo root
 # ---------------------------------------------------------------------------
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from backend.app.physics.leakage import (
     NominalDevice,
