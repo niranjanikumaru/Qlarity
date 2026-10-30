@@ -1,0 +1,59 @@
+name: Qlarity-Yield CI
+
+on:
+  push:
+    branches: [ main, master, semi, qlarity-yield-deploy, develop ]
+  pull_request:
+    branches: [ main, master, semi, qlarity-yield-deploy ]
+
+jobs:
+  test:
+    name: Backend Physics & Quantum Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install Locked Dependencies
+        working-directory: ./qlarity-yield
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-lock.txt
+
+      - name: Run Physics, Classical & API Unit Tests
+        working-directory: ./qlarity-yield
+        run: |
+          python -m pytest backend/tests/test_physics_classical.py backend/tests/test_api.py -v
+
+      - name: Run Oracle Validation Tests
+        working-directory: ./qlarity-yield
+        run: |
+          python -m pytest backend/tests/test_oracle_validation.py -v
+
+  docker-smoke-test:
+    name: Container Build & Health Check
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: docker build -t qlarity-yield:test .
+
+      - name: Launch Container & Verify Health Endpoint
+        run: |
+          docker run -d --name test-container -p 8000:8000 -e ALLOW_REMOTE=true qlarity-yield:test
+          sleep 6
+          curl -f http://localhost:8000/api/model || exit 1
+          docker stop test-container

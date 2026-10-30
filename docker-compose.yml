@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  qlarity-yield:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qlarity-yield-app
+    ports:
+      - "8000:8000"
+    environment:
+      - ALLOW_REMOTE=true
+      - HOST=0.0.0.0
+      - PORT=8000
+      - ALLOWED_HOSTS=*
+    restart: unless-stopped

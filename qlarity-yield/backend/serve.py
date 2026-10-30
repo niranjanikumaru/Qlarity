@@ -75,16 +75,22 @@ async def lifespan(app):
         if j['status'] in ('running','queued'): stop(j,'cancelled','Server shutdown')
     if TASKS: await asyncio.gather(*TASKS,return_exceptions=True)
 
+ALLOW_REMOTE=os.environ.get('ALLOW_REMOTE','false').lower() in ('1','true','yes')
+ALLOWED_HOSTS=[h.strip() for h in os.environ.get('ALLOWED_HOSTS','localhost,127.0.0.1,testserver').split(',') if h.strip()]
+
 app=FastAPI(title='Qlarity — Leakage-yield workbench',version='2.0.0',lifespan=lifespan)
-app.add_middleware(TrustedHostMiddleware,allowed_hosts=['localhost','127.0.0.1','testserver'])
+if not ALLOW_REMOTE and '*' not in ALLOWED_HOSTS:
+    app.add_middleware(TrustedHostMiddleware,allowed_hosts=ALLOWED_HOSTS)
+
 @app.middleware('http')
 async def local_only(request:Request,call_next):
-    if request.client and request.client.host not in ('127.0.0.1','::1','testclient'):
-        return Response('This release is local-only.',403)
-    if request.method in ('POST','DELETE','PUT'):
-        origin=request.headers.get('origin')
-        if origin and origin != str(request.base_url).rstrip('/'):
-            return Response('Cross-origin mutations are disabled.',403)
+    if not ALLOW_REMOTE:
+        if request.client and request.client.host not in ('127.0.0.1','::1','testclient'):
+            return Response('This release is local-only.',403)
+        if request.method in ('POST','DELETE','PUT'):
+            origin=request.headers.get('origin')
+            if origin and origin != str(request.base_url).rstrip('/'):
+                return Response('Cross-origin mutations are disabled.',403)
     response=await call_next(request)
     response.headers['X-Content-Type-Options']='nosniff'
     return response
@@ -295,3 +301,10 @@ def oracle_verification():
 
 app.mount('/evidence',StaticFiles(directory=ROOT/'evidence'),name='evidence')
 app.mount('/',StaticFiles(directory=ROOT/'web',html=True),name='web')
+
+if __name__ == '__main__':
+    import uvicorn
+    host = os.environ.get('HOST', '0.0.0.0' if ALLOW_REMOTE else '127.0.0.1')
+    port = int(os.environ.get('PORT', 8000))
+    uvicorn.run(app, host=host, port=port)
+
