@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qlarity — Quantum-Enhanced Semiconductor Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:            #F8F9FC;
+      --txt:           #111827;
+      --muted:         #6B7280;
+      --accent:        #4F46E5;
+      --accent2:       #7C3AED;
+      --glass:         rgba(255,255,255,0.58);
+      --glass-border:  rgba(255,255,255,0.78);
+      --glass-shadow:  0 8px 32px rgba(79,70,229,0.10);
+    }
+
+    html, body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ══════════════════════════════
+       NAVBAR
+    ══════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 52px;
+      height: 62px;
+      background: rgba(248,249,252,0.78);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 1px solid rgba(255,255,255,0.65);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+      color: var(--txt);
+    }
+
+    .logo-mark {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: grid; place-items: center;
+      box-shadow: 0 4px 12px rgba(79,70,229,0.35);
+    }
+
+    .logo-mark svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linejoin: round; }
+
+    .logo-name { font-size: 18px; font-weight: 800; letter-spacing: -0.6px; }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 2px; list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13.5px; font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 13px;
+      border-radius: 9px;
+      transition: color .18s, background .18s;
+    }
+    .nav-links a:hover { color: var(--txt); background: rgba(0,0,0,0.045); }
+
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+
+    .btn-signin {
+      font-size: 13.5px; font-weight: 500;
+      color: var(--muted);
+      text-decoration: none; padding: 6px 13px; border-radius: 9px;
+      transition: color .18s;
+    }
+    .btn-signin:hover { color: var(--txt); }
+
+    .btn-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #0f172a;
+      color: #fff;
+      font-size: 13.5px; font-weight: 600;
+      padding: 9px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: transform .2s, box-shadow .2s, background .2s;
+      white-space: nowrap;
+    }
+    .btn-pill:hover {
+      background: #1e293b;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(15,23,42,0.28);
+    }
+
+    /* ══════════════════════════════
+       HERO WRAPPER
+    ══════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      padding-top: 62px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-inner {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 60px 52px 36px;
+      gap: 52px;
+      width: 100%;
+    }
+
+    /* ══════════════════════════════
+       HERO LEFT
+    ══════════════════════════════ */
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(79,70,229,0.07);
+      border: 1px solid rgba(79,70,229,0.22);
+      color: var(--accent);
+      font-size: 11.5px; font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 50px;
+      width: fit-content;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .hero-h1 {
+      font-size: clamp(34px, 4.2vw, 54px);
+      font-weight: 900;
+      line-height: 1.07;
+      letter-spacing: -2px;
+      color: var(--txt);
+    }
+
+    .hero-h1 .arrow-span {
+      display: inline-block;
+      color: var(--accent);
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+    }
+    .hero-h1:hover .arrow-span { transform: translateX(8px); }
+
+    .hero-h1 .gradient-text {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 15.5px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 440px;
+    }
+
+    .hero-ctas {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+
+    .btn-cta-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #0f172a;
+      color: #fff;
+      font-size: 15px; font-weight: 700;
+      padding: 14px 30px;
+      border-radius: 50px;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(15,23,42,0.22);
+      transition: transform .22s, box-shadow .22s;
+    }
+    .btn-cta-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 36px rgba(15,23,42,0.32);
+    }
+
+    .btn-cta-glass {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.65);
+      color: var(--txt);
+      font-size: 15px; font-weight: 600;
+      padding: 14px 28px;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.95);
+      text-decoration: none;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      transition: transform .22s, box-shadow .22s;
+    }
+    .btn-cta-glass:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.14);
+    }
+
+    .play-icon {
+      width: 22px; height: 22px;
+      background: var(--txt);
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 9px; color: #fff;
+      padding-left: 2px;
+    }
+
+    /* ══════════════════════════════
+       HERO RIGHT (Canvas + Cards)
+    ══════════════════════════════ */
+    .hero-right {
+      position: relative;
+      height: 500px;
+    }
+
+    #three-canvas {
+      position: absolute;
+      inset: 0; width: 100%; height: 100%;
+      border-radius: 28px;
+      /* Fade edges */
+      -webkit-mask-image: radial-gradient(ellipse 90% 88% at 55% 50%, #000 60%, transparent 100%);
+      mask-image: radial-gradient(ellipse 90% 88% at 55% 50%, #000 60%, transparent 100%);
+    }
+
+    /* ── GLASS CARDS ── */
+    .gcard {
+      position: absolute;
+      background: var(--glass);
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.85);
+      z-index: 20;
+      transition: transform .3s ease, box-shadow .3s ease;
+      cursor: default;
+      user-select: none;
+    }
+    .gcard:hover {
+      box-shadow: 0 20px 52px rgba(79,70,229,0.18), inset 0 1px 0 rgba(255,255,255,0.85);
+    }
+
+    /* Card A — Metric 10.7M */
+    .card-a {
+      top: 22px; right: 20px;
+      padding: 18px 22px;
+      min-width: 168px;
+      animation: floatA 5.2s ease-in-out infinite;
+    }
+
+    .card-a-top { display: flex; align-items: baseline; gap: 8px; }
+    .metric-val { font-size: 27px; font-weight: 900; letter-spacing: -1.2px; color: var(--txt); }
+
+    .badge-green {
+      display: inline-flex; align-items: center; gap: 3px;
+      background: rgba(22,163,74,0.11);
+      color: #16a34a;
+      font-size: 10.5px; font-weight: 700;
+      padding: 2px 8px; border-radius: 50px;
+    }
+
+    .metric-label {
+      font-size: 10.5px; color: var(--muted); font-weight: 500; margin-top: 5px;
+    }
+
+    /* Sparkline mini chart */
+    .sparkline { margin-top: 10px; display: flex; align-items: flex-end; gap: 3px; height: 24px; }
+    .spark-bar {
+      flex: 1; background: linear-gradient(to top, var(--accent), var(--accent2));
+      border-radius: 3px; opacity: 0.55;
+      transition: opacity .2s;
+    }
+    .spark-bar.hi { opacity: 1; }
+    .card-a:hover .spark-bar { opacity: 0.8; }
+    .card-a:hover .spark-bar.hi { opacity: 1; }
+
+    /* Card B — Analysis */
+    .card-b {
+      top: 195px; right: 20px;
+      padding: 16px 18px;
+      min-width: 210px;
+      display: flex; align-items: center; gap: 14px;
+      animation: floatB 6s ease-in-out infinite .8s;
+    }
+
+    .card-b-txt { font-size: 13px; font-weight: 700; color: var(--txt); line-height: 1.35; }
+    .card-b-sub { font-size: 10.5px; color: var(--muted); font-weight: 500; margin-top: 3px; }
+
+    .icon-circle {
+      width: 34px; height: 34px; flex-shrink: 0;
+      background: #0f172a;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      color: #fff; font-size: 15px;
+    }
+
+    /* Card C — Gauge */
+    .card-c {
+      bottom: 44px; right: 20px;
+      padding: 18px 22px;
+      min-width: 130px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      animation: floatC 5.8s ease-in-out infinite 1.4s;
+    }
+
+    .gauge-wrap { position: relative; width: 76px; height: 76px; }
+    .gauge-wrap svg { transform: rotate(-90deg); }
+
+    .gauge-bg { fill: none; stroke: rgba(79,70,229,0.1); stroke-width: 6; }
+    .gauge-fill {
+      fill: none;
+      stroke: url(#grd);
+      stroke-width: 6;
+      stroke-linecap: round;
+      /* circumference ≈ 207.35 for r=33 */
+      stroke-dasharray: 207.35;
+      stroke-dashoffset: 37.32; /* 207.35*(1-0.82) */
+      transition: stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1);
+    }
+
+    .gauge-num {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 17px; font-weight: 900;
+      letter-spacing: -0.8px; color: var(--txt);
+    }
+
+    .gauge-lbl { font-size: 10.5px; color: var(--muted); font-weight: 500; }
+
+    /* Card D — live indicator (small, bottom-left area of canvas) */
+    .card-d {
+      bottom: 44px; left: 20px;
+      padding: 10px 14px;
+      display: flex; align-items: center; gap: 8px;
+      animation: floatD 4.8s ease-in-out infinite .3s;
+    }
+
+    .live-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 0 rgba(34,197,94,0.5);
+      animation: ping 1.5s ease-in-out infinite;
+    }
+
+    @keyframes ping {
+      0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+      70%  { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
+      100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    }
+
+    .live-txt { font-size: 11px; font-weight: 700; color: var(--txt); }
+    .live-sub { font-size: 9.5px; color: var(--muted); font-weight: 500; }
+
+    /* ── Float Keyframes ── */
+    @keyframes floatA {
+      0%,100% { transform: translateY(0px) rotate(0.4deg); }
+      50%      { transform: translateY(-11px) rotate(-0.4deg); }
+    }
+    @keyframes floatB {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-8px) translateX(2px); }
+    }
+    @keyframes floatC {
+      0%,100% { transform: translateY(0px) rotate(-0.3deg); }
+      50%      { transform: translateY(-9px) rotate(0.3deg); }
+    }
+    @keyframes floatD {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-6px); }
+    }
+
+    /* ══════════════════════════════
+       BOTTOM BANNER
+    ══════════════════════════════ */
+    .banner-wrap {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 52px 36px;
+      width: 100%;
+    }
+
+    .banner {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,0.62);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 50px;
+      padding: 12px 12px 12px 20px;
+      box-shadow: 0 4px 28px rgba(79,70,229,0.08);
+    }
+
+    .banner-left {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 13.5px; color: var(--muted); font-weight: 500;
+    }
+
+    .banner-icon-wrap {
+      width: 34px; height: 34px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 15px;
+      box-shadow: 0 4px 12px rgba(79,70,229,0.32);
+    }
+
+    .banner-right a {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #0f172a;
+      color: #fff;
+      font-size: 12.5px; font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .banner-right a:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(15,23,42,0.28);
+    }
+
+    /* ══════════════════════════════
+       FADE-IN ENTRANCE
+    ══════════════════════════════ */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(28px);
+      animation: fadeUp .7s cubic-bezier(.4,0,.2,1) forwards;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .d1 { animation-delay: .08s; }
+    .d2 { animation-delay: .18s; }
+    .d3 { animation-delay: .28s; }
+    .d4 { animation-delay: .38s; }
+    .d5 { animation-delay: .52s; }
+
+    /* ══════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════ */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; padding: 40px 24px 28px; gap: 36px; }
+      .hero-right { height: 380px; }
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .banner-wrap { padding: 0 24px 28px; }
+      .banner-left span { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-h1 { letter-spacing: -1.2px; }
+      .hero-right { height: 320px; }
+      .card-b { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════ NAVBAR ════════════════════════ -->
+<nav>
+  <a href="landing.html" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16">
+        <polygon points="8,1.5 14.5,5 14.5,11 8,14.5 1.5,11 1.5,5"/>
+        <line x1="8" y1="1.5" x2="8" y2="14.5"/>
+        <line x1="1.5" y1="5" x2="14.5" y2="11"/>
+        <line x1="14.5" y1="5" x2="1.5" y2="11"/>
+      </svg>
+    </div>
+    <span class="logo-name">Qlarity</span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#">Why Qlarity ▾</a></li>
+    <li><a href="#">Products ▾</a></li>
+    <li><a href="#">Solutions ▾</a></li>
+    <li><a href="#">Resources ▾</a></li>
+    <li><a href="#">Partners ▾</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <a href="#" class="btn-signin">Sign In</a>
+    <a href="index.html" class="btn-pill">Try Now ↗</a>
+  </div>
+</nav>
+
+<!-- ════════════════════════ HERO ════════════════════════ -->
+<section class="hero">
+  <div class="hero-inner">
+
+    <!-- LEFT -->
+    <div class="hero-left">
+
+      <div class="badge fade-up d1">
+        <span class="badge-dot"></span>
+        Quantum-Enhanced Analytics
+      </div>
+
+      <h1 class="hero-h1 fade-up d2">
+        Explore data <span class="arrow-span">→</span> deliver insights,&nbsp;and take&nbsp;action with
+        <span class="gradient-text">Qlarity&nbsp;AI.</span>
+      </h1>
+
+      <p class="hero-sub fade-up d3">
+        Accelerate semiconductor quality decisions and eliminate repetitive test tasks with
+        Qlarity's IQAE Quantum Engine and Copilot. Intelligent wafer analytics at scale.
+      </p>
+
+      <div class="hero-ctas fade-up d4">
+        <a href="index.html" class="btn-cta-primary">
+          Open Workspace →
+        </a>
+        <a href="#" class="btn-cta-glass">
+          <span class="play-icon">▶</span>
+          Watch Demo
+        </a>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="hero-right fade-up d5">
+      <canvas id="three-canvas"></canvas>
+
+      <!-- Card A: 10.7M metric -->
+      <div class="gcard card-a">
+        <div class="card-a-top">
+          <span class="metric-val">10.7M</span>
+          <span class="badge-green">▲ +27%</span>
+        </div>
+        <div class="metric-label">Dies Analyzed · Last Month</div>
+        <div class="sparkline">
+          <div class="spark-bar" style="height:35%"></div>
+          <div class="spark-bar" style="height:50%"></div>
+          <div class="spark-bar" style="height:42%"></div>
+          <div class="spark-bar" style="height:65%"></div>
+          <div class="spark-bar" style="height:58%"></div>
+          <div class="spark-bar" style="height:78%"></div>
+          <div class="spark-bar hi" style="height:100%"></div>
+        </div>
+      </div>
+
+      <!-- Card B: Data Analysis Reimagined -->
+      <div class="gcard card-b">
+        <div style="flex:1">
+          <div class="card-b-txt">Data Analysis<br>Reimagined</div>
+          <div class="card-b-sub">IQAE · Quantum-powered</div>
+        </div>
+        <div class="icon-circle">↗</div>
+      </div>
+
+      <!-- Card C: 82% gauge -->
+      <div class="gcard card-c">
+        <div class="gauge-wrap">
+          <svg viewBox="0 0 76 76" width="76" height="76">
+            <defs>
+              <linearGradient id="grd" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4F46E5"/>
+                <stop offset="100%" stop-color="#a855f7"/>
+              </linearGradient>
+            </defs>
+            <circle class="gauge-bg" cx="38" cy="38" r="33"/>
+            <circle class="gauge-fill" cx="38" cy="38" r="33"/>
+          </svg>
+          <div class="gauge-num">82%</div>
+        </div>
+        <div class="gauge-lbl">Wafer Yield Rate</div>
+      </div>
+
+      <!-- Card D: Live indicator -->
+      <div class="gcard card-d">
+        <div class="live-dot"></div>
+        <div>
+          <div class="live-txt">Live Analysis</div>
+          <div class="live-sub">35,000 dies · real-time</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── BOTTOM BANNER ── -->
+  <div class="banner-wrap">
+    <div class="banner">
+      <div class="banner-left">
+        <div class="banner-icon-wrap">✨</div>
+        <span>Harness the full value of your semiconductor data with Qlarity's latest release.</span>
+      </div>
+      <div class="banner-right">
+        <a href="index.html">What's new in Qlarity 2026.2 ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ THREE.JS ════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const canvas = document.getElementById('three-canvas');
+  if (!canvas) return;
+
+  /* ── Renderer ── */
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+
+  /* ── Scene / Camera ── */
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
+  camera.position.set(0, 0, 5.5);
+
+  /* ── Lights ── */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+
+  const lights = [
+    { color: 0x8b5cf6, intensity: 6, pos: [ 3,  3,  3] },
+    { color: 0x06b6d4, intensity: 5, pos: [-3, -2,  2] },
+    { color: 0xc084fc, intensity: 4, pos: [ 0,  4, -2] },
+    { color: 0xf0abfc, intensity: 3, pos: [-2,  2,  4] },
+  ];
+
+  const pts = lights.map(l => {
+    const p = new THREE.PointLight(l.color, l.intensity, 18);
+    p.position.set(...l.pos);
+    scene.add(p);
+    return p;
+  });
+
+  const dirL = new THREE.DirectionalLight(0xffffff, 1.4);
+  dirL.position.set(2, 4, 3);
+  scene.add(dirL);
+
+  /* ── Materials (glass-like) ── */
+  function glassMat(color, opacity = 0.82) {
+    return new THREE.MeshPhysicalMaterial({
+      color,
+      transparent: true,
+      opacity,
+      metalness: 0.05,
+      roughness: 0.07,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.06,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+  }
+
+  const matPurple = glassMat(0xc4b5fd, 0.80);
+  const matCyan   = glassMat(0x67e8f9, 0.78);
+  const matViolet = glassMat(0xa78bfa, 0.65);
+  const matPink   = glassMat(0xf5d0fe, 0.60);
+
+  /* ── Meshes ── */
+  // Main torus knot — centrepiece
+  const tk = new THREE.Mesh(
+    new THREE.TorusKnotGeometry(1.1, 0.40, 220, 32, 2, 3),
+    matPurple
+  );
+  tk.position.set(0.2, 0, 0);
+  scene.add(tk);
+
+  // Supporting sphere
+  const sph = new THREE.Mesh(
+    new THREE.SphereGeometry(0.7, 72, 72),
+    matCyan
+  );
+  sph.position.set(-1.4, -0.9, -0.4);
+  scene.add(sph);
+
+  // Icosahedron
+  const ico = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(0.55, 3),
+    matViolet
+  );
+  ico.position.set(1.5, 1.3, -1.1);
+  scene.add(ico);
+
+  // Small torus ring
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(0.62, 0.21, 36, 120),
+    matCyan
+  );
+  ring.position.set(-1.6, 1.0, 0.2);
+  ring.rotation.x = Math.PI / 4;
+  scene.add(ring);
+
+  // Tiny accent sphere
+  const tiny = new THREE.Mesh(
+    new THREE.SphereGeometry(0.28, 48, 48),
+    matPink
+  );
+  tiny.position.set(1.8, -1.2, 0.6);
+  scene.add(tiny);
+
+  /* ── Mouse parallax ── */
+  let mx = 0, my = 0, tx = 0, ty = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = (e.clientX / window.innerWidth  - 0.5) * 2;
+    my = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  /* ── Resize ── */
+  function onResize() {
+    const r = canvas.parentElement.getBoundingClientRect();
+    renderer.setSize(r.width, r.height, false);
+    camera.aspect = r.width / r.height;
+    camera.updateProjectionMatrix();
+  }
+  onResize();
+  window.addEventListener('resize', onResize);
+
+  /* ── Animate ── */
+  const clock = new THREE.Clock();
+
+  (function tick() {
+    requestAnimationFrame(tick);
+    const t = clock.getElapsedTime();
+
+    /* Smooth mouse lerp */
+    tx += (mx - tx) * 0.028;
+    ty += (my - ty) * 0.028;
+
+    /* Objects */
+    tk.rotation.x = t * 0.18 + ty * 0.28;
+    tk.rotation.y = t * 0.23 + tx * 0.28;
+    tk.rotation.z = t * 0.07;
+
+    sph.rotation.y = t * 0.32;
+    sph.rotation.x = t * 0.16;
+    sph.position.y = -0.9 + Math.sin(t * 0.82) * 0.14;
+
+    ico.rotation.x = t * 0.26;
+    ico.rotation.y = t * 0.21;
+    ico.position.y = 1.3 + Math.cos(t * 0.74) * 0.11;
+
+    ring.rotation.z = t * 0.19;
+    ring.rotation.x = Math.PI / 4 + Math.sin(t * 0.52) * 0.12;
+    ring.position.x = -1.6 + Math.sin(t * 0.38) * 0.1;
+
+    tiny.rotation.x = t * 0.4;
+    tiny.position.y = -1.2 + Math.sin(t * 1.1 + 1) * 0.09;
+
+    /* Animate lights for iridescent shimmer */
+    pts[0].position.set(3  + Math.sin(t * 0.48) * 1.6, 3  + Math.cos(t * 0.41) * 1.4, 3);
+    pts[1].position.set(-3 + Math.cos(t * 0.55) * 1.5, -2 + Math.sin(t * 0.37) * 1.2, 2 + Math.sin(t * 0.72) * 1.0);
+    pts[2].position.set(Math.sin(t * 0.34) * 2.0, 4, -2 + Math.cos(t * 0.6) * 1.2);
+
+    /* Camera drift */
+    camera.position.x = tx * 0.45;
+    camera.position.y = -ty * 0.28;
+    camera.lookAt(0, 0, 0);
+
+    renderer.render(scene, camera);
+  })();
+})();
+</script>
+
+</body>
+</html>

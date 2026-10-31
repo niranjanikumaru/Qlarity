@@ -2,6 +2,7 @@ const $ = s => document.querySelector(s), form = $('#form');
 const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const pct = x => (100 * x).toFixed(2) + '%', num = x => Number(x).toLocaleString(undefined, { maximumFractionDigits: 3 });
 
+let resultsStale = false;
 let defaults, active = null, data = null, selected = 0, busy = false, angle = -0.6, inspect = 0;
 let chartViewMode = 'scenarios';
 let chartHitboxes = [];
@@ -49,6 +50,7 @@ function read() {
 
 function setBusy(v) {
   busy = v;
+  if (v) $('#session-source').textContent = 'Computation in progress';
   $('#run').disabled = v;
   $('#recorded').disabled = v;
   $('#cancel').hidden = !v;
@@ -58,7 +60,7 @@ function setBusy(v) {
 }
 
 function dirty() {
-  if (data && !busy) $('#status').textContent = 'Settings changed. Run comparison to evaluate updated parameters.';
+  if (data && !busy) { resultsStale = true; $('#status').textContent = 'Settings changed. Run comparison to evaluate updated parameters.'; $('#studio-result-state').textContent = 'Settings changed — these results belong to the previous run. Run comparison to update.'; }
 }
 
 form.addEventListener('input', () => {
@@ -123,7 +125,7 @@ async function poll() {
       failures = 0;
       $('#status').textContent = j.progress;
       if (j.status === 'completed') {
-        data = j.result;
+        data = j.result; resultsStale = false;
         selected = 0;
         setBusy(false);
         localStorage.removeItem('qlarity-active');
@@ -163,7 +165,7 @@ $('#cancel').onclick = async () => {
 
 $('#recorded').onclick = async () => {
   try {
-    data = await api('/evidence/example.json');
+    data = await api('/evidence/example.json'); resultsStale = false;
     active = null;
     selected = 0;
     data.execution = 'recorded';
@@ -186,6 +188,7 @@ function metric(k, v) {
 
 function render() {
   if (!data) return;
+  $('#session-source').textContent = data.execution === 'recorded' ? 'Recorded example' : 'Live run complete';
   $('#provenance').textContent = (data.execution === 'recorded' ? 'RECORDED EXECUTION' : 'FRESH QUANTUM RUN');
   $('#comparison').classList.remove('empty');
   $('#comparison').innerHTML = data.scenarios.map((s, i) => {
@@ -203,7 +206,7 @@ function render() {
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>Estimator</th><th>Estimated Yield</th><th>Confidence Interval</th><th>Decision</th></tr>
+              <tr><th>Estimator</th><th>Estimated Yield</th><th>Failure probability CI</th><th>Decision</th></tr>
             </thead>
             <tbody>
               ${s.results.map(r => `<tr><td>${esc(r.method)}</td><td>${pct(r.yield_estimate)}</td><td>${pct(r.ci[0])}–${pct(r.ci[1])}</td><td>${badge(r.decision)}</td></tr>`).join('')}
@@ -217,10 +220,12 @@ function render() {
   document.querySelectorAll('[data-select]').forEach(b => b.onclick = () => {
     selected = +b.dataset.select;
     render();
-    $('#evidence').scrollIntoView({ behavior: 'smooth' });
+    location.hash = 'evidence';
+    showView(true);
   });
 
   renderEvidence();
+  renderStudio();
   draw();
   drawYieldChart();
   for (const id of ['json', 'csv', 'zip']) $('#' + id).disabled = false;
@@ -298,7 +303,7 @@ async function history() {
         const j = await api('/api/runs/' + b.dataset.history);
         if (j.result) {
           active = j.id;
-          data = j.result;
+          data = j.result; resultsStale = false;
           selected = 0;
           fill(data.request);
           render();
@@ -321,11 +326,12 @@ function draw() {
   canvas.width = rect.width * dpr;
   canvas.height = rect.height * dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (!rect.width || !rect.height) return;
   const w = rect.width, h = rect.height;
   ctx.clearRect(0, 0, w, h);
   const states = data?.scenarios[selected]?.population;
   if (!states) {
-    ctx.fillStyle = '#a9bc9f';
+    ctx.fillStyle = '#666871';
     ctx.font = '14px system-ui';
     ctx.fillText('Your process space will appear here.', 25, h / 2);
     return;
@@ -344,12 +350,12 @@ function draw() {
   }).sort((a, b) => a.depth - b.depth);
 
   for (const p of points) {
-    ctx.fillStyle = p.s.float_failure ? '#f58a60' : '#a8c58c';
+    ctx.fillStyle = p.s.float_failure ? '#b7839a' : '#6f9f91';
     ctx.globalAlpha = p.i === inspect ? 1 : 0.75;
     const r = Math.max(2, Math.min(8, scale * 0.17));
     ctx.fillRect(p.x - r, p.y - r, r * 2, r * 2);
     if (p.i === inspect) {
-      ctx.strokeStyle = '#fff';
+      ctx.strokeStyle = '#24242b';
       ctx.strokeRect(p.x - r - 3, p.y - r - 3, r * 2 + 6, r * 2 + 6);
     }
   }
@@ -418,7 +424,7 @@ function drawYieldChart() {
 
   const scenarios = data?.scenarios || [];
   if (!scenarios.length) {
-    ctx.fillStyle = '#a9bc9f';
+    ctx.fillStyle = '#666871';
     ctx.font = '13px system-ui';
     ctx.fillText('Execute an experiment or load recorded data to inspect yield.', 30, h / 2);
     return;
@@ -462,9 +468,9 @@ function drawYieldChart() {
   const valToY = v => marginTop + ph - ((Math.max(yMin, Math.min(yMax, v)) - yMin) / (yMax - yMin)) * ph;
 
   // Gridlines & Axis labels
-  ctx.strokeStyle = '#223627';
+  ctx.strokeStyle = '#dadce4';
   ctx.lineWidth = 1;
-  ctx.fillStyle = '#7a9681';
+  ctx.fillStyle = '#696b75';
   ctx.font = '10px monospace';
   ctx.textAlign = 'right';
   ctx.textBaseline = 'middle';
@@ -482,7 +488,7 @@ function drawYieldChart() {
   // Target Spec Threshold Line
   const targetY = valToY(targetYield);
   ctx.save();
-  ctx.strokeStyle = '#f59e0b';
+  ctx.strokeStyle = '#977136';
   ctx.lineWidth = 2;
   ctx.setLineDash([5, 4]);
   ctx.beginPath();
@@ -492,7 +498,7 @@ function drawYieldChart() {
   ctx.restore();
 
   // Target Spec Label Tag
-  ctx.fillStyle = '#f59e0b';
+  ctx.fillStyle = '#977136';
   ctx.font = 'bold 10px system-ui';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'bottom';
@@ -526,12 +532,12 @@ function drawYieldChart() {
       const hMc = basePy - topMc;
 
       const gradMc = ctx.createLinearGradient(0, topMc, 0, basePy);
-      gradMc.addColorStop(0, '#60a5fa');
-      gradMc.addColorStop(1, '#1d4ed8');
+      gradMc.addColorStop(0, '#b9b0e4');
+      gradMc.addColorStop(1, '#8675b7');
       ctx.fillStyle = gradMc;
       ctx.fillRect(xMc, topMc, barW, hMc);
 
-      drawErrorBar(ctx, xMc + barW / 2, valToY(ciMc[0]), valToY(ciMc[1]), '#93c5fd');
+      drawErrorBar(ctx, xMc + barW / 2, valToY(ciMc[0]), valToY(ciMc[1]), '#685391');
 
       chartHitboxes.push({
         x: xMc, y: topMc, w: barW, h: hMc,
@@ -549,12 +555,12 @@ function drawYieldChart() {
       const hQ = basePy - topQ;
 
       const gradQ = ctx.createLinearGradient(0, topQ, 0, basePy);
-      gradQ.addColorStop(0, '#34d399');
-      gradQ.addColorStop(1, '#059669');
+      gradQ.addColorStop(0, '#9dc8bb');
+      gradQ.addColorStop(1, '#578f7c');
       ctx.fillStyle = gradQ;
       ctx.fillRect(xQ, topQ, barW, hQ);
 
-      drawErrorBar(ctx, xQ + barW / 2, valToY(ciQ[0]), valToY(ciQ[1]), '#a7f3d0');
+      drawErrorBar(ctx, xQ + barW / 2, valToY(ciQ[0]), valToY(ciQ[1]), '#396f60');
 
       chartHitboxes.push({
         x: xQ, y: topQ, w: barW, h: hQ,
@@ -567,7 +573,7 @@ function drawYieldChart() {
       });
 
       // Bar Value Text
-      ctx.fillStyle = '#e2ebd8';
+      ctx.fillStyle = '#292a30';
       ctx.font = '9px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
@@ -575,7 +581,7 @@ function drawYieldChart() {
       ctx.fillText((yQ * 100).toFixed(1) + '%', xQ + barW / 2, topQ - 2);
 
       // Scenario Label below axis
-      ctx.fillStyle = '#c7d5c4';
+      ctx.fillStyle = '#5e616b';
       ctx.font = '11px system-ui';
       ctx.textBaseline = 'top';
       const shortName = s.scenario.label.replace('Tighter ', 'Tight ');
@@ -584,12 +590,12 @@ function drawYieldChart() {
       // Decision status badge
       const meets = yQ >= targetYield;
       ctx.fillStyle = meets ? 'rgba(34, 197, 94, 0.22)' : 'rgba(239, 68, 68, 0.22)';
-      ctx.strokeStyle = meets ? '#22c55e' : '#ef4444';
+      ctx.strokeStyle = meets ? '#528270' : '#b86657';
       ctx.lineWidth = 1;
       const badgeW = 44, badgeH = 14;
       ctx.strokeRect(cx - badgeW / 2, basePy + 24, badgeW, badgeH);
       ctx.fillRect(cx - badgeW / 2, basePy + 24, badgeW, badgeH);
-      ctx.fillStyle = meets ? '#4ade80' : '#f87171';
+      ctx.fillStyle = meets ? '#396e5e' : '#a54c40';
       ctx.font = 'bold 9px system-ui';
       ctx.textBaseline = 'middle';
       ctx.fillText(meets ? 'MEETS' : 'MISSES', cx, basePy + 31);
@@ -616,16 +622,16 @@ function drawYieldChart() {
       const isQuantum = r.method === 'IQAE';
       const grad = ctx.createLinearGradient(0, topY, 0, basePy);
       if (isQuantum) {
-        grad.addColorStop(0, '#34d399');
-        grad.addColorStop(1, '#059669');
+        grad.addColorStop(0, '#9dc8bb');
+        grad.addColorStop(1, '#578f7c');
       } else {
-        grad.addColorStop(0, '#60a5fa');
-        grad.addColorStop(1, '#1d4ed8');
+        grad.addColorStop(0, '#b9b0e4');
+        grad.addColorStop(1, '#8675b7');
       }
       ctx.fillStyle = grad;
       ctx.fillRect(bx, topY, barW, bh);
 
-      drawErrorBar(ctx, cx, valToY(ciVal[0]), valToY(ciVal[1]), isQuantum ? '#a7f3d0' : '#93c5fd');
+      drawErrorBar(ctx, cx, valToY(ciVal[0]), valToY(ciVal[1]), isQuantum ? '#396f60' : '#685391');
 
       chartHitboxes.push({
         x: bx, y: topY, w: barW, h: bh,
@@ -637,13 +643,13 @@ function drawYieldChart() {
         meets: yVal >= targetYield
       });
 
-      ctx.fillStyle = '#e2ebd8';
+      ctx.fillStyle = '#292a30';
       ctx.font = '10px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
       ctx.fillText((yVal * 100).toFixed(1) + '%', cx, topY - 2);
 
-      ctx.fillStyle = '#c7d5c4';
+      ctx.fillStyle = '#5e616b';
       ctx.font = '10px system-ui';
       ctx.textBaseline = 'top';
       const shortM = r.method.replace('Exact encoded', 'Exact Ref').replace('Conditional CDF', 'Cond CDF').replace('Importance sampling', 'Imp. Samp');
@@ -680,8 +686,8 @@ function initYieldChartEvents() {
         Estimator: <em>${esc(hit.method)}</em><br>
         Yield Estimate: <strong>${pct(hit.yieldVal)}</strong><br>
         95% Confidence Interval: [${pct(hit.ci[0])}, ${pct(hit.ci[1])}]<br>
-        Margin to Target: <strong style="color:${delta >= 0 ? '#4ade80' : '#f87171'}">${delta >= 0 ? '+' : ''}${pct(delta)}</strong><br>
-        Decision: <span style="color:${hit.meets ? '#4ade80' : '#f87171'};font-weight:bold">${hit.meets ? 'MEETS SPECIFICATION' : 'BELOW SPECIFICATION'}</span>
+        Margin to Target: <strong style="color:${delta >= 0 ? '#396e5e' : '#a54c40'}">${delta >= 0 ? '+' : ''}${pct(delta)}</strong><br>
+        Decision: <span style="color:${hit.meets ? '#396e5e' : '#a54c40'};font-weight:bold">${hit.meets ? 'MEETS SPECIFICATION' : 'BELOW SPECIFICATION'}</span>
       `;
     } else {
       tooltip.hidden = true;
@@ -790,18 +796,19 @@ function drawWafer() {
   waferCanvas.width = rect.width * dpr;
   waferCanvas.height = rect.height * dpr;
   wCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (!rect.width || !rect.height) return;
   const w = rect.width, h = rect.height, cx = w / 2, cy = h / 2, R = Math.min(cx, cy) - 14;
   wCtx.clearRect(0, 0, w, h);
 
   // Outer silicon wafer border (300mm standard)
-  wCtx.strokeStyle = '#445b4c';
+  wCtx.strokeStyle = '#a6b9b1';
   wCtx.lineWidth = 2;
   wCtx.beginPath();
   wCtx.arc(cx, cy, R, 0, Math.PI * 2);
   wCtx.stroke();
 
   // Wafer notch at bottom (6 o'clock orientation notch)
-  wCtx.fillStyle = '#27382d';
+  wCtx.fillStyle = '#c8dcd3';
   wCtx.beginPath();
   wCtx.arc(cx, cy + R, 6, Math.PI, 0);
   wCtx.fill();
@@ -810,7 +817,7 @@ function drawWafer() {
   for (let i = 0; i < pts.length; i++) {
     const [id, x_mm, y_mm, Lg, Tox, Vth, Ileak, pass] = pts[i];
     const px = cx + x_mm * scale, py = cy + y_mm * scale;
-    if (waferMode === 'yield') wCtx.fillStyle = pass ? '#5cb85c' : '#d9534f';
+    if (waferMode === 'yield') wCtx.fillStyle = pass ? '#86b4a4' : '#b7839a';
     else if (waferMode === 'vth') wCtx.fillStyle = colorForValue(Vth, 0.28, 0.38, 'plasma');
     else if (waferMode === 'lg') wCtx.fillStyle = colorForValue(Lg, 24.0, 30.0, 'cool');
     else wCtx.fillStyle = colorForValue(Math.log10(Ileak), 0.2, 2.4, 'plasma');
@@ -821,7 +828,7 @@ function drawWafer() {
   if (waferHoverIndex >= 0 && waferHoverIndex < pts.length) {
     const [id, x_mm, y_mm, Lg, Tox, Vth, Ileak, pass] = pts[waferHoverIndex];
     const px = cx + x_mm * scale, py = cy + y_mm * scale;
-    wCtx.strokeStyle = '#ffffff';
+    wCtx.strokeStyle = '#24242b';
     wCtx.lineWidth = 2.5;
     wCtx.strokeRect(px - 4.5, py - 4.5, 9, 9);
   }
@@ -841,9 +848,20 @@ function drawWafer() {
   }
 }
 
+let waferRequest = 0;
 async function loadWafer(wType = 'nominal') {
+  const request = ++waferRequest;
+  waferData = null;
+  wCtx.clearRect(0, 0, waferCanvas.width, waferCanvas.height);
+  $('#wafer-metrics').replaceChildren();
+  $('#wafer-load-status').textContent = 'Loading wafer data…';
+  $('#wafer-retry').hidden = true;
+  $('#wafer-yield-badge').textContent = 'Loading';
+  $('#hero-yield-num').textContent = '—';
   try {
-    waferData = await api('/api/wafer/summary?wafer_type=' + encodeURIComponent(wType));
+    const response = await api('/api/wafer/summary?wafer_type=' + encodeURIComponent(wType));
+    if (request !== waferRequest) return;
+    waferData = response;
     if (!waferData) return;
     const badge = $('#wafer-yield-badge');
     badge.textContent = waferData.overall_yield_pct + '% WAFER YIELD';
@@ -853,18 +871,18 @@ async function loadWafer(wType = 'nominal') {
     let customCards = '';
     if (wType === 'localized_defect' && q) {
       customCards = `
-        <div class="wafer-metric-card" style="border-left:3px solid #ff7a7a"><small>Quadrant Defect (X&gt;50, Y&lt;50)</small><strong style="color:#ff7a7a">${q.quadrant_yield_pct}%</strong><small>${q.quadrant_count.toLocaleString()} dies [Failure Zone]</small></div>
-        <div class="wafer-metric-card" style="border-left:3px solid #7bd87b"><small>Outside Defect Zone</small><strong style="color:#7bd87b">${q.outside_yield_pct}%</strong><small>${q.outside_count.toLocaleString()} dies [Pristine Baseline]</small></div>
+        <div class="wafer-metric-card" style="border-left:3px solid #a75d60"><small>Quadrant Defect (X&gt;50, Y&lt;50)</small><strong style="color:#a75d60">${q.quadrant_yield_pct}%</strong><small>${q.quadrant_count.toLocaleString()} dies [Failure Zone]</small></div>
+        <div class="wafer-metric-card" style="border-left:3px solid #3c7664"><small>Outside Defect Zone</small><strong style="color:#3c7664">${q.outside_yield_pct}%</strong><small>${q.outside_count.toLocaleString()} dies [Pristine Baseline]</small></div>
       `;
     } else if (wType === 'equipment_drift') {
       customCards = `
-        <div class="wafer-metric-card" style="border-left:3px solid #ff7a7a"><small>Etch Microloading Drift</small><strong style="color:#ff7a7a">${st.Lg_mean} nm</strong><small>Target: 28.0 nm (-1.4 nm)</small></div>
-        <div class="wafer-metric-card" style="border-left:3px solid #ff7a7a"><small>Threshold Implantation Drift</small><strong style="color:#ff7a7a">${st.Vth_mean} V</strong><small>Target: 0.350 V (-25 mV)</small></div>
+        <div class="wafer-metric-card" style="border-left:3px solid #a75d60"><small>Etch Microloading Drift</small><strong style="color:#a75d60">${st.Lg_mean} nm</strong><small>Target: 28.0 nm (-1.4 nm)</small></div>
+        <div class="wafer-metric-card" style="border-left:3px solid #a75d60"><small>Threshold Implantation Drift</small><strong style="color:#a75d60">${st.Vth_mean} V</strong><small>Target: 0.350 V (-25 mV)</small></div>
       `;
     } else if (wType === 'high_variance') {
       customCards = `
-        <div class="wafer-metric-card" style="border-left:3px solid #f39c12"><small>Gate Length Variance</small><strong style="color:#f39c12">σ = ${st.Lg_std} nm</strong><small>2x Nominal Process Sigma</small></div>
-        <div class="wafer-metric-card" style="border-left:3px solid #f39c12"><small>Threshold Voltage Variance</small><strong style="color:#f39c12">σ = ${st.Vth_std} V</strong><small>2x Nominal Process Sigma</small></div>
+        <div class="wafer-metric-card" style="border-left:3px solid #916e38"><small>Gate Length Variance</small><strong style="color:#916e38">σ = ${st.Lg_std} nm</strong><small>2x Nominal Process Sigma</small></div>
+        <div class="wafer-metric-card" style="border-left:3px solid #916e38"><small>Threshold Voltage Variance</small><strong style="color:#916e38">σ = ${st.Vth_std} V</strong><small>2x Nominal Process Sigma</small></div>
       `;
     } else {
       customCards = `
@@ -881,14 +899,24 @@ async function loadWafer(wType = 'nominal') {
       ${customCards}
       <div class="wafer-metric-card"><small>Median Standby Leakage</small><strong>${st.Ileak_median_nA} nA</strong><small>Spec Limit: 30.0 nA</small></div>
     `;
+    $('#hero-yield-num').textContent = waferData.overall_yield_pct + '%';
+    $('#hero-yield-label').textContent = wType.replaceAll('_', ' ') + ' wafer yield';
+    $('#wafer-load-status').textContent = `${waferData.total_dies.toLocaleString()} synthetic dies loaded · ${waferData.sampled_dies.length.toLocaleString()} points displayed`;
     drawWafer();
   } catch (err) {
+    if (request !== waferRequest) return;
+    waferData = null;
+    $('#wafer-yield-badge').textContent = 'Data unavailable';
+    $('#hero-yield-label').textContent = 'Wafer data unavailable';
+    $('#wafer-load-status').textContent = 'Could not load wafer data. ' + err.message;
+    $('#wafer-retry').hidden = false;
     console.warn('Wafer summary error', err);
   }
 }
 
 async function initWafer() {
   try {
+    $('#wafer-retry').onclick = () => loadWafer($('#wafer-condition-select').value);
     const condSelect = $('#wafer-condition-select');
     if (condSelect) {
       condSelect.onchange = e => loadWafer(e.target.value);
@@ -902,6 +930,7 @@ async function initWafer() {
           document.querySelectorAll('.button-group button').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           waferMode = mode;
+          $('#wafer-legend').hidden = mode !== 'yield';
           drawWafer();
         };
       }
@@ -925,7 +954,7 @@ async function initWafer() {
         waferTooltip.hidden = false;
         waferTooltip.style.left = mx + 'px';
         waferTooltip.style.top = my + 'px';
-        waferTooltip.innerHTML = `<strong>Die #${id}</strong> (${x}, ${y} mm)<br>L<sub>g</sub>: ${Lg} nm | T<sub>ox</sub>: ${Tox} nm<br>V<sub>th</sub>: ${Vth} V | I<sub>leak</sub>: ${Ileak} nA<br><span style="color:${pass ? '#7bd87b' : '#ff7a7a'};font-weight:bold">${pass ? 'PASSED (≤30 nA)' : 'FAILED (>30 nA)'}</span>`;
+        waferTooltip.innerHTML = `<strong>Die #${id}</strong> (${x}, ${y} mm)<br>L<sub>g</sub>: ${Lg} nm | T<sub>ox</sub>: ${Tox} nm<br>V<sub>th</sub>: ${Vth} V | I<sub>leak</sub>: ${Ileak} nA<br><span style="color:${pass ? '#3c7664' : '#a75d60'};font-weight:bold">${pass ? 'PASSED (≤30 nA)' : 'FAILED (>30 nA)'}</span>`;
         $('#wafer-die-detail').textContent = `Die #${id} · Coordinates: (${x}, ${y}) mm · Gate Length: ${Lg} nm · Oxide: ${Tox} nm · Threshold Vth: ${Vth} V · Standby Leakage: ${Ileak} nA · Status: ${pass ? 'PASS' : 'FAIL'}`;
       } else {
         waferHoverIndex = -1;
@@ -972,7 +1001,7 @@ async function init() {
     } else {
       // Auto-load example for instant executive presentation
       try {
-        data = await api('/evidence/example.json');
+        data = await api('/evidence/example.json'); resultsStale = false;
         data.execution = 'recorded';
         selected = 0;
         render();
@@ -986,4 +1015,67 @@ async function init() {
   }
 }
 
+// View navigation only changes visibility; the calculation state stays mounted.
+const viewTargets = {wafer:'overview', workspace:'studio', 'compare-and-decide':'studio', benchmarks:'analytics', evidence:'evidence'};
+function showView(scroll = false) {
+  const target = location.hash.slice(1) || 'wafer';
+  const view = viewTargets[target] || 'overview';
+  document.querySelectorAll('[data-view]').forEach(el => { el.hidden = el.dataset.view !== view; });
+  document.querySelectorAll('[data-view-link]').forEach(el => {
+    const activeView = el.dataset.viewLink === view;
+    el.classList.toggle('active', activeView);
+    if (activeView) el.setAttribute('aria-current', 'page'); else el.removeAttribute('aria-current');
+  });
+  requestAnimationFrame(() => {
+    draw(); drawYieldChart(); drawWafer();
+    if (scroll) document.getElementById(target)?.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  });
+}
+window.addEventListener('hashchange', () => showView(true));
+showView();
+// Make the existing verification control usable with the keyboard.
+$('#quantum-engine-status').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); }
+});
+const oracleModal = $('#oracle-modal');
+const modalObserver = new MutationObserver(() => {
+  if (!oracleModal.hidden) $('#oracle-modal-close').focus();
+  else $('#quantum-engine-status').focus({preventScroll:true});
+});
+modalObserver.observe(oracleModal, {attributes:true,attributeFilter:['hidden']});
+window.addEventListener('keydown', e => {
+  if (oracleModal.hidden) return;
+  if (e.key === 'Escape') oracleModal.hidden = true;
+  if (e.key === 'Tab') { e.preventDefault(); $('#oracle-modal-close').focus(); }
+});
 init();
+
+
+function renderStudio() {
+  const scenario = data?.scenarios[selected];
+  if (!scenario) return;
+  const picker = $('#studio-scenario');
+  picker.disabled = false;
+  picker.innerHTML = data.scenarios.map((s, i) => `<option value="${i}" ${i === selected ? 'selected' : ''}>${esc(s.scenario.label)}</option>`).join('');
+  const r = scenario.results.find(r => r.method === 'IQAE') || scenario.results.find(r => r.method === 'Monte Carlo');
+  const target = 1 - scenario.scenario.max_failure_probability;
+  const baseline = data.scenarios[0].results.find(x => x.method === r.method);
+  const delta = 100 * (r.yield_estimate - baseline.yield_estimate);
+  const fmt = v => Number(v).toLocaleString(undefined, {maximumFractionDigits: 4});
+  const card = (label, value, detail) => `<article class="studio-stat"><small>${label}</small><strong>${value}</strong><p>${detail}</p></article>`;
+  $('#studio-result-state').textContent = (resultsStale ? 'Settings changed — showing previous run. ' : '') + `${data.execution === 'recorded' ? 'Recorded example' : 'Completed run'} · ${scenario.scenario.label} · ${r.method}`;
+  $('#studio-metrics').innerHTML =
+    card('Estimated modeled yield', pct(r.yield_estimate), `${esc(r.method)} · ${esc(r.decision)}`) +
+    card('Failure probability', pct(r.p_fail), 'Encoded leakage condition') +
+    card('Change from baseline', `${delta >= 0 ? '+' : ''}${delta.toFixed(2)} pp`, 'Same estimator · percentage points') +
+    card('Yield target', pct(target), `${(100 * (r.yield_estimate - target)).toFixed(2)} pp estimated margin`) +
+    card('Decision yield interval', `${pct(1-r.decision_ci[1])}–${pct(1-r.decision_ci[0])}`, 'Includes finite-grid encoding disagreement') +
+    card('Leakage limit', `${fmt(scenario.scenario.I_limit_A * 1e9)} nA`, `${fmt(scenario.scenario.temperature_K)} K · ${scenario.population.length} weighted configurations`);
+  $('#studio-scenario-bars').innerHTML = '<h3>Four-scenario yield comparison</h3>' + data.scenarios.map((s,i) => {
+    const row = s.results.find(x => x.method === r.method);
+    return `<button type="button" data-studio-select="${i}" aria-pressed="${i === selected}"><span>${esc(s.scenario.label)}</span><strong>${pct(row.yield_estimate)}</strong><span class="studio-bar-track"><span style="width:${Math.max(0,Math.min(100,row.yield_estimate*100))}%"></span></span><small>${esc(row.decision)}</small></button>`;
+  }).join('');
+  document.querySelectorAll('[data-studio-select]').forEach(b => b.onclick = () => { selected = Number(b.dataset.studioSelect); render(); });
+}
+$('#studio-scenario').onchange = e => { selected = Number(e.target.value); render(); };
+$('.population-disclosure').addEventListener('toggle', draw);
