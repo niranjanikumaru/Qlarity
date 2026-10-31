@@ -19,3 +19,12 @@ body>header{max-width:1600px;margin:auto;min-height:94px;display:flex;align-item
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
 
 .workspace-nav{position:sticky;top:0;z-index:50;background:#f1f2ecf5;backdrop-filter:blur(15px);padding-top:12px}html{scroll-padding-top:85px}@media(max-width:560px){html{scroll-padding-top:135px}}
+
+/* Data-led Studio overview, matching the wafer metric cards. */
+.studio-summary{margin-bottom:18px}.studio-summary>p,.studio-scope,#wafer-load-status{font-size:12px;color:var(--muted)}
+#wafer-load-status{margin:0 0 16px;overflow-wrap:anywhere}#wafer-retry{margin-bottom:18px}
+.studio-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.studio-stat{background:var(--lavender);border-radius:19px;padding:20px;min-width:0}.studio-stat:first-child{background:var(--mint);grid-column:1/-1}.studio-stat small{color:#58596a}.studio-stat strong{display:block;font-size:26px;letter-spacing:-1px;font-weight:500;margin:6px 0;overflow-wrap:anywhere}.studio-stat:first-child strong{font-size:48px}.studio-stat p{font-size:11px;color:#555968;margin:0}.studio-summary a{font-size:12px}
+.studio-scenario-bars h3{margin-bottom:10px}.studio-scenario-bars button{display:grid;grid-template-columns:1fr auto;width:100%;text-align:left;background:#f5f6f3;border:1px solid transparent;border-radius:14px;padding:12px 15px;margin:7px 0;gap:5px;font-size:11px}.studio-scenario-bars button[aria-pressed=true]{border-color:#8b80b7;background:#f0edf9}.studio-scenario-bars strong{font-size:13px}.studio-scenario-bars small{grid-column:1/-1;color:#60606a}.studio-bar-track{grid-column:1/-1;height:6px;border-radius:8px;background:#e0dfeb;overflow:hidden}.studio-bar-track>span{display:block;height:100%;background:#83ad9f;border-radius:8px}
+.population-disclosure{background:white;border-radius:22px;padding:18px 24px;margin-bottom:24px}.population-disclosure .population{height:auto;min-height:0;margin:18px 0 0;padding:15px}.population-disclosure #population{height:260px;min-height:0}.studio-scope{margin-top:18px}
+@media(max-width:560px){.studio-stat{padding:15px}.studio-stat strong{font-size:22px}.studio-stat:first-child strong{font-size:40px}.studio-metrics{gap:9px}}

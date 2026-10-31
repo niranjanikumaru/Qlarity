@@ -71,6 +71,8 @@
     </div>
 
     <!-- Wafer Metric Cards -->
+    <div id="wafer-load-status" role="status" aria-live="polite">Loading wafer data…</div>
+    <button id="wafer-retry" type="button" hidden>Retry wafer data</button>
     <div class="wafer-layout"><div class="wafer-metrics-grid" id="wafer-metrics"></div>
 
     <div class="wafer-container">
@@ -152,10 +154,20 @@
     </aside>
 
     <div class="main-column">
+      <section class="panel studio-summary" aria-labelledby="studio-summary-title">
+        <div class="section-head"><span class="number">03</span><h2 id="studio-summary-title">Scenario overview</h2></div>
+        <p id="studio-result-state" role="status" aria-live="polite">Run a comparison or open the recorded example to see results.</p>
+        <label for="studio-scenario">Inspect scenario<select id="studio-scenario" disabled><option>No results yet</option></select></label>
+        <div id="studio-metrics" class="studio-metrics"><p>Calculated statistics will appear here. No estimates are shown before a result is available.</p></div>
+        <div id="studio-scenario-bars" class="studio-scenario-bars"></div>
+        <p class="studio-scope">Illustrative single-transistor model · finite-grid results, not whole-chip or production yield.</p>
+        <a href="#evidence">Inspect selected scenario evidence ↗</a>
+      </section>
+      <details class="population-disclosure"><summary>Explore individual parameter configurations</summary>
       <section class="population">
         <div class="section-head">
           <span class="number">03</span>
-          <h2>Process Population Orbit</h2>
+          <h2>Parameter configurations</h2>
           <span id="population-label">Run an experiment to inspect states</span>
         </div>
         <canvas id="population" tabindex="0" aria-label="Weighted parameter configurations. After a run, use left and right arrow keys to inspect states."></canvas>
@@ -164,8 +176,9 @@
           <span><i class="fail"></i>At or above limit</span>
           <span>Drag to orbit · arrows to inspect</span>
         </div>
-        <p id="state-detail">Synthetic parameter configurations, 28nm HKMG transistor model.</p>
+        <p id="state-detail">Weighted configurations from the illustrative transistor model.</p>
       </section>
+      </details>
     </div>
   </section>
 

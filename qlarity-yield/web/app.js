@@ -2,6 +2,7 @@ const $ = s => document.querySelector(s), form = $('#form');
 const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const pct = x => (100 * x).toFixed(2) + '%', num = x => Number(x).toLocaleString(undefined, { maximumFractionDigits: 3 });
 
+let resultsStale = false;
 let defaults, active = null, data = null, selected = 0, busy = false, angle = -0.6, inspect = 0;
 let chartViewMode = 'scenarios';
 let chartHitboxes = [];
@@ -59,7 +60,7 @@ function setBusy(v) {
 }
 
 function dirty() {
-  if (data && !busy) $('#status').textContent = 'Settings changed. Run comparison to evaluate updated parameters.';
+  if (data && !busy) { resultsStale = true; $('#status').textContent = 'Settings changed. Run comparison to evaluate updated parameters.'; $('#studio-result-state').textContent = 'Settings changed — these results belong to the previous run. Run comparison to update.'; }
 }
 
 form.addEventListener('input', () => {
@@ -124,7 +125,7 @@ async function poll() {
       failures = 0;
       $('#status').textContent = j.progress;
       if (j.status === 'completed') {
-        data = j.result;
+        data = j.result; resultsStale = false;
         selected = 0;
         setBusy(false);
         localStorage.removeItem('qlarity-active');
@@ -164,7 +165,7 @@ $('#cancel').onclick = async () => {
 
 $('#recorded').onclick = async () => {
   try {
-    data = await api('/evidence/example.json');
+    data = await api('/evidence/example.json'); resultsStale = false;
     active = null;
     selected = 0;
     data.execution = 'recorded';
@@ -224,6 +225,7 @@ function render() {
   });
 
   renderEvidence();
+  renderStudio();
   draw();
   drawYieldChart();
   for (const id of ['json', 'csv', 'zip']) $('#' + id).disabled = false;
@@ -301,7 +303,7 @@ async function history() {
         const j = await api('/api/runs/' + b.dataset.history);
         if (j.result) {
           active = j.id;
-          data = j.result;
+          data = j.result; resultsStale = false;
           selected = 0;
           fill(data.request);
           render();
@@ -846,9 +848,20 @@ function drawWafer() {
   }
 }
 
+let waferRequest = 0;
 async function loadWafer(wType = 'nominal') {
+  const request = ++waferRequest;
+  waferData = null;
+  wCtx.clearRect(0, 0, waferCanvas.width, waferCanvas.height);
+  $('#wafer-metrics').replaceChildren();
+  $('#wafer-load-status').textContent = 'Loading wafer data…';
+  $('#wafer-retry').hidden = true;
+  $('#wafer-yield-badge').textContent = 'Loading';
+  $('#hero-yield-num').textContent = '—';
   try {
-    waferData = await api('/api/wafer/summary?wafer_type=' + encodeURIComponent(wType));
+    const response = await api('/api/wafer/summary?wafer_type=' + encodeURIComponent(wType));
+    if (request !== waferRequest) return;
+    waferData = response;
     if (!waferData) return;
     const badge = $('#wafer-yield-badge');
     badge.textContent = waferData.overall_yield_pct + '% WAFER YIELD';
@@ -888,14 +901,22 @@ async function loadWafer(wType = 'nominal') {
     `;
     $('#hero-yield-num').textContent = waferData.overall_yield_pct + '%';
     $('#hero-yield-label').textContent = wType.replaceAll('_', ' ') + ' wafer yield';
+    $('#wafer-load-status').textContent = `${waferData.total_dies.toLocaleString()} synthetic dies loaded · ${waferData.sampled_dies.length.toLocaleString()} points displayed`;
     drawWafer();
   } catch (err) {
+    if (request !== waferRequest) return;
+    waferData = null;
+    $('#wafer-yield-badge').textContent = 'Data unavailable';
+    $('#hero-yield-label').textContent = 'Wafer data unavailable';
+    $('#wafer-load-status').textContent = 'Could not load wafer data. ' + err.message;
+    $('#wafer-retry').hidden = false;
     console.warn('Wafer summary error', err);
   }
 }
 
 async function initWafer() {
   try {
+    $('#wafer-retry').onclick = () => loadWafer($('#wafer-condition-select').value);
     const condSelect = $('#wafer-condition-select');
     if (condSelect) {
       condSelect.onchange = e => loadWafer(e.target.value);
@@ -980,7 +1001,7 @@ async function init() {
     } else {
       // Auto-load example for instant executive presentation
       try {
-        data = await api('/evidence/example.json');
+        data = await api('/evidence/example.json'); resultsStale = false;
         data.execution = 'recorded';
         selected = 0;
         render();
@@ -1028,3 +1049,33 @@ window.addEventListener('keydown', e => {
   if (e.key === 'Tab') { e.preventDefault(); $('#oracle-modal-close').focus(); }
 });
 init();
+
+
+function renderStudio() {
+  const scenario = data?.scenarios[selected];
+  if (!scenario) return;
+  const picker = $('#studio-scenario');
+  picker.disabled = false;
+  picker.innerHTML = data.scenarios.map((s, i) => `<option value="${i}" ${i === selected ? 'selected' : ''}>${esc(s.scenario.label)}</option>`).join('');
+  const r = scenario.results.find(r => r.method === 'IQAE') || scenario.results.find(r => r.method === 'Monte Carlo');
+  const target = 1 - scenario.scenario.max_failure_probability;
+  const baseline = data.scenarios[0].results.find(x => x.method === r.method);
+  const delta = 100 * (r.yield_estimate - baseline.yield_estimate);
+  const fmt = v => Number(v).toLocaleString(undefined, {maximumFractionDigits: 4});
+  const card = (label, value, detail) => `<article class="studio-stat"><small>${label}</small><strong>${value}</strong><p>${detail}</p></article>`;
+  $('#studio-result-state').textContent = (resultsStale ? 'Settings changed — showing previous run. ' : '') + `${data.execution === 'recorded' ? 'Recorded example' : 'Completed run'} · ${scenario.scenario.label} · ${r.method}`;
+  $('#studio-metrics').innerHTML =
+    card('Estimated modeled yield', pct(r.yield_estimate), `${esc(r.method)} · ${esc(r.decision)}`) +
+    card('Failure probability', pct(r.p_fail), 'Encoded leakage condition') +
+    card('Change from baseline', `${delta >= 0 ? '+' : ''}${delta.toFixed(2)} pp`, 'Same estimator · percentage points') +
+    card('Yield target', pct(target), `${(100 * (r.yield_estimate - target)).toFixed(2)} pp estimated margin`) +
+    card('Decision yield interval', `${pct(1-r.decision_ci[1])}–${pct(1-r.decision_ci[0])}`, 'Includes finite-grid encoding disagreement') +
+    card('Leakage limit', `${fmt(scenario.scenario.I_limit_A * 1e9)} nA`, `${fmt(scenario.scenario.temperature_K)} K · ${scenario.population.length} weighted configurations`);
+  $('#studio-scenario-bars').innerHTML = '<h3>Four-scenario yield comparison</h3>' + data.scenarios.map((s,i) => {
+    const row = s.results.find(x => x.method === r.method);
+    return `<button type="button" data-studio-select="${i}" aria-pressed="${i === selected}"><span>${esc(s.scenario.label)}</span><strong>${pct(row.yield_estimate)}</strong><span class="studio-bar-track"><span style="width:${Math.max(0,Math.min(100,row.yield_estimate*100))}%"></span></span><small>${esc(row.decision)}</small></button>`;
+  }).join('');
+  document.querySelectorAll('[data-studio-select]').forEach(b => b.onclick = () => { selected = Number(b.dataset.studioSelect); render(); });
+}
+$('#studio-scenario').onchange = e => { selected = Number(e.target.value); render(); };
+$('.population-disclosure').addEventListener('toggle', draw);
