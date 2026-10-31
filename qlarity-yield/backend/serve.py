@@ -194,7 +194,11 @@ def get_wafer_data(wafer_type: str = 'nominal'):
     if not csv_path.exists():
         return None
 
-    import pandas as pd, numpy as np
+    try:
+        import pandas as pd
+    except ImportError as exc:
+        raise HTTPException(503, 'Wafer data requires pandas. Install requirements-lock.txt in the Python environment running this server, then restart it.') from exc
+    import numpy as np
     df = pd.read_csv(csv_path)
     total = len(df)
     passed = int(df['Yield_Pass'].sum())
