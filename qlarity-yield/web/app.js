@@ -350,12 +350,13 @@ function draw() {
   }).sort((a, b) => a.depth - b.depth);
 
   for (const p of points) {
-    ctx.fillStyle = p.s.float_failure ? '#b7839a' : '#6f9f91';
-    ctx.globalAlpha = p.i === inspect ? 1 : 0.75;
-    const r = Math.max(2, Math.min(8, scale * 0.17));
+    ctx.fillStyle = p.s.float_failure ? '#ef4444' : '#22c55e';
+    ctx.globalAlpha = p.i === inspect ? 1 : 0.85;
+    const r = Math.max(2.5, Math.min(8, scale * 0.18));
     ctx.fillRect(p.x - r, p.y - r, r * 2, r * 2);
     if (p.i === inspect) {
-      ctx.strokeStyle = '#24242b';
+      ctx.strokeStyle = p.s.float_failure ? '#991b1b' : '#14532d';
+      ctx.lineWidth = 2;
       ctx.strokeRect(p.x - r - 3, p.y - r - 3, r * 2 + 6, r * 2 + 6);
     }
   }
@@ -488,7 +489,7 @@ function drawYieldChart() {
   // Target Spec Threshold Line
   const targetY = valToY(targetYield);
   ctx.save();
-  ctx.strokeStyle = '#977136';
+  ctx.strokeStyle = '#f59e0b';
   ctx.lineWidth = 2;
   ctx.setLineDash([5, 4]);
   ctx.beginPath();
@@ -498,7 +499,7 @@ function drawYieldChart() {
   ctx.restore();
 
   // Target Spec Label Tag
-  ctx.fillStyle = '#977136';
+  ctx.fillStyle = '#d97706';
   ctx.font = 'bold 10px system-ui';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'bottom';
@@ -526,18 +527,18 @@ function drawYieldChart() {
 
       const basePy = valToY(yMin);
 
-      // Classical Monte Carlo Bar (Left)
+      // Classical Monte Carlo Bar (Left) - Electric Violet
       const xMc = cx - barW - 3;
       const topMc = valToY(yMc);
       const hMc = basePy - topMc;
 
       const gradMc = ctx.createLinearGradient(0, topMc, 0, basePy);
-      gradMc.addColorStop(0, '#b9b0e4');
-      gradMc.addColorStop(1, '#8675b7');
+      gradMc.addColorStop(0, '#a78bfa');
+      gradMc.addColorStop(1, '#6366f1');
       ctx.fillStyle = gradMc;
       ctx.fillRect(xMc, topMc, barW, hMc);
 
-      drawErrorBar(ctx, xMc + barW / 2, valToY(ciMc[0]), valToY(ciMc[1]), '#685391');
+      drawErrorBar(ctx, xMc + barW / 2, valToY(ciMc[0]), valToY(ciMc[1]), '#4f46e5');
 
       chartHitboxes.push({
         x: xMc, y: topMc, w: barW, h: hMc,
@@ -549,18 +550,18 @@ function drawYieldChart() {
         meets: yMc >= targetYield
       });
 
-      // Quantum IQAE Bar (Right)
+      // Quantum IQAE Bar (Right) - Bright Emerald Green
       const xQ = cx + 3;
       const topQ = valToY(yQ);
       const hQ = basePy - topQ;
 
       const gradQ = ctx.createLinearGradient(0, topQ, 0, basePy);
-      gradQ.addColorStop(0, '#9dc8bb');
-      gradQ.addColorStop(1, '#578f7c');
+      gradQ.addColorStop(0, '#4ade80');
+      gradQ.addColorStop(1, '#16a34a');
       ctx.fillStyle = gradQ;
       ctx.fillRect(xQ, topQ, barW, hQ);
 
-      drawErrorBar(ctx, xQ + barW / 2, valToY(ciQ[0]), valToY(ciQ[1]), '#396f60');
+      drawErrorBar(ctx, xQ + barW / 2, valToY(ciQ[0]), valToY(ciQ[1]), '#15803d');
 
       chartHitboxes.push({
         x: xQ, y: topQ, w: barW, h: hQ,
@@ -573,30 +574,30 @@ function drawYieldChart() {
       });
 
       // Bar Value Text
-      ctx.fillStyle = '#292a30';
-      ctx.font = '9px monospace';
+      ctx.fillStyle = '#1e293b';
+      ctx.font = 'bold 9.5px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
       ctx.fillText((yMc * 100).toFixed(1) + '%', xMc + barW / 2, topMc - 2);
       ctx.fillText((yQ * 100).toFixed(1) + '%', xQ + barW / 2, topQ - 2);
 
       // Scenario Label below axis
-      ctx.fillStyle = '#5e616b';
+      ctx.fillStyle = '#475569';
       ctx.font = '11px system-ui';
       ctx.textBaseline = 'top';
       const shortName = s.scenario.label.replace('Tighter ', 'Tight ');
       ctx.fillText(shortName, cx, basePy + 6);
 
-      // Decision status badge
+      // Decision status badge - Bright Green Meets / Bright Red Misses
       const meets = yQ >= targetYield;
       ctx.fillStyle = meets ? 'rgba(34, 197, 94, 0.22)' : 'rgba(239, 68, 68, 0.22)';
-      ctx.strokeStyle = meets ? '#528270' : '#b86657';
-      ctx.lineWidth = 1;
-      const badgeW = 44, badgeH = 14;
-      ctx.strokeRect(cx - badgeW / 2, basePy + 24, badgeW, badgeH);
-      ctx.fillRect(cx - badgeW / 2, basePy + 24, badgeW, badgeH);
-      ctx.fillStyle = meets ? '#396e5e' : '#a54c40';
-      ctx.font = 'bold 9px system-ui';
+      ctx.strokeStyle = meets ? '#22c55e' : '#ef4444';
+      ctx.lineWidth = 1.5;
+      const badgeW = 48, badgeH = 15;
+      ctx.strokeRect(cx - badgeW / 2, basePy + 23, badgeW, badgeH);
+      ctx.fillRect(cx - badgeW / 2, basePy + 23, badgeW, badgeH);
+      ctx.fillStyle = meets ? '#15803d' : '#dc2626';
+      ctx.font = 'bold 9.5px system-ui';
       ctx.textBaseline = 'middle';
       ctx.fillText(meets ? 'MEETS' : 'MISSES', cx, basePy + 31);
     }
@@ -622,16 +623,16 @@ function drawYieldChart() {
       const isQuantum = r.method === 'IQAE';
       const grad = ctx.createLinearGradient(0, topY, 0, basePy);
       if (isQuantum) {
-        grad.addColorStop(0, '#9dc8bb');
-        grad.addColorStop(1, '#578f7c');
+        grad.addColorStop(0, '#4ade80');
+        grad.addColorStop(1, '#16a34a');
       } else {
-        grad.addColorStop(0, '#b9b0e4');
-        grad.addColorStop(1, '#8675b7');
+        grad.addColorStop(0, '#a78bfa');
+        grad.addColorStop(1, '#6366f1');
       }
       ctx.fillStyle = grad;
       ctx.fillRect(bx, topY, barW, bh);
 
-      drawErrorBar(ctx, cx, valToY(ciVal[0]), valToY(ciVal[1]), isQuantum ? '#396f60' : '#685391');
+      drawErrorBar(ctx, cx, valToY(ciVal[0]), valToY(ciVal[1]), isQuantum ? '#15803d' : '#4f46e5');
 
       chartHitboxes.push({
         x: bx, y: topY, w: barW, h: bh,
@@ -686,8 +687,8 @@ function initYieldChartEvents() {
         Estimator: <em>${esc(hit.method)}</em><br>
         Yield Estimate: <strong>${pct(hit.yieldVal)}</strong><br>
         95% Confidence Interval: [${pct(hit.ci[0])}, ${pct(hit.ci[1])}]<br>
-        Margin to Target: <strong style="color:${delta >= 0 ? '#396e5e' : '#a54c40'}">${delta >= 0 ? '+' : ''}${pct(delta)}</strong><br>
-        Decision: <span style="color:${hit.meets ? '#396e5e' : '#a54c40'};font-weight:bold">${hit.meets ? 'MEETS SPECIFICATION' : 'BELOW SPECIFICATION'}</span>
+        Margin to Target: <strong style="color:${delta >= 0 ? '#16a34a' : '#dc2626'}">${delta >= 0 ? '+' : ''}${pct(delta)}</strong><br>
+        Decision: <span style="color:${hit.meets ? '#16a34a' : '#dc2626'};font-weight:bold">${hit.meets ? 'MEETS SPECIFICATION' : 'BELOW SPECIFICATION'}</span>
       `;
     } else {
       tooltip.hidden = true;
@@ -800,45 +801,57 @@ function drawWafer() {
   const w = rect.width, h = rect.height, cx = w / 2, cy = h / 2, R = Math.min(cx, cy) - 14;
   wCtx.clearRect(0, 0, w, h);
 
-  // Outer silicon wafer border (300mm standard)
-  wCtx.strokeStyle = '#a6b9b1';
-  wCtx.lineWidth = 2;
+  // Silicon wafer disc (high-contrast dark substrate)
+  wCtx.save();
   wCtx.beginPath();
   wCtx.arc(cx, cy, R, 0, Math.PI * 2);
+  wCtx.fillStyle = '#0f172a';
+  wCtx.fill();
+
+  // Outer silicon wafer border (300mm standard)
+  wCtx.strokeStyle = '#475569';
+  wCtx.lineWidth = 2;
   wCtx.stroke();
 
   // Wafer notch at bottom (6 o'clock orientation notch)
-  wCtx.fillStyle = '#c8dcd3';
+  wCtx.fillStyle = '#1e293b';
   wCtx.beginPath();
-  wCtx.arc(cx, cy + R, 6, Math.PI, 0);
+  wCtx.arc(cx, cy + R, 7, Math.PI, 0);
   wCtx.fill();
+  wCtx.restore();
 
   const pts = waferData.sampled_dies, scale = R / 150.0;
   for (let i = 0; i < pts.length; i++) {
     const [id, x_mm, y_mm, Lg, Tox, Vth, Ileak, pass] = pts[i];
     const px = cx + x_mm * scale, py = cy + y_mm * scale;
-    if (waferMode === 'yield') wCtx.fillStyle = pass ? '#86b4a4' : '#b7839a';
-    else if (waferMode === 'vth') wCtx.fillStyle = colorForValue(Vth, 0.28, 0.38, 'plasma');
-    else if (waferMode === 'lg') wCtx.fillStyle = colorForValue(Lg, 24.0, 30.0, 'cool');
-    else wCtx.fillStyle = colorForValue(Math.log10(Ileak), 0.2, 2.4, 'plasma');
-    wCtx.fillRect(px - 1.8, py - 1.8, 3.6, 3.6);
+    if (waferMode === 'yield') {
+      // Bright neon green for yielding transistors, bright electric red for defect/leakage transistors
+      wCtx.fillStyle = pass ? '#22c55e' : '#ef4444';
+    } else if (waferMode === 'vth') {
+      wCtx.fillStyle = colorForValue(Vth, 0.28, 0.38, 'plasma');
+    } else if (waferMode === 'lg') {
+      wCtx.fillStyle = colorForValue(Lg, 24.0, 30.0, 'cool');
+    } else {
+      wCtx.fillStyle = colorForValue(Math.log10(Ileak), 0.2, 2.4, 'plasma');
+    }
+    wCtx.fillRect(px - 2.0, py - 2.0, 4.0, 4.0);
   }
 
   // Highlight hovered die
   if (waferHoverIndex >= 0 && waferHoverIndex < pts.length) {
     const [id, x_mm, y_mm, Lg, Tox, Vth, Ileak, pass] = pts[waferHoverIndex];
     const px = cx + x_mm * scale, py = cy + y_mm * scale;
-    wCtx.strokeStyle = '#24242b';
+    wCtx.strokeStyle = '#ffffff';
     wCtx.lineWidth = 2.5;
-    wCtx.strokeRect(px - 4.5, py - 4.5, 9, 9);
+    wCtx.strokeRect(px - 5, py - 5, 10, 10);
   }
 
-  // Draw defect quadrant annotation if in localized_defect mode
+  // Draw defect quadrant annotation if in localized_defect mode - Vivid Alert Red
   if (waferData.wafer_type === 'localized_defect') {
     wCtx.save();
-    wCtx.strokeStyle = 'rgba(255, 100, 100, 0.85)';
-    wCtx.lineWidth = 1.5;
-    wCtx.setLineDash([4, 4]);
+    wCtx.strokeStyle = 'rgba(239, 68, 68, 0.95)';
+    wCtx.lineWidth = 2;
+    wCtx.setLineDash([5, 4]);
     const qx = cx + 50 * scale;
     const qy = cy - 150 * scale;
     const qw = 100 * scale;
@@ -871,18 +884,18 @@ async function loadWafer(wType = 'nominal') {
     let customCards = '';
     if (wType === 'localized_defect' && q) {
       customCards = `
-        <div class="wafer-metric-card" style="border-left:3px solid #a75d60"><small>Quadrant Defect (X&gt;50, Y&lt;50)</small><strong style="color:#a75d60">${q.quadrant_yield_pct}%</strong><small>${q.quadrant_count.toLocaleString()} dies [Failure Zone]</small></div>
-        <div class="wafer-metric-card" style="border-left:3px solid #3c7664"><small>Outside Defect Zone</small><strong style="color:#3c7664">${q.outside_yield_pct}%</strong><small>${q.outside_count.toLocaleString()} dies [Pristine Baseline]</small></div>
+        <div class="wafer-metric-card" style="border-left:4px solid #ef4444;background:#fef2f2"><small>Quadrant Defect (X&gt;50, Y&lt;50)</small><strong style="color:#dc2626">${q.quadrant_yield_pct}%</strong><small style="color:#ef4444">${q.quadrant_count.toLocaleString()} dies [Failure Zone]</small></div>
+        <div class="wafer-metric-card" style="border-left:4px solid #22c55e;background:#f0fdf4"><small>Outside Defect Zone</small><strong style="color:#16a34a">${q.outside_yield_pct}%</strong><small style="color:#16a34a">${q.outside_count.toLocaleString()} dies [Pristine Baseline]</small></div>
       `;
     } else if (wType === 'equipment_drift') {
       customCards = `
-        <div class="wafer-metric-card" style="border-left:3px solid #a75d60"><small>Etch Microloading Drift</small><strong style="color:#a75d60">${st.Lg_mean} nm</strong><small>Target: 28.0 nm (-1.4 nm)</small></div>
-        <div class="wafer-metric-card" style="border-left:3px solid #a75d60"><small>Threshold Implantation Drift</small><strong style="color:#a75d60">${st.Vth_mean} V</strong><small>Target: 0.350 V (-25 mV)</small></div>
+        <div class="wafer-metric-card" style="border-left:4px solid #ef4444;background:#fef2f2"><small>Etch Microloading Drift</small><strong style="color:#dc2626">${st.Lg_mean} nm</strong><small style="color:#ef4444">Target: 28.0 nm (-1.4 nm)</small></div>
+        <div class="wafer-metric-card" style="border-left:4px solid #ef4444;background:#fef2f2"><small>Threshold Implantation Drift</small><strong style="color:#dc2626">${st.Vth_mean} V</strong><small style="color:#ef4444">Target: 0.350 V (-25 mV)</small></div>
       `;
     } else if (wType === 'high_variance') {
       customCards = `
-        <div class="wafer-metric-card" style="border-left:3px solid #916e38"><small>Gate Length Variance</small><strong style="color:#916e38">σ = ${st.Lg_std} nm</strong><small>2x Nominal Process Sigma</small></div>
-        <div class="wafer-metric-card" style="border-left:3px solid #916e38"><small>Threshold Voltage Variance</small><strong style="color:#916e38">σ = ${st.Vth_std} V</strong><small>2x Nominal Process Sigma</small></div>
+        <div class="wafer-metric-card" style="border-left:4px solid #f59e0b;background:#fffbeb"><small>Gate Length Variance</small><strong style="color:#d97706">σ = ${st.Lg_std} nm</strong><small style="color:#d97706">2x Nominal Process Sigma</small></div>
+        <div class="wafer-metric-card" style="border-left:4px solid #f59e0b;background:#fffbeb"><small>Threshold Voltage Variance</small><strong style="color:#d97706">σ = ${st.Vth_std} V</strong><small style="color:#d97706">2x Nominal Process Sigma</small></div>
       `;
     } else {
       customCards = `
@@ -954,7 +967,7 @@ async function initWafer() {
         waferTooltip.hidden = false;
         waferTooltip.style.left = mx + 'px';
         waferTooltip.style.top = my + 'px';
-        waferTooltip.innerHTML = `<strong>Die #${id}</strong> (${x}, ${y} mm)<br>L<sub>g</sub>: ${Lg} nm | T<sub>ox</sub>: ${Tox} nm<br>V<sub>th</sub>: ${Vth} V | I<sub>leak</sub>: ${Ileak} nA<br><span style="color:${pass ? '#3c7664' : '#a75d60'};font-weight:bold">${pass ? 'PASSED (≤30 nA)' : 'FAILED (>30 nA)'}</span>`;
+        waferTooltip.innerHTML = `<strong>Die #${id}</strong> (${x}, ${y} mm)<br>L<sub>g</sub>: ${Lg} nm | T<sub>ox</sub>: ${Tox} nm<br>V<sub>th</sub>: ${Vth} V | I<sub>leak</sub>: ${Ileak} nA<br><span style="color:${pass ? '#16a34a' : '#dc2626'};font-weight:bold">${pass ? 'PASSED (≤ 30 nA)' : 'FAILED (> 30 nA)'}</span>`;
         $('#wafer-die-detail').textContent = `Die #${id} · Coordinates: (${x}, ${y}) mm · Gate Length: ${Lg} nm · Oxide: ${Tox} nm · Threshold Vth: ${Vth} V · Standby Leakage: ${Ileak} nA · Status: ${pass ? 'PASS' : 'FAIL'}`;
       } else {
         waferHoverIndex = -1;
